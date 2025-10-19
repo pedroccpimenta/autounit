@@ -7,7 +7,7 @@ import os
 import sys
 import requests
 import pymysql
-import clts_pcp as clts
+# import clts_pcp as clts
 import time 
 import subprocess
 

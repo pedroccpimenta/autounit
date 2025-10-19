@@ -3,7 +3,7 @@ flask_apscheduler
 
 pymysql
 pygsheets
-clts_pcp
+# clts_pcp
 subprocess
 socket
 os
