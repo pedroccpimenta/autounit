@@ -20,6 +20,15 @@ scheduler.start()
 
 ftasks="tasks.json"
 
+
+file_path = __file__  # __file__ is the current script's path
+mod_time = os.path.getmtime(file_path)
+mod_date = datetime.datetime.fromtimestamp(mod_time)
+
+
+version=mod_date.strftime('%Y-%m-%d')
+
+
 @app.route('/')
 def hello():
     global ftasks
@@ -53,7 +62,7 @@ def hello():
     <h1>Header</h1>
     {table}
     <hr color=lime>
-    {now}
+    Version {version}, running at {hostname} ({now})
     </body>
     </html>
     """
