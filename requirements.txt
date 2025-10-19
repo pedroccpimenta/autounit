@@ -1,3 +1,9 @@
 flask
 pymysql
 pygsheets
+clts_pcp
+subprocess
+socket
+os
+sys
+time
