@@ -27,6 +27,7 @@ mod_date = datetime.datetime.fromtimestamp(mod_time)
 
 
 version=mod_date.strftime('%Y-%m-%d')
+nk=0
 
 
 @app.route('/')
@@ -62,7 +63,7 @@ def hello():
     <h1>Header</h1>
     {table}
     <hr color=lime>
-    Version {version}, running at {hostname} ({now})
+    Version {version}, running at {hostname} ({now}) [{nk}]
     </body>
     </html>
     """
@@ -103,7 +104,6 @@ def page2():
     return f'{now} This is Page 2'
 
 
-nk=0
 def ping_pong_task():
     global nk, ftasks
     nk = nk+1
