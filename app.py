@@ -28,6 +28,13 @@ mod_date = datetime.datetime.fromtimestamp(mod_time)
 
 version=mod_date.strftime('%Y-%m-%d')
 nk=0
+ostat = 'ostat.json'
+
+
+@app.route('/page2')
+def page2():
+    now = str(datetime.datetime.now())[0:19]
+    return f'{now} This is Page 2'
 
 
 @app.route('/')
@@ -35,6 +42,8 @@ def hello():
     global ftasks
     now = str(datetime.datetime.now())[0:19]
     tasks = json.load(open(ftasks))
+    ostatus = json.load(open(ostat))
+    print (" =========================", ostatus)
 
     table = "<table border=1><tr><td>task_id<td>pipeline<td>lastrun<td>Period (mins)<td>ret<td>T watch<td>T proc"
 
@@ -63,7 +72,7 @@ def hello():
     <h1>Header</h1>
     {table}
     <hr color=lime>
-    Version {version}, running at {hostname} ({now}) [{nk}]
+    Version {version}, running at {hostname} ({now}) [{ostatus['nk']}]
     </body>
     </html>
     """
@@ -73,6 +82,7 @@ def hello():
 
 
 def dummy():
+    jtkr = requests.get("https://autounit.onrender.com/")
     try:
         ### do dummy job    
         print ("                »»»»»»»» dummy running !!!")
@@ -96,17 +106,8 @@ def ext_python():
     return ret
 
 
-
-
-@app.route('/page2')
-def page2():
-    now = str(datetime.datetime.now())[0:19]
-    return f'{now} This is Page 2'
-
-
 def ping_pong_task():
-    global nk, ftasks
-    nk = nk+1
+    global ftasks
     # repeated task function
     ot = [time.perf_counter(), time.process_time()]
     
@@ -155,46 +156,55 @@ def ping_pong_task():
     with open(ftasks, "w") as f:    
         f.write(json.dumps(tasks, ensure_ascii=False))
 
-    print(f"{nk:9} Ping pong task running:", datetime.datetime.now())
+    ostatus = json.load(open(ostat))
+
+    print(f"{ostatus['nk']:9} Ping pong task running:", datetime.datetime.now())
 
     now = str(datetime.datetime.now())[0:19]
-    with open(ostat, "w") as f:    
-        f.write(json.dumps({"host":hostname, "uptime":now}))
+    print("______________________",ostatus)
+    ostatus['uptime']= now
+    ostatus["nk"] = ostatus["nk"] + 1 
+    if ostatus["nk"] > 100000:
+        ostatus["nk"] = 0
 
-    if nk > 100000:
-        nk=0
+
+
+
+    print("______________________",ostatus)
+
+    with open(ostat, "w") as f:    
+        f.write(json.dumps(ostatus, ensure_ascii=False))
 
 
 now = str(datetime.datetime.now())[0:19]
 
-ostat = 'ostat.json'
 ping_pong_period = 40  # seconds
 
 try:
     if os.path.isfile(ostat):
-        print ("""\n          AAAAA 
-         AA  AA
-        AA   AA
-       AAAAAAAA 
-      AA     AA
-     AA      AAUTO STARTING... wait a minute, pleeeeeeaseeee ...
+        print ("""\n          AAAAA           UU     UU
+         AA  AA  UU     UU                     
+        AA   AA  UU     UU
+       AAAAAAAA  UU     UU 
+      AA     AA  UU     UU
+     AA      AA utonomous UUUUUUUUU nit - TO STARTING... wait a minute, pleeeeeeaseeee ...
               """)
         print ('file exists... ', end='')
         time.sleep(ping_pong_period+10)
         ostatus = json.load(open(ostat))
         print (ostatus)
         difference = datetime.datetime.now() - datetime.datetime.strptime(ostatus['uptime'], "%Y-%m-%d %H:%M:%S")
-        print(print("Seconds:", difference.seconds))
+        print("Seconds:", difference.seconds)
         if difference.seconds > 100:
             now = str(datetime.datetime.now())[0:19]
             scheduler.add_job(id='ping_pong_job', func=ping_pong_task, trigger='interval', seconds=ping_pong_period)
             with open(ostat, "w") as f:    
-                f.write(json.dumps({"host":hostname, "uptime":now}))
+                f.write(json.dumps({"host":hostname, "uptime":now, "nk":nk}))
 
     else:
         print(f"File `{ostat}` does not exist")
         with open(ostat, "w") as f:    
-            f.write(json.dumps({"host":hostname, "uptime":now}))
+            f.write(json.dumps({"host":hostname, "uptime":now, "nk":0}))
 
         # Add an interval job that runs every 50 seconds (example)
         scheduler.add_job(id='ping_pong_job', func=ping_pong_task, trigger='interval', seconds=ping_pong_period)
