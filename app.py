@@ -39,13 +39,13 @@ def page2():
 
 @app.route('/')
 def hello():
-    global ftasks
+    #global ftasks
     now = str(datetime.datetime.now())[0:19]
     tasks = json.load(open(ftasks))
     ostatus = json.load(open(ostat))
-    print (" =========================", ostatus)
+    #print (" =========================", ostatus)
 
-    table = "<table border=1><tr><td>task_id<td>pipeline<td>lastrun<td>Period (mins)<td>ret<td>T watch<td>T proc"
+    table = "<table border=1 cellspacing=0 cellpadding=1><tr style='background:silver'><td>task_id<td>pipeline<td>lastrun<td>Period (mins)<td>ret<td>T watch<td>T proc"
 
     for ek in tasks.keys():
         table += f"<tr><td>{ek}<td>{tasks[ek]['pyfunction']}<td>{tasks[ek]['lrun']}"
@@ -53,7 +53,7 @@ def hello():
         if 'ret' in  tasks[ek].keys():
             table += f"<td align=right>{tasks[ek]['ret']}"
         else:
-            table += f"<td align=right> - no ret"
+            table += f"<td align=right> - no ret (!)"
 
         if 'ets' in  tasks[ek].keys():
             table += f"<td align=right>{tasks[ek]['ets'][1]:.3f}"
@@ -80,6 +80,11 @@ def hello():
     return resp
 
 
+def keep_alive():
+    jtkr = requests.get("https://autounit.onrender.com/")
+    print ("keep_alive is really defined")
+    return str(jtkr)
+    #return(53)
 
 def dummy():
     jtkr = requests.get("https://autounit.onrender.com/")
@@ -107,7 +112,7 @@ def ext_python():
 
 
 def ping_pong_task():
-    global ftasks
+    #global ftasks
     # repeated task function
     ot = [time.perf_counter(), time.process_time()]
     
@@ -161,16 +166,13 @@ def ping_pong_task():
     print(f"{ostatus['nk']:9} Ping pong task running:", datetime.datetime.now())
 
     now = str(datetime.datetime.now())[0:19]
-    print("______________________",ostatus)
+    #print("______________________",ostatus)
     ostatus['uptime']= now
     ostatus["nk"] = ostatus["nk"] + 1 
     if ostatus["nk"] > 100000:
         ostatus["nk"] = 0
 
-
-
-
-    print("______________________",ostatus)
+    #print("______________________",ostatus)
 
     with open(ostat, "w") as f:    
         f.write(json.dumps(ostatus, ensure_ascii=False))
@@ -182,17 +184,18 @@ ping_pong_period = 40  # seconds
 
 try:
     if os.path.isfile(ostat):
-        print ("""\n          AAAAA           UU     UU
-         AA  AA  UU     UU                     
-        AA   AA  UU     UU
-       AAAAAAAA  UU     UU 
-      AA     AA  UU     UU
-     AA      AA utonomous UUUUUUUUU nit - TO STARTING... wait a minute, pleeeeeeaseeee ...
+        print ("""\n          AAAAA          UU     UU
+         AA  AA          UU     UU                     
+        AA   AA          UU     UU
+       AAAAAAAA          UU     UU 
+      AA     AA          UU     UU
+     AA      AAutonomous UUUUUUUUUnit - TO STARTING... wait a minute, pleeeeeeaseeee ...
               """)
         print ('file exists... ', end='')
         time.sleep(ping_pong_period+10)
         ostatus = json.load(open(ostat))
-        print (ostatus)
+        #print (ostatus)
+        ostatus['nk']=0
         difference = datetime.datetime.now() - datetime.datetime.strptime(ostatus['uptime'], "%Y-%m-%d %H:%M:%S")
         print("Seconds:", difference.seconds)
         if difference.seconds > 100:
@@ -223,6 +226,9 @@ if tasks == {}:
         "dummy":{"pyfunction":"dummy", "lrun":"2025-09-26 18:30:00", "period":2},
         "dummy2":{"pyfunction":"ext_python", "lrun":"2025-09-26 18:30:00", "period":3}
     }
+
+
+tasks['keep_alive']={"pyfunction":"keep_alive", "lrun":"2025-09-26 18:30:00", "period":3}
 
 with open(ftasks, "w") as f:    
     f.write(json.dumps(tasks, ensure_ascii=False))
