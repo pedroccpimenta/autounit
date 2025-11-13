@@ -82,7 +82,13 @@ def hello():
 
 def keep_alive():
     jtkr = requests.get("https://autounit.onrender.com/")
-    print ("keep_alive is really defined")
+
+    return str(jtkr)
+    #return(53)
+
+def keep_alive2():
+    jtkr = requests.get("https://autounit-b.onrender.com/")
+
     return str(jtkr)
     #return(53)
 
@@ -224,7 +230,9 @@ except Exception as e:
 if tasks == {}:
     tasks = {
         "dummy":{"pyfunction":"dummy", "lrun":"2025-09-26 18:30:00", "period":2},
-        "dummy2":{"pyfunction":"ext_python", "lrun":"2025-09-26 18:30:00", "period":3}
+        "dummy2":{"pyfunction":"ext_python", "lrun":"2025-09-26 18:30:00", "period":3},
+        "dummy3":{"pyfunction":"keep_alive2", "lrun":"2025-09-26 18:30:00", "period":6},
+
     }
 
 
