@@ -4,6 +4,10 @@ flask_apscheduler
 pymysql
 pygsheets
 clts_pcp
+
+#  The following modules are included in standard python, 
+#  including them here lead to errors.
+
 #subprocess
 #socket
 #os
