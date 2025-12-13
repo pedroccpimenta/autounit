@@ -1,7 +1,9 @@
-{"dummy": {"pyfunction": "dummy", "lrun": "2025-10-21 20:40:54", "period": 2, "ets": [11.645963799965102, 1.328125], "ret": "0"}, 
+{
+
+"dummy": {"pyfunction": "dummy", "lrun": "2025-10-21 20:40:54", "period": 2, "ets": [11.645963799965102, 1.328125], "ret": "0"}, 
 "dummy2": {"pyfunction": "ext_python", "lrun": "2025-10-21 20:42:03", "period": 3, "ets": [0.02047590003348887, 0.0], "ret": "python: can't open file 'D:\\\\github\\\\autounit\\\\other_script.py': [Errno 2] No such file or directory\n"}, 
 "main": {"pyfunction": "null", "lrun": "2025-10-21 20:42:43", "period": 0.6666666666666666, "ets": [0.03000550001161173, 0.03000550001161173], "ret": "0"}, 
 "keep_alive": {"pyfunction": "keep_alive", "lrun": "2025-10-21 20:42:10", "period": 3, "ets": [7.832658700004686, 0.75], "ret": "<Response [200]>"},
-"keep_alive2": {"pyfunction": "keep_alive2", "lrun": "2025-10-21 20:42:10", "period": 3, "ets": [7.832658700004686, 0.75], "ret": "<Response [200]>"},
+"keep_alive2": {"pyfunction": "keep_alive2", "lrun": "2025-10-21 20:42:10", "period": 3, "ets": [7.832658700004686, 0.75], "ret": "<Response [200]>"}
 
 }
