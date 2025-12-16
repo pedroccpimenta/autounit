@@ -171,7 +171,7 @@ if enviro == "google.colab":
   creds = json.loads(userdata.get(f"{user}-geonames.json"))
 elif enviro == "render":
   print (" > loading", f"/etc/secrets/{user}-geonames.json")
-  creds = json.load(open(f"/secrets/{user}-geonames.json"))
+  creds = json.load(open(f"/etc/secrets/{user}-geonames.json"))
 else:
   print (" > loading", f"./secrets/{user}-geonames.json")
   creds = json.load(open(f"./secrets/{user}-geonames.json"))
