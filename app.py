@@ -354,7 +354,7 @@ except Exception as e:
             "main": {"pyfunction": "null", "lrun": "2025-12-14 18:52:11", "period": 0.6666666666666666, "ets": [0.002531200007069856, 0.002531200007069856], "ret": "0"}, 
             "keep_alive": {"pyfunction": "keep_alive", "lrun": "2025-12-14 18:51:32", "period": 3, "ets": [0.37277300003916025, 0.0], "ret": "<Response [200]>"}, 
             "keep_alive2": {"pyfunction": "keep_alive2", "lrun": "2025-12-14 18:50:53", "period": 3, "ets": [0.38333000004058704, 0.0], "ret": "<Response [200]>"},
-            "pcp_meteo_icao": {"pyfunction": "pcp_icao", "lrun": "2025-12-14 18:50:53", "period": 25, "ets": [None, None], "ret": " - not yet called - "}
+            "pcp_meteo_icao": {"pyfunction": "pcp_icao", "lrun": "2025-12-14 18:50:53", "period": 15, "ets": [None, None], "ret": " - not yet called - "}
             }
     print (f"{ftasks} created...")
                      

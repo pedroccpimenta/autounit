@@ -47,7 +47,7 @@ if current_env is None:
     from google.colab import userdata
 else:
   enviro="to be defined"
-      
+
 print ("current enviro:", enviro)
 
 
@@ -169,7 +169,9 @@ if verbose:
 
 if enviro == "google.colab":
   creds = json.loads(userdata.get(f"{user}-geonames.json"))
-elif enviro== ""
+elif enviro == "render":
+  print (" > loading", f"/secrets/{user}-geonames.json")
+  creds = json.load(open(f"/secrets/{user}-geonames.json"))
 else:
   print (" > loading", f"./secrets/{user}-geonames.json")
   creds = json.load(open(f"./secrets/{user}-geonames.json"))
@@ -181,7 +183,7 @@ url=f"http://api.geonames.org/weatherIcaoJSON?ICAO=LPPR&username={creds['key']}"
 
 if enviro == "google_colab":
   pass
-elif enviro == "render"
+elif enviro == "render":
   datapath=f"static/data/{user}"
   print ("datapath", datapath)
 else:
