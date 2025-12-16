@@ -32,12 +32,23 @@ import socket
 import os
 from urllib.parse import quote
 
+global enviro
 
 current_env = os.environ.get('CONDA_DEFAULT_ENV')
 print ("current_env", current_env)
 
 if current_env is None:
-  from google.colab import userdata
+  hostname=socket.gethostname()[:30]
+  if hostname[:4]=="srv-":
+    enviro="render"
+    pass
+  else:
+    enviro="colab.google"
+    from google.colab import userdata
+else:
+  enviro="to be defined"
+      
+print ("current enviro:", enviro)
 
 
 #if current_env is None:
@@ -156,8 +167,9 @@ if verbose:
 ## Getting data from geonames
 #
 
-if current_env is None:
+if enviro == "google.colab":
   creds = json.loads(userdata.get(f"{user}-geonames.json"))
+elif enviro== ""
 else:
   print (" > loading", f"./secrets/{user}-geonames.json")
   creds = json.load(open(f"./secrets/{user}-geonames.json"))
@@ -167,8 +179,11 @@ print (creds['manifesto'])
 
 url=f"http://api.geonames.org/weatherIcaoJSON?ICAO=LPPR&username={creds['key']}"
 
-if current_env is None:
+if enviro == "google_colab":
   pass
+elif enviro == "render"
+  datapath=f"static/data/{user}"
+  print ("datapath", datapath)
 else:
   datapath=f"data/{user}"
   print ("datapath", datapath)
@@ -275,8 +290,10 @@ clts.elapt[f"Starting database accesses:"] = clts.deltat(tstart)
 # This connection needs further parametrization, since the same user might want to use
 # different databases for different pipelines / data sources
 #
-if current_env is None:
+if enviro == "google.colab":
   dblist=json.loads(userdata.get(f"{user}-dblist.json"))
+elif enviro == "render":
+  dblist=json.load(open(f"/secrets/{user}-dblist.json"))
 else:
   dblist = json.load(open(f"./secrets/{user}-dblist.json"))
 
@@ -290,8 +307,12 @@ for db in dblist:
       print ("db in dblist:", db)
       print (f'connecting to `{db}`')
     try:
-      if current_env is None:
+      if enviro == "google.colab":
         dbcreds=json.loads(userdata.get(f'{user}-{db}.json'))
+      elif enviro == "render":
+        print ("READING ", f'/secrets/{user}-{db}.json')
+        dbcreds=json.load(open(f'/secrets/{user}-{db}.json'))
+        
       else:
         print ("READING ", f'secrets/{user}-{db}.json')
         dbcreds=json.load(open(f'secrets/{user}-{db}.json'))
@@ -322,8 +343,9 @@ for db in dblist:
       elif dbcreds['dbms']=="sql_tls":
         print("... connecting to sql_tls database...")
         timeout = dbcreds['timeout']
-        if current_env is None:
+        if enviro =="google.colab":
           pem_content = userdata.get(dbcreds['pem'])
+
           with open(f'/tmp/{user}.pem', 'w') as f:
             f.write(pem_content)
           connection = pymysql.connect(
@@ -340,6 +362,25 @@ for db in dblist:
             read_timeout=timeout,
             autocommit=True
         )
+        elif enviro == "render":
+          print ("Reading", f'/secrets/{dbcreds['pem']}')
+          pem_content = open (f'/secrets/{dbcreds['pem']}').read()
+          connection = pymysql.connect(
+            host=dbcreds["dest_host"],
+            port=dbcreds["port"],
+            db=dbcreds['database'],
+            user=dbcreds['username'],
+            password=dbcreds['password'],
+            cursorclass=pymysql.cursors.DictCursor,
+            charset="utf8mb4",
+            ssl={'ca': f'/secrets/{user}.pem'},
+            connect_timeout=timeout,
+            write_timeout=timeout,
+            read_timeout=timeout,
+            autocommit=True
+        )
+
+
         else:
           print ("Reading", f'secrets/{dbcreds['pem']}')
           pem_content = open (f'secrets/{dbcreds['pem']}').read()
