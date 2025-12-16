@@ -517,9 +517,13 @@ if send_mail and email_addresses!=[]:
     if enviro=="jupyter":
       credsgmail=json.loads(userdata.get('configGMail_PCP.json') )
     else:
+      epath=""
+      if enviro=="render:":
+          epath:"/etc"
+
       try:
-          print("Trying to open " , f'./secrets/configGMail_{hostname}.json')
-          with open(f'./secrets/configGMail_{hostname}.json', 'r') as fh:
+          print("Trying to open " , f'.{epath}/secrets/configGMail_{hostname}.json')
+          with open(f'.{epath}/secrets/configGMail_{hostname}.json', 'r') as fh:
               credsgmail=json.loads(fh.read())
       except Exception as err:
         print ("Error:", err)
