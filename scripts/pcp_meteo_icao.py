@@ -170,7 +170,7 @@ if verbose:
 if enviro == "google.colab":
   creds = json.loads(userdata.get(f"{user}-geonames.json"))
 elif enviro == "render":
-  print (" > loading", f"/secrets/{user}-geonames.json")
+  print (" > loading", f"/etc/secrets/{user}-geonames.json")
   creds = json.load(open(f"/secrets/{user}-geonames.json"))
 else:
   print (" > loading", f"./secrets/{user}-geonames.json")
@@ -295,7 +295,7 @@ clts.elapt[f"Starting database accesses:"] = clts.deltat(tstart)
 if enviro == "google.colab":
   dblist=json.loads(userdata.get(f"{user}-dblist.json"))
 elif enviro == "render":
-  dblist=json.load(open(f"/secrets/{user}-dblist.json"))
+  dblist=json.load(open(f"/etc/secrets/{user}-dblist.json"))
 else:
   dblist = json.load(open(f"./secrets/{user}-dblist.json"))
 
@@ -312,7 +312,7 @@ for db in dblist:
       if enviro == "google.colab":
         dbcreds=json.loads(userdata.get(f'{user}-{db}.json'))
       elif enviro == "render":
-        print ("READING ", f'/secrets/{user}-{db}.json')
+        print ("READING ", f'/etc/secrets/{user}-{db}.json')
         dbcreds=json.load(open(f'/secrets/{user}-{db}.json'))
         
       else:
@@ -365,8 +365,8 @@ for db in dblist:
             autocommit=True
         )
         elif enviro == "render":
-          print ("Reading", f'/secrets/{dbcreds['pem']}')
-          pem_content = open (f'/secrets/{dbcreds['pem']}').read()
+          print ("Reading", f'/etc/secrets/{dbcreds['pem']}')
+          pem_content = open (f'/etc/secrets/{dbcreds['pem']}').read()
           connection = pymysql.connect(
             host=dbcreds["dest_host"],
             port=dbcreds["port"],
