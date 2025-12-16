@@ -3,6 +3,7 @@ flask
 flask_apscheduler
 
 crate
+google
 pymysql
 pygsheets
 clts_pcp
