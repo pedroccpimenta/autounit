@@ -4,6 +4,7 @@ flask_apscheduler
 
 crate
 google
+mailersend
 pymysql
 pygsheets
 clts_pcp

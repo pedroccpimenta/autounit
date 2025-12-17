@@ -319,7 +319,7 @@ if enviro == "google.colab":
 elif enviro == "render":
   dblist=json.load(open(f"/etc/secrets/{user}-dblist.json"))
 else:
-  dblist = json.load(open(f"./secrets/{user}-dblist.json"))
+  dblist = json.load(open(f"secrets/{user}-dblist.json"))
 
 
 print(dblist)
@@ -525,10 +525,32 @@ clts.elapt["Overall (before email):"]=clts.deltat(tstart)
 hora=str(datetime.datetime.now())[11:13]
 horaemail=['07', '17' ]
 
-#if sendmail and (hora in horaemail):
+#if sendmail and (hora in horaemail):  
 if send_mail and email_addresses!=[]:
 #if send_mail and  email_addresses!=[] and abs((datetime.datetime.now() - datetime.datetime.combine(datetime.datetime.now().date(), datetime.time(11, 0))).total_seconds() / 60) < 40 :
 
+  if enviro=="render":
+
+    from mailersend import MailerSendClient, EmailBuilder
+      credsgmail=json.load( open("/etc/secrets/PCP-mailersend.json" ))
+      ms = MailerSendClient( api_key=credsgmail['token'])
+
+      text = toem+"\nEsta é uma mensagem automática."
+
+      html = "<html><body style=''font-family:Montserrat;''>"+toem+ "<hr color=orange>"
+      html = html +"This message is an automated notification from "+ context +"</body></html>"
+
+
+      for em in email_addresses:
+        email = (EmailBuilder()
+         .from_email(credsgmail['user'], credsgmail['username'])
+         .to_many([{"email": em, "name": em}  ])
+         .subject(f"🌦️🛫 {context}")
+         .html(html)
+         .text("Hello World!")
+         .build())
+
+  else:
     toem=clts.listtimes()
 
     from email.mime.text import MIMEText
