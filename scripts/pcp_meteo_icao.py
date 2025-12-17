@@ -316,7 +316,7 @@ for db in dblist:
         dbcreds=json.loads(userdata.get(f'{user}-{db}.json'))
       elif enviro == "render":
         print ("READING ", f'/etc/secrets/{user}-{db}.json')
-        dbcreds=json.load(open(f'/secrets/{user}-{db}.json'))
+        dbcreds=json.load(open(f'/etc/secrets/{user}-{db}.json'))
         
       else:
         print ("READING ", f'secrets/{user}-{db}.json')
