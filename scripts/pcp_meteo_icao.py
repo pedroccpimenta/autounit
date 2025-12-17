@@ -531,7 +531,7 @@ if send_mail and email_addresses!=[]:
               credsgmail=json.loads(fh.read())
       except Exception as err:
         print ("Error:", err)
-        return(-2)
+
 
     try:
         assunto = f"🌦️🛫 {context}"
