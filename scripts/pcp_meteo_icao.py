@@ -41,7 +41,7 @@ if current_env is None:
   hostname=socket.gethostname()[:30]
   if hostname[:4]=="srv-":
     enviro="render"
-    pass
+    
   else:
     enviro="colab.google"
     from google.colab import userdata
@@ -63,7 +63,8 @@ import crate
 print("... done.")
 
 current_env = os.environ.get('CONDA_DEFAULT_ENV')
-print ("current_env", current_env)
+print ("current_env:", current_env)
+print ("enviro:", enviro)
 
 ## Context gathering
 
