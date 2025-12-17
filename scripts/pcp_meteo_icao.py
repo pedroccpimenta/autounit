@@ -517,12 +517,13 @@ if send_mail and email_addresses!=[]:
     import smtplib, ssl
 
     # V25
+    print (" AGAIN enviro:", enviro)
     if enviro=="jupyter":
       credsgmail=json.loads(userdata.get('configGMail_PCP.json') )
     else:
       epath=""
       if enviro=="render:":
-          epath:"/etc"
+          epath="/etc"
 
       try:
           print("Trying to open " , f'.{epath}/secrets/configGMail_{hostname}.json')
@@ -566,7 +567,7 @@ if send_mail and email_addresses!=[]:
           server.sendmail(sender_email,email_addresses, message.as_string())
         print ("Notificação enviada.")
         clts.elapt[f"After sending email"] = clts.deltat(tstart)        # add an entry to elapt dictionary
-    except Error as e:
+    except Exception as e:
         print('A notificação não foi enviada:', e)
         clts.elapt[f"email not sent ({e})"] = clts.deltat(tstart)       # add an entry to elapt dictionary
     finally:
