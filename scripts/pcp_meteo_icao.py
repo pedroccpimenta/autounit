@@ -532,23 +532,23 @@ if send_mail and email_addresses!=[]:
   if enviro=="render":
 
     from mailersend import MailerSendClient, EmailBuilder
-      credsgmail=json.load( open("/etc/secrets/PCP-mailersend.json" ))
-      ms = MailerSendClient( api_key=credsgmail['token'])
+    credsgmail=json.load( open("/etc/secrets/PCP-mailersend.json" ))
+    ms = MailerSendClient( api_key=credsgmail['token'])
 
-      text = toem+"\nEsta é uma mensagem automática."
+    text = toem+"\nEsta é uma mensagem automática."
 
-      html = "<html><body style=''font-family:Montserrat;''>"+toem+ "<hr color=orange>"
-      html = html +"This message is an automated notification from "+ context +"</body></html>"
+    html = "<html><body style=''font-family:Montserrat;''>"+toem+ "<hr color=orange>"
+    html = html +"This message is an automated notification from "+ context +"</body></html>"
 
 
-      for em in email_addresses:
-        email = (EmailBuilder()
-         .from_email(credsgmail['user'], credsgmail['username'])
-         .to_many([{"email": em, "name": em}  ])
-         .subject(f"🌦️🛫 {context}")
-         .html(html)
-         .text("Hello World!")
-         .build())
+    for em in email_addresses:
+      email = (EmailBuilder()
+       .from_email(credsgmail['user'], credsgmail['username'])
+       .to_many([{"email": em, "name": em}  ])
+       .subject(f"🌦️🛫🏤 {context}")
+       .html(html)
+       .text("Hello World!")
+       .build())
 
   else:
     toem=clts.listtimes()
