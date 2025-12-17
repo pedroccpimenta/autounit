@@ -62,7 +62,7 @@ def hello():
 
     table2="<table border=1  cellspacing=0 cellpadding=1><tr style='background:silver'><td>#<td>"
     for ep in lpret :
-        table2 += f"<tr><td align=right>{ep.PID}<td align=right>{ep.returncode}"
+        table2 += f"<tr><td align=right>{ep.pid}<td align=right>{ep.returncode}"
     table2 += "</table>"
 
 
@@ -137,7 +137,7 @@ def edittasks():
             table += f"<td align=right>{tasks[ek]['ets'][0]:.3f}"
 
 
-    table += "</table><input type=text name=xkvalue value='EZ53'><input type='submit' value='Submit'>"
+    table += "</table><input type=password name=xkvalue value='EZ53'><input type='submit' value='Submit'>"
 
 
     ostatus = json.load(open(ostat))
