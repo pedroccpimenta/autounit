@@ -60,9 +60,26 @@ def hello():
     table += "</table>"
 
 
-    table2="<table border=1  cellspacing=0 cellpadding=1><tr style='background:silver'><td>#<td>"
+    table2="<table border=1  cellspacing=0 cellpadding=1><tr style='background:silver'>"
+    table2 += f"<tr><td><colspan =2>lpret:{lpret}"
+    table2 += "<tr><td>#<td>"
     for ep in lpret :
-        table2 += f"<tr><td align=right>{ep.pid}<td align=right>{ep.returncode}"
+
+        if ep.poll() is None:  # Still running
+            table2 += f"<tr><td align=right clospan=2>Process {ep.pid} still running."
+
+        else:  # Completed
+            #print(f"Process {ep.pid} finished with return code {ep.returncode}")
+            stdout, stderr = ep.communicate()  # Only call once per process
+            #print(f"STDOUT: {stdout}")
+            #print(f"STDERR: {stderr}")
+            table2 += f"<tr><td align=right>{stdout}<td> {stderr}."
+
+
+            #ztat = ep.communicate()
+            #table2 += f"<tr><td align=right clospan=2>{ztat}"
+            #table2 += f"<tr><td align=right>{ep.pid}<td align=right>{ep.returncode}"
+            
     table2 += "</table>"
 
 
@@ -207,7 +224,13 @@ def pcp_icao():
     try:
         print ("     »» pcp_icao !!!")
         #pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'])
+        #pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'])
+        pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'], stdout=subprocess.PIPE, 
+                        stderr=subprocess.PIPE, 
+                        text=True)
+        print ("\n\n ---------------------------------------------------")
+        print( pret)
+        print ("---------------------------------------------------\n\n")
         lpret.append(pret)
         ret = f"pcp_meteo_icao launched ({now}): {str(pret)}"
 

@@ -346,7 +346,7 @@ for db in dblist:
         status="ok"
 
       elif dbcreds['dbms']=="sql_tls":
-        print("... connecting to sql_tls database...")
+        print(f"... connecting to sql_tls database @{enviro}")
         timeout = dbcreds['timeout']
         if enviro =="google.colab":
           pem_content = userdata.get(dbcreds['pem'])
@@ -378,7 +378,7 @@ for db in dblist:
             password=dbcreds['password'],
             cursorclass=pymysql.cursors.DictCursor,
             charset="utf8mb4",
-            ssl={'ca': f'/secrets/{user}.pem'},
+            ssl={'ca': f'/etc/secrets/{user}.pem'},
             connect_timeout=timeout,
             write_timeout=timeout,
             read_timeout=timeout,
