@@ -101,6 +101,7 @@ if enviro=="render":
   send_mail = DEFAULT_PARAMS['send_mail']
   email_addresses = DEFAULT_PARAMS['email_addresses']
 else:
+  pass
 
 if '__file__' in globals():    # script running in airflow / Linux
   script_path = os.path.abspath(__file__)
