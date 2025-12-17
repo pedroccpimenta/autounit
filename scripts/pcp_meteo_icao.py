@@ -47,6 +47,7 @@ if current_env is None:
     from google.colab import userdata
 else:
   enviro="to be defined"
+  enviro="flask"
 
 print ("current enviro:", enviro)
 
@@ -95,14 +96,25 @@ ip = requests.get('https://api.ipify.org').text
 
 print("Server name:", hostname, "Public IP Address:", ip)
 
-if enviro=="render":
-  destination=DEFAULT_PARAMS['destination']
-  verbose= DEFAULT_PARAMS['verbose']
-  send_mail = DEFAULT_PARAMS['send_mail']
-  email_addresses = DEFAULT_PARAMS['email_addresses']
-else:
-  pass
 
+destination=DEFAULT_PARAMS['destination']
+verbose= DEFAULT_PARAMS['verbose']
+send_mail = DEFAULT_PARAMS['send_mail']
+email_addresses = DEFAULT_PARAMS['email_addresses']
+
+
+
+if '__file__' in globals():    # script running in airflow / Linux
+  script_path = os.path.abspath(__file__)
+  parts = __file__.replace('\\', "/").split('/')
+  datapath=f'./data/ppimenta/{parts[-1]}'
+  #enviro = "airflow/linux"
+
+  script = parts[-1]
+  channel = parts[-2]
+  user = parts[-3]
+
+  user = "PCP"
 
 if False:   #  CHECK FOr AIRFLOW
   if '__file__' in globals():    # script running in airflow / Linux
@@ -123,11 +135,6 @@ if False:   #  CHECK FOr AIRFLOW
     send_mail = DEFAULT_PARAMS['send_mail']
     email_addresses = DEFAULT_PARAMS['email_addresses']
 
-  script = parts[-1]
-  channel = parts[-2]
-  user = parts[-3]
-
-  user = "PCP"
 
   if enviro=="jupyter":
     clts.elapt[f"running <a href='https://colab.research.google.com/drive/{script.replace("fileId=","")}'>google colab notebook</a>"] = clts.deltat(tstart)
