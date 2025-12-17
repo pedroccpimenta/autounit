@@ -534,6 +534,7 @@ if send_mail and email_addresses!=[]:
     from mailersend import MailerSendClient, EmailBuilder
     credsgmail=json.load( open("/etc/secrets/PCP-mailersend.json" ))
     ms = MailerSendClient( api_key=credsgmail['token'])
+    toem=clts.listtimes()
 
     text = toem+"\nEsta é uma mensagem automática."
 
@@ -547,7 +548,7 @@ if send_mail and email_addresses!=[]:
        .to_many([{"email": em, "name": em}  ])
        .subject(f"🌦️🛫🏤 {context}")
        .html(html)
-       .text("Hello World!")
+       .text(text)
        .build())
 
   else:
