@@ -103,66 +103,68 @@ if enviro=="render":
 else:
   pass
 
-if '__file__' in globals():    # script running in airflow / Linux
-  script_path = os.path.abspath(__file__)
-  parts = __file__.replace('\\', "/").split('/')
-  datapath=f'./data/ppimenta/{parts[-1]}'
-  #enviro = "airflow/linux"
-else:                          # script running in colab.research.google
-  enviro = "jupyter"
-  #  !pip install ipynbname --quiet
-  import ipynbname
-  folder_path = os.getcwd()  # This returns the folder where the notebook is located
-  print("folder_path:", folder_path)
-  parts=[hostname, "pcp", "meteo data from ICAO" , ipynbname.name()]
-  datapath="."
-  destination=DEFAULT_PARAMS['destination']
-  verbose= DEFAULT_PARAMS['verbose']
-  send_mail = DEFAULT_PARAMS['send_mail']
-  email_addresses = DEFAULT_PARAMS['email_addresses']
 
-script = parts[-1]
-channel = parts[-2]
-user = parts[-3]
+if False:   #  CHECK FOr AIRFLOW
+  if '__file__' in globals():    # script running in airflow / Linux
+    script_path = os.path.abspath(__file__)
+    parts = __file__.replace('\\', "/").split('/')
+    datapath=f'./data/ppimenta/{parts[-1]}'
+    #enviro = "airflow/linux"
+  else:                          # script running in colab.research.google
+    enviro = "jupyter"
+    #  !pip install ipynbname --quiet
+    import ipynbname
+    folder_path = os.getcwd()  # This returns the folder where the notebook is located
+    print("folder_path:", folder_path)
+    parts=[hostname, "pcp", "meteo data from ICAO" , ipynbname.name()]
+    datapath="."
+    destination=DEFAULT_PARAMS['destination']
+    verbose= DEFAULT_PARAMS['verbose']
+    send_mail = DEFAULT_PARAMS['send_mail']
+    email_addresses = DEFAULT_PARAMS['email_addresses']
 
-user = "PCP"
+  script = parts[-1]
+  channel = parts[-2]
+  user = parts[-3]
 
-if enviro=="jupyter":
-  clts.elapt[f"running <a href='https://colab.research.google.com/drive/{script.replace("fileId=","")}'>google colab notebook</a>"] = clts.deltat(tstart)
-elif enviro=="render":
-  print ("running in ", enviro, ", hostname:", hostname)
-  pass
-else:
-  # Try to retrieve airflow variable
-  try:
-      clts.elapt[f"script filename:{script}"] = clts.deltat(tstart)
-      clts.elapt[f"var name: {script.replace('.py', '')}"] = clts.deltat(tstart)
-      #airflow_conf = json.loads(Variable.get(script.replace('.py', "")))
-      #airflow_conf = json.loads(Variable.get("pcp_itecons_v25"))
-      airflow_conf = Variable.get(script.replace('.py', ''), default_var={}, deserialize_json=True)
-      clts.elapt[f"Params read from variable:{airflow_conf}"] = clts.deltat(tstart)
-  except Exception as e:
-      airflow_conf = {"status":f"error reading from {script.replace('.py', '')}"}
-      clts.elapt[f"Error: {e}"] = clts.deltat(tstart)
+  user = "PCP"
 
-  clts.elapt[f"After reading from airflow variable:{airflow_conf}"] = clts.deltat(tstart)
+  if enviro=="jupyter":
+    clts.elapt[f"running <a href='https://colab.research.google.com/drive/{script.replace("fileId=","")}'>google colab notebook</a>"] = clts.deltat(tstart)
+  elif enviro=="render":
+    print ("running in ", enviro, ", hostname:", hostname)
+    pass
+  else:
+    # Try to retrieve airflow variable
+    try:
+        clts.elapt[f"script filename:{script}"] = clts.deltat(tstart)
+        clts.elapt[f"var name: {script.replace('.py', '')}"] = clts.deltat(tstart)
+        #airflow_conf = json.loads(Variable.get(script.replace('.py', "")))
+        #airflow_conf = json.loads(Variable.get("pcp_itecons_v25"))
+        airflow_conf = Variable.get(script.replace('.py', ''), default_var={}, deserialize_json=True)
+        clts.elapt[f"Params read from variable:{airflow_conf}"] = clts.deltat(tstart)
+    except Exception as e:
+        airflow_conf = {"status":f"error reading from {script.replace('.py', '')}"}
+        clts.elapt[f"Error: {e}"] = clts.deltat(tstart)
 
-  # Merge with DEFAULT_PARAMS
-  if True:
-    print (f"Default config: {DEFAULT_PARAMS}")
+    clts.elapt[f"After reading from airflow variable:{airflow_conf}"] = clts.deltat(tstart)
 
-  clts.elapt[f"Default params:{DEFAULT_PARAMS}"] = clts.deltat(tstart)    # Profiling, August 2025
+    # Merge with DEFAULT_PARAMS
+    if True:
+      print (f"Default config: {DEFAULT_PARAMS}")
 
-  config = {**DEFAULT_PARAMS, **airflow_conf}
-  print(f"Updated config: {config}")
+    clts.elapt[f"Default params:{DEFAULT_PARAMS}"] = clts.deltat(tstart)    # Profiling, August 2025
 
-  #clts.elapt[f"Updated params (1):{airflow_conf1}"] = clts.deltat(tstart)    # Profiling, August 2025
-  clts.elapt[f"Updated params:{config}"] = clts.deltat(tstart)    # Profiling, August 2025
+    config = {**DEFAULT_PARAMS, **airflow_conf}
+    print(f"Updated config: {config}")
 
-  verbose = config['verbose']
-  destination = config['destination']
-  send_mail = config['send_mail']
-  email_addresses = config['email_addresses']
+    #clts.elapt[f"Updated params (1):{airflow_conf1}"] = clts.deltat(tstart)    # Profiling, August 2025
+    clts.elapt[f"Updated params:{config}"] = clts.deltat(tstart)    # Profiling, August 2025
+
+    verbose = config['verbose']
+    destination = config['destination']
+    send_mail = config['send_mail']
+    email_addresses = config['email_addresses']
 
 # The overall format of context should be:
 # server (ip) | user | channel | file.py | database destination (to be deprecated)
