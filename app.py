@@ -66,7 +66,7 @@ def hello():
     for ep in lpret :
 
         if ep.poll() is None:  # Still running
-            table2 += f"<tr><td align=right clospan=2>Process {ep.pid} still running."
+            table2 += f"<tr><td align=right clospan=2>Process {ep.pid} still running."  
 
         else:  # Completed
             #print(f"Process {ep.pid} finished with return code {ep.returncode}")
@@ -79,7 +79,7 @@ def hello():
             #ztat = ep.communicate()
             #table2 += f"<tr><td align=right clospan=2>{ztat}"
             #table2 += f"<tr><td align=right>{ep.pid}<td align=right>{ep.returncode}"
-            
+
     table2 += "</table>"
 
 
@@ -224,10 +224,10 @@ def pcp_icao():
     try:
         print ("     »» pcp_icao !!!")
         #pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        #pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'])
-        pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'], stdout=subprocess.PIPE, 
-                        stderr=subprocess.PIPE, 
-                        text=True)
+        pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'])
+        #pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'], stdout=subprocess.PIPE, 
+        #                stderr=subprocess.PIPE, 
+        #                text=True)
         print ("\n\n ---------------------------------------------------")
         print( pret)
         print ("---------------------------------------------------\n\n")
