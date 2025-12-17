@@ -167,6 +167,8 @@ if verbose:
 
 ## Getting data from geonames
 #
+if hostname[:4]=="srv-":
+    enviro="render"
 
 if enviro == "google.colab":
   creds = json.loads(userdata.get(f"{user}-geonames.json"))
