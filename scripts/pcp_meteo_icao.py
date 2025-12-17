@@ -551,6 +551,10 @@ if send_mail and email_addresses!=[]:
        .text(text)
        .build())
 
+
+      response = ms.emails.send(email )
+      print(f"Email sent to {em}: {response}")
+
   else:
     toem=clts.listtimes()
 
