@@ -86,7 +86,7 @@ def hello():
     resp = f"""<html>
     <head>
     <script>
-        setTimeout(function() {{ location.reload(); }}, 10000);
+        setTimeout(function() {{ location.reload(); }}, 30000);
     </script>
     </head>
     <body style='font-family:roboto'>
@@ -167,7 +167,7 @@ def edittasks():
     <head>
     <script>
        // setTimeout(function() {{ location.reload(); }}, 10000);
-        setTimeout(function() {{ location.submit(); }}, 10000);
+        setTimeout(function() {{ location.submit(); }}, 20000);
     </script>
     </head>
     <body style='font-family:roboto'>
@@ -189,9 +189,13 @@ def keep_alive():
     #return(53)
 
 def keep_alive2():
-    jtkr = requests.get("https://autounit-b.onrender.com/")
+    jtkr = requests.get("https://autounit-b.onrender.com/api")
     return  str(jtkr)
      
+
+@app.route('/api', methods=['POST',"GET"])
+def api():
+    return "ok"
     #return(53)
 
 def dummy():
@@ -224,10 +228,10 @@ def pcp_icao():
     try:
         print ("     »» pcp_icao !!!")
         #pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'])
-        #pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'], stdout=subprocess.PIPE, 
-        #                stderr=subprocess.PIPE, 
-        #                text=True)
+        #pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'])
+        pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'], stdout=subprocess.PIPE, 
+                        stderr=subprocess.PIPE, 
+                        text=True)
         print ("\n\n ---------------------------------------------------")
         print( pret)
         print ("---------------------------------------------------\n\n")
@@ -398,8 +402,8 @@ with open(ftstat, "w") as f:
 tasks = { "dummy": {"pyfunction": "dummy", "lrun": "2025-12-14 18:22:25", "period": 2, "ets": [0.3278165999799967, 0.0], "ret": "0"}, 
          "dummy2": {"pyfunction": "ext_python", "lrun": "2025-12-14 18:19:45", "period": 3, "ets": [0.023559799999929965, 0.0], "ret": "python: can't open file 'D:\\\\github\\\\autounit\\\\other_script.py': [Errno 2] No such file or directory\n"}, 
          "main": {"pyfunction": "null", "lrun": "2025-12-14 18:22:25", "period": 0.6666666666666666, "ets": [0.3526784000569023, 0.3526784000569023], "ret": "0"}, 
-         "keep_alive": {"pyfunction": "keep_alive", "lrun": "2025-12-14 18:20:25", "period": 3, "ets": [0.384520799969323, 0.0], "ret": "<Response [200]>"}, 
-         "keep_alive2": {"pyfunction": "keep_alive2", "lrun": "2025-12-14 18:19:47", "period": 3, "ets": [1.0239231000305153, 0.0], "ret": "<Response [200]>"}
+         "keep_alive": {"pyfunction": "keep_alive", "lrun": "2025-12-14 18:20:25", "period": 8, "ets": [0.384520799969323, 0.0], "ret": "<Response [200]>"}, 
+         "keep_alive2": {"pyfunction": "keep_alive2", "lrun": "2025-12-14 18:19:47", "period": 5, "ets": [1.0239231000305153, 0.0], "ret": "<Response [200]>"}
     }
 
 
