@@ -184,7 +184,7 @@ def edittasks():
 
 
 def keep_alive():
-    jtkr = requests.get("https://autounit.onrender.com/")
+    jtkr = requests.get("https://autounit.onrender.com/api")
     return  str(jtkr)
     #return(53)
 
@@ -199,6 +199,7 @@ def api():
     #return(53)
 
 def dummy():
+    return ("dummy")
     jtkr = requests.get("https://autounit.onrender.com/")
     try:
         ### do dummy job    
