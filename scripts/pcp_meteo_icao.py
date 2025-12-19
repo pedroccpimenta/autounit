@@ -78,10 +78,10 @@ DEFAULT_PARAMS = {
     "destination": "-*-",         # deprecated to use several alternatives: ['localhost', 'baze.cm-maia.pt', 'aiven'] - see below
     "send_mail": True,          # alternatives: [True, False]
     #"email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com' ]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
-    "email_addresses": [ 'ppimenta.umaia@gmail.com' ]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
+    #email_addresses": [ 'ppimenta.umaia@gmail.com' ]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
 
 
-    #"email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com', "mluizabaltar@gmail.com" , "rodrigo.mendes.0530@gmail.com", "gustavo.sa.martins@gmail.com"]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
+    "email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com', "mluizabaltar@gmail.com" , "rodrigo.mendes.0530@gmail.com", "gustavo.sa.martins@gmail.com"]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
 
 
     }
@@ -534,10 +534,10 @@ hora=str(datetime.datetime.now())[11:13]
 horaemail=['07', '10', "17", "20" ]
 
 #if sendmail and (hora in horaemail):  
-if send_mail and email_addresses!=[] and hora in horaemail:
+if send_mail and email_addresses!=[]: # and hora in horaemail:
 #if send_mail and  email_addresses!=[] and abs((datetime.datetime.now() - datetime.datetime.combine(datetime.datetime.now().date(), datetime.time(11, 0))).total_seconds() / 60) < 40 :
 
-  if enviro=="render":
+  if enviro == "render":
 
     from mailersend import MailerSendClient, EmailBuilder
     credsgmail=json.load( open("/etc/secrets/PCP-mailersend.json" ))
