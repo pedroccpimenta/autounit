@@ -229,10 +229,13 @@ def pcp_icao():
     try:
         print ("     »» pcp_icao !!!")
         #pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        #pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'])
-        pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'], stdout=subprocess.PIPE, 
-                        stderr=subprocess.PIPE, 
-                        text=True)
+        pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'])
+
+
+        #pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'], stdout=subprocess.PIPE, 
+        #                stderr=subprocess.PIPE, 
+        #                text=True)
+        
         print ("\n\n ---------------------------------------------------")
         print( pret)
         print ("---------------------------------------------------\n\n")
