@@ -38,8 +38,12 @@ def hello():
     global lpret
     #global ftasks
     now = str(datetime.datetime.now())[0:19]
-    tasks = json.load(open(ftasks))
-    ostatus = json.load(open(ostat))
+    try:
+        tasks = json.load(open(ftasks))
+        ostatus = json.load(open(ostat))
+    except Exception as err:
+        return("setting up... a minute, please...")
+
     #print (" =========================", ostatus)
 
     table = "<table border=1 cellspacing=0 cellpadding=1><tr style='background:silver'><td>task_id<td>pipeline<td>lastrun<td>Period (mins)<td>ret<td>T watch<td>T proc"
@@ -270,7 +274,25 @@ def ping_pong_task():
                 print (f" calling {tasks[et]['pyfunction']}() ..." )
                 bc = [time.perf_counter(), time.process_time()]
                 try:
+
                     rv = eval(tasks[et]['pyfunction'] + "()")
+                    """
+                    now=str(datetime.datetime.now())[0:19]
+                    #pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'])
+
+
+                    #pret = subprocess.Popen(['python', 'scripts/pcp_meteo_icao.py'], stdout=subprocess.PIPE, 
+                    #                stderr=subprocess.PIPE, 
+                    #                text=True)
+                    
+                    print ("\n\n ---------------------------------------------------")
+                    print( pret)
+                    print ("---------------------------------------------------\n\n")
+                    lpret.append(pret)
+                    ret = f"pcp_meteo_icao launched ({now}): {str(pret)}"
+                    """
+
                 except Exception as e:
                     rv = e
                     #pass
@@ -292,7 +314,7 @@ def ping_pong_task():
     now = str(datetime.datetime.now())[0:19]
 
     ut = [time.perf_counter(), time.process_time()]
-    tasks['main'] = {
+    tasks['main cycle'] = {
         'pyfunction':'null', 'lrun':now,'period':ping_pong_period/60, 
         'ets':[ut[0]-ot[0], ut[0]-ot[0]],
         'ret':"0"
@@ -378,7 +400,6 @@ except Exception as e:
         }
 
         # Version December 2025
-
         tasks = {
             "dummy": {"pyfunction": "dummy", "lrun": "2025-12-14 18:50:52", "period": 2, "ets": [0.3018737999955192, 0.0], "ret": "0"}, 
             "dummy2": {"pyfunction": "ext_python", "lrun": "2025-12-14 18:50:52", "period": 3, "ets": [0.025285999989137053, 0.0], "ret": "python: can't open file 'D:\\\\github\\\\autounit\\\\other_script.py': [Errno 2] No such file or directory\n"}, 
@@ -387,11 +408,24 @@ except Exception as e:
             "keep_alive2": {"pyfunction": "keep_alive2", "lrun": "2025-12-14 18:50:53", "period": 3, "ets": [0.38333000004058704, 0.0], "ret": "<Response [200]>"},
             "pcp_meteo_icao": {"pyfunction": "pcp_icao", "lrun": "2025-12-14 18:50:53", "period": 15, "ets": [None, None], "ret": " - not yet called - "}
             }
+
+
+        # Version December 2025
+        tasks = {
+            # "dummy": {"pyfunction": "dummy", "lrun": "2025-12-14 18:50:52", "period": 2, "ets": [0.3018737999955192, 0.0], "ret": "0"}, 
+            # "dummy2": {"pyfunction": "ext_python", "lrun": "2025-12-14 18:50:52", "period": 3, "ets": [0.025285999989137053, 0.0], "ret": "python: can't open file 'D:\\\\github\\\\autounit\\\\other_script.py': [Errno 2] No such file or directory\n"}, 
+            # "main": {"pyfunction": "null", "lrun": "2025-12-14 18:52:11", "period": 0.6666666666666666, "ets": [0.002531200007069856, 0.002531200007069856], "ret": "0"}, 
+            #"keep_alive": {"pyfunction": "keep_alive", "lrun": "2025-12-14 18:51:32", "period": 3, "ets": [0.37277300003916025, 0.0], "ret": "<Response [200]>"}, 
+            #"keep_alive2": {"pyfunction": "keep_alive2", "lrun": "2025-12-14 18:50:53", "period": 3, "ets": [0.38333000004058704, 0.0], "ret": "<Response [200]>"},
+            "pcp_meteo_icao": {"pyfunction": "pcp_icao", "lrun": "2025-12-14 18:50:53", "period": 15, "ets": [None, None], "ret": " - not yet called - "}
+            }
+
+
     print (f"{ftasks} created...")
                      
 
 with open(ftasks, "w") as f:    
-    f.write(json.dumps(tasks, ensure_ascii=False))
+    f.write(json.dumps(tasks, ensure_ascii=False, indent=3))
 
 tstat = {}
 
@@ -399,16 +433,10 @@ for ek in tasks.keys():
             tstat[ek]="off"
 
 with open(ftstat, "w") as f:    
-    f.write(json.dumps(tstat, ensure_ascii=False))
+    f.write(json.dumps(tstat, ensure_ascii=False, indent=3))
 
 
-## 14/12/2025 tasks
-tasks = { "dummy": {"pyfunction": "dummy", "lrun": "2025-12-14 18:22:25", "period": 2, "ets": [0.3278165999799967, 0.0], "ret": "0"}, 
-         "dummy2": {"pyfunction": "ext_python", "lrun": "2025-12-14 18:19:45", "period": 3, "ets": [0.023559799999929965, 0.0], "ret": "python: can't open file 'D:\\\\github\\\\autounit\\\\other_script.py': [Errno 2] No such file or directory\n"}, 
-         "main": {"pyfunction": "null", "lrun": "2025-12-14 18:22:25", "period": 0.6666666666666666, "ets": [0.3526784000569023, 0.3526784000569023], "ret": "0"}, 
-         "keep_alive": {"pyfunction": "keep_alive", "lrun": "2025-12-14 18:20:25", "period": 8, "ets": [0.384520799969323, 0.0], "ret": "<Response [200]>"}, 
-         "keep_alive2": {"pyfunction": "keep_alive2", "lrun": "2025-12-14 18:19:47", "period": 5, "ets": [1.0239231000305153, 0.0], "ret": "<Response [200]>"}
-    }
+
 
 
 if __name__ == '__main__':

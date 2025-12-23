@@ -77,11 +77,11 @@ DEFAULT_PARAMS = {
     "verbose": True,           # alternatives: [True, False]
     "destination": "-*-",         # deprecated to use several alternatives: ['localhost', 'baze.cm-maia.pt', 'aiven'] - see below
     "send_mail": True,          # alternatives: [True, False]
-    #"email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com' ]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
+    "email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com' ]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
     #email_addresses": [ 'ppimenta.umaia@gmail.com' ]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
 
 
-    "email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com', "mluizabaltar@gmail.com" , "rodrigo.mendes.0530@gmail.com", "gustavo.sa.martins@gmail.com"]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
+    #"email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com', "mluizabaltar@gmail.com" , "rodrigo.mendes.0530@gmail.com", "gustavo.sa.martins@gmail.com"]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
 
 
     }
@@ -370,6 +370,28 @@ for db in dblist:
         cursor = connection.cursor()
         clts.elapt[f"... connected to `{db}`"] = clts.deltat(tstart)
         status="ok"
+
+
+      elif dbcreds['dbms']=="sky_sql":
+        print("... connecting to sky_sql database...")
+        # timeout = dbcreds['timeout'] # NOT COMPATIBLE WITH SKYSQL
+
+        connection = pymysql.connect(
+            host=dbcreds["dest_host"],
+            port=dbcreds["port"],
+            db=dbcreds['database'],
+            user=dbcreds['username'],
+            password=dbcreds['password'],
+            ssl={'verify_cert': True} ,
+            cursorclass=pymysql.cursors.DictCursor
+
+            #cursorclass=pymysql.cursors.DictCursor,
+            #charset="utf8mb4",
+          
+        )
+        cursor = connection.cursor()
+        clts.elapt[f"... connected to `{db}`"] = clts.deltat(tstart)
+        status="ok"
         status="ok"
 
       elif dbcreds['dbms']=="sql_tls":
@@ -492,6 +514,7 @@ for db in dblist:
         a={}
         a['nr']= res[0]
         res= a
+
       print(res)
       if res["nr"]==0:
         cursor.execute(sql)
@@ -531,24 +554,26 @@ Again, the filename of this file could be parametrized as <user>-<email service>
 
 clts.elapt["Overall (before email):"]=clts.deltat(tstart)
 hora=str(datetime.datetime.now())[11:13]
-horaemail=['06','07', '08','09' ,'10', '11', "17", "20" ]
+horaemail=['06','07', '08','09' ,'10', '11', "17", "20", "23", "00"  ]
 
 #if sendmail and (hora in horaemail):  
-if send_mail and email_addresses!=[] and hora in horaemail:
+if send_mail and email_addresses!=[] and hora in horaemail :
+#if send_mail and email_addresses!=[] and hora in horaemail or True :
 #if send_mail and  email_addresses!=[] and abs((datetime.datetime.now() - datetime.datetime.combine(datetime.datetime.now().date(), datetime.time(11, 0))).total_seconds() / 60) < 40 :
 
   if enviro == "render":
-
-    from mailersend import MailerSendClient, EmailBuilder
-    credsgmail=json.load( open("/etc/secrets/PCP-mailersend.json" ))
-    ms = MailerSendClient( api_key=credsgmail['token'])
     toem=clts.listtimes()
 
     text = toem+"\nEsta é uma mensagem automática."
-
+    subject = f"🌦️🛫🏤 {context}"
     html = "<html><body style=''font-family:Montserrat;''>"+toem+ "<hr color=orange>"
     html = html +"This message is an automated notification from "+ context +"</body></html>"
 
+    """
+    from mailersend import MailerSendClient, EmailBuilder
+    credsgmail=json.load( open("/etc/secrets/PCP-mailersend.json" ))
+    ms = MailerSendClient( api_key=credsgmail['token'])
+  
 
     for em in email_addresses:
       email = (EmailBuilder()
@@ -561,7 +586,22 @@ if send_mail and email_addresses!=[] and hora in horaemail:
 
 
       response = ms.emails.send(email )
-      print(f"Email sent to {em}: {response}")
+      print(f"Email sent to {em}: {response}")  
+      """
+
+    import resend
+    credsgmail=json.load( open("/etc/secrets/PCP-resend.json" ))
+    resend.api_key = credsgmail['api-key']
+    for em in email_addresses:
+      r = resend.Emails.send({
+        "from": credsgmail['from'],
+        "to": f"{em} <{em}>",
+        "subject": f"🌦️🛫🏤 {context}",
+        "html": html
+      })
+
+
+
 
   else:
     toem=clts.listtimes()
@@ -620,10 +660,14 @@ if send_mail and email_addresses!=[] and hora in horaemail:
           server.login(credsgmail['UserName'], credsgmail['UserPwd'])
           sender_email = credsgmail['UserFrom']
           server.sendmail(sender_email,email_addresses, message.as_string())
-        print ("Notificação enviada.")
-        clts.elapt[f"After sending email"] = clts.deltat(tstart)        # add an entry to elapt dictionary
     except Exception as e:
         print('A notificação não foi enviada:', e)
         clts.elapt[f"email not sent ({e})"] = clts.deltat(tstart)       # add an entry to elapt dictionary
     finally:
         pass
+
+  print ("Notificação enviada.")
+  clts.elapt[f"After sending email"] = clts.deltat(tstart)        # add an entry to elapt dictionary
+else:
+  print(f"Tstamp not included to send emails ({horaemail}).")
+  clts.listtimes()
