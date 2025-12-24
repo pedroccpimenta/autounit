@@ -1,0 +1,11 @@
+{
+	"pcp_meteo_icao": {
+		"call": "python", 
+		"script": "scripts/pcp_meteo_icao.py", 
+		"lrun": "2025-12-23 10:20:46", 
+		"period": 15, 
+		"ets": [null, null], 
+		"ret": " - not yet called - "
+	}
+
+}
