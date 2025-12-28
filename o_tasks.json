@@ -9,7 +9,7 @@
 	},
 	"autounit@render.com": {
 		"call": "url", 
-		"script": "https://autounit.onrender.com", 
+		"script": "https://autounit.onrender.com/api", 
 		"lrun": "2025-12-23 10:20:46", 
 		"period": 12, 
 		"ets": [null, null], 
@@ -17,7 +17,7 @@
 	},
 	"autounit-b@render.com": {
 		"call": "url", 
-		"script": "https://autounit-b.onrender.com", 
+		"script": "https://autounit-b.onrender.com/api", 
 		"lrun": "2025-12-23 10:20:46", 
 		"period": 12, 
 		"ets": [null, null], 
