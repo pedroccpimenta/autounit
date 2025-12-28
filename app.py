@@ -80,20 +80,23 @@ def hello():
     table2 += "<tr><td>#<td>"
     for ep in lpret :
 
-        if ep.poll() is None:  # Still running
-            table2 += f"<tr><td align=right clospan=2>Process {ep.pid} still running."  
+        if type(ep) is  requests.models.Response:
+            table2 += f"<tr><td align=right clospan=2>{ep.text}"  
+        else:
+            if ep.poll() is None:  # Still running
+                table2 += f"<tr><td align=right clospan=2>Process {ep.pid} still running."  
 
-        else:  # Completed
-            #print(f"Process {ep.pid} finished with return code {ep.returncode}")
-            stdout, stderr = ep.communicate()  # Only call once per process
-            #print(f"STDOUT: {stdout}")
-            #print(f"STDERR: {stderr}")
-            table2 += f"<tr><td align=right>{stdout}<td> {stderr}."
+            else:  # Completed
+                #print(f"Process {ep.pid} finished with return code {ep.returncode}")
+                stdout, stderr = ep.communicate()  # Only call once per process
+                #print(f"STDOUT: {stdout}")
+                #print(f"STDERR: {stderr}")
+                table2 += f"<tr><td align=right>{stdout}<td> {stderr}."
 
 
-            #ztat = ep.communicate()
-            #table2 += f"<tr><td align=right clospan=2>{ztat}"
-            #table2 += f"<tr><td align=right>{ep.pid}<td align=right>{ep.returncode}"
+                #ztat = ep.communicate()
+                #table2 += f"<tr><td align=right clospan=2>{ztat}"
+                #table2 += f"<tr><td align=right>{ep.pid}<td align=right>{ep.returncode}"
 
     table2 += "</table>"
 
