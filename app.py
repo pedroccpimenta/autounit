@@ -271,6 +271,8 @@ def r_peter():
                         pret = subprocess.Popen([tasks[et]['call'], tasks[et]['script']])
                     elif tasks[et]['call']=="url":
                         pret = requests.get(tasks[et]['script'])
+                    else:
+                        pret ="`call` not defined."
                     
                     pc = [time.perf_counter(), time.process_time()]
 
