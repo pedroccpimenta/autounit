@@ -261,9 +261,13 @@ def r_peter():
                 print (f" {et:>22s} | {tasks[et]['lrun']:>20s} | {difference.seconds:>5d} |", end = "")
                 if difference.seconds/60 > tasks[et]['period']:
                     print (f" calling {et} ..." )
+
                     bc = [time.perf_counter(), time.process_time()]
                    
-                    pret = subprocess.Popen([tasks[et]['call'], tasks[et]['script']])
+                    if tasks[et]['call']=="python":
+                        pret = subprocess.Popen([tasks[et]['call'], tasks[et]['script']])
+                    elif tasks[et]['call']=="url":
+                        pret = requests.get(tasks[et]['script'])
                     
                     pc = [time.perf_counter(), time.process_time()]
 

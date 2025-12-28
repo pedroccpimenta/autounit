@@ -6,6 +6,22 @@
 		"period": 15, 
 		"ets": [null, null], 
 		"ret": " - not yet called - "
+	},
+	"autounit@render.com": {
+		"call": "url", 
+		"script": "https://autounit.onrender.com", 
+		"lrun": "2025-12-23 10:20:46", 
+		"period": 12, 
+		"ets": [null, null], 
+		"ret": " - not yet called - "
+	},
+	"autounit-b@render.com": {
+		"call": "url", 
+		"script": "https://autounit-b.onrender.com", 
+		"lrun": "2025-12-23 10:20:46", 
+		"period": 12, 
+		"ets": [null, null], 
+		"ret": " - not yet called - "
 	}
 
 }
