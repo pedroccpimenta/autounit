@@ -17,7 +17,12 @@ import psutil
 import pymysql
 import requests
 from flask import Flask, Response, redirect, request, url_for
-from flask_apscheduler import APScheduler
+#from flask_apscheduler import APScheduler
+
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.interval import IntervalTrigger
+import atexit
+
 
 #Local
 import clts_pcp as clts
@@ -26,12 +31,18 @@ hostname=socket.gethostname()[:30]
 
 app = Flask(__name__)
 
+scheduler = BackgroundScheduler(daemon=True, timezone='UTC')
+
+
+"""
 # configs for APScheduler
 app.config['SCHEDULER_API_ENABLED'] = False  # Disable API
 app.config['SCHEDULER_TIMEZONE'] = 'UTC'
 
 scheduler = APScheduler()
 scheduler.init_app(app)
+"""
+
 scheduler.start()
 
 o_tasks="o_tasks.json"
@@ -527,25 +538,31 @@ r_peter()
 def test_job():
     print(f"TEST JOB EXECUTED at {datetime.datetime.now()}")
 
-scheduler.add_job(id='test', func=test_job, trigger='interval', seconds=10)
+#scheduler.add_job(id='test', func=test_job, trigger='interval', seconds=10)
+scheduler.add_job(
+    id='test',
+    func=test_job,
+    trigger=IntervalTrigger(seconds=10),
+    replace_existing=True
+)
 
 ## Scheduling r_peter()
 # scheduler.add_job(id='r_peter_job', func=r_peter, trigger='interval', seconds=r_peter_period)
 
-try:
-    scheduler.add_job(
-        id='r_peter_job',
-        func=r_peter,
-        trigger='interval',
-        seconds=r_peter_period,
-        replace_existing=True
-    )
-    print(f">>> Job scheduled! Jobs list: {scheduler.get_jobs()}")
-except Exception as e:
-    print(f"!!! Failed to add job: {e}")
+scheduler.add_job(
+    id='r_peter_job',
+    func=r_peter,
+    trigger=IntervalTrigger(seconds=r_peter_period),
+    replace_existing=True
+)
 
 print(f">>> Scheduler state: running={scheduler.running}")
 print(f">>> Jobs: {scheduler.get_jobs()}")
+
+
+
+
+
 
 
 
