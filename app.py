@@ -7,9 +7,11 @@ import platform
 import shutil
 import socket
 #import sqlite3
+import schedule
 import subprocess
 import sys
 import time
+import threading
 
 # Third-party
 #import duckdb
@@ -31,7 +33,7 @@ hostname=socket.gethostname()[:30]
 
 app = Flask(__name__)
 
-scheduler = BackgroundScheduler(daemon=True, timezone='UTC')
+#scheduler = BackgroundScheduler(daemon=True, timezone='UTC')
 
 
 """
@@ -43,7 +45,7 @@ scheduler = APScheduler()
 scheduler.init_app(app)
 """
 
-scheduler.start()
+#scheduler.start()
 
 o_tasks="o_tasks.json"
 r_tasks="r_tasks.json"
@@ -538,6 +540,7 @@ r_peter()
 def test_job():
     print(f"TEST JOB EXECUTED at {datetime.datetime.now()}")
 
+"""
 #scheduler.add_job(id='test', func=test_job, trigger='interval', seconds=10)
 scheduler.add_job(
     id='test',
@@ -555,15 +558,27 @@ scheduler.add_job(
     trigger=IntervalTrigger(seconds=r_peter_period),
     replace_existing=True
 )
-
-print(f">>> Scheduler state: running={scheduler.running}")
-print(f">>> Jobs: {scheduler.get_jobs()}")
+"""
 
 
+schedule.every(10).seconds.do(test_job)
+schedule.every(40).seconds.do(r_peter)
 
 
+#print(f">>> Scheduler state: running={scheduler.running}")
 
+# Run scheduler in background thread
+def run_scheduler():
+    print(">>> Scheduler thread starting...")
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
+scheduler_thread = threading.Thread(target=run_scheduler, daemon=True)
+scheduler_thread.start()
+print(">>> Scheduler thread started")
+
+#print(f">>> Jobs: {schedule.get_jobs()}")
 
 
 if __name__ == '__main__':
