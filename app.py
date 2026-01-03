@@ -560,9 +560,15 @@ scheduler.add_job(
 """
 
 
-schedule.every(10).seconds.do(test_job)
+#schedule.every(10).seconds.do(test_job)
 schedule.every(40).seconds.do(r_peter)
 
+
+test_job()
+r_peter()
+
+
+print(f">>> Scheduled Jobs: {schedule.get_jobs()}")
 
 #print(f">>> Scheduler state: running={scheduler.running}")
 
@@ -571,7 +577,7 @@ def run_scheduler():
     print(">>> Scheduler thread starting...")
     while True:
         schedule.run_pending()
-        time.sleep(10)
+        time.sleep(5)
 
 scheduler_thread = threading.Thread(target=run_scheduler, daemon=True)
 scheduler_thread.start()
