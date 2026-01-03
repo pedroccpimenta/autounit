@@ -25,6 +25,11 @@ import clts_pcp as clts
 hostname=socket.gethostname()[:30]
 
 app = Flask(__name__)
+
+# configs for APScheduler
+app.config['SCHEDULER_API_ENABLED'] = False  # Disable API
+app.config['SCHEDULER_TIMEZONE'] = 'UTC'
+
 scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
@@ -227,6 +232,12 @@ def hello():
 
     return resp
 
+
+## Health check
+
+@app.route('/health')
+def health():
+    return 'OK', 200
 
 ## Process the form and redirect based on input
 
@@ -512,8 +523,31 @@ with open(ostat, "w") as f:
 ## Calling r_peter()
 r_peter()
 
+
+def test_job():
+    print(f"TEST JOB EXECUTED at {datetime.now()}")
+
+scheduler.add_job(id='test', func=test_job, trigger='interval', seconds=10)
+
 ## Scheduling r_peter()
-scheduler.add_job(id='r_peter_job', func=r_peter, trigger='interval', seconds=r_peter_period)
+# scheduler.add_job(id='r_peter_job', func=r_peter, trigger='interval', seconds=r_peter_period)
+
+try:
+    scheduler.add_job(
+        id='r_peter_job',
+        func=r_peter,
+        trigger='interval',
+        seconds=r_peter_period,
+        replace_existing=True
+    )
+    print(f">>> Job scheduled! Jobs list: {scheduler.get_jobs()}")
+except Exception as e:
+    print(f"!!! Failed to add job: {e}")
+
+print(f">>> Scheduler state: running={scheduler.running}")
+print(f">>> Jobs: {scheduler.get_jobs()}")
+
+
 
 if __name__ == '__main__':
     app.run(debug=False, use_reloader=False)
