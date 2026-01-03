@@ -560,12 +560,8 @@ scheduler.add_job(
 """
 
 
-#schedule.every(10).seconds.do(test_job)
+schedule.every(20).seconds.do(test_job)
 schedule.every(40).seconds.do(r_peter)
-
-
-test_job()
-r_peter()
 
 
 print(f">>> Scheduled Jobs: {schedule.get_jobs()}")
