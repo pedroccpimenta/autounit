@@ -525,7 +525,7 @@ r_peter()
 
 
 def test_job():
-    print(f"TEST JOB EXECUTED at {datetime.now()}")
+    print(f"TEST JOB EXECUTED at {datetime.datetime.now()}")
 
 scheduler.add_job(id='test', func=test_job, trigger='interval', seconds=10)
 
