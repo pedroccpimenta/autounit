@@ -1,5 +1,6 @@
 crate
 # duckdb
+gevent
 google
 mailersend
 psutil
