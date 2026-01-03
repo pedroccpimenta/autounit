@@ -35,7 +35,6 @@ app = Flask(__name__)
 
 #scheduler = BackgroundScheduler(daemon=True, timezone='UTC')
 
-
 """
 # configs for APScheduler
 app.config['SCHEDULER_API_ENABLED'] = False  # Disable API
