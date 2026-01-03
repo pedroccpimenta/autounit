@@ -29,6 +29,7 @@ from flask import Flask, Response, redirect, request, url_for
 #Local
 import clts_pcp as clts
 
+global hostanme
 hostname=socket.gethostname()[:30]
 
 app = Flask(__name__)
@@ -73,6 +74,8 @@ def chrome_devtools_discovery():
 @app.route('/sstatus')
 def sstatus():
 
+    global hostanme
+    
     public_ip = requests.get("https://api.ipify.org", timeout=5).text
     #print(public_ip)
 
