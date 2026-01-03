@@ -474,7 +474,7 @@ if os.path.exists(o_tasks):
     tasks = json.load(open(o_tasks))
     print (f"o_tasks ({o_tasks}) loaded.")
     print (f"opening {r_tasks} and saving tasks:")
-    print (json.dumps(tasks, ensure_ascii=False, indent=3))    
+    #print (json.dumps(tasks, ensure_ascii=False, indent=3))    
 
     if "main cycle" not in tasks.keys():
         tasks['main cycle'] ={
@@ -501,7 +501,7 @@ status = {ek: "off" for ek in tasks}
 with open(task_status, "w", encoding="utf-8") as f: 
     json.dump({ek: "off" for ek in tasks}, f, ensure_ascii=False, indent=3)
 
-print (json.dumps(status, ensure_ascii=False, indent=3))    
+#print (json.dumps(status, ensure_ascii=False, indent=3))    
 
 
 print (f"\n> opening `{ostat}` (overall status) and saving hostname and up timestamp...", end ="")
@@ -512,10 +512,10 @@ with open(ostat, "w") as f:
 ## Calling r_peter()
 r_peter()
 
+## Scheduling r_peter()
+scheduler.add_job(id='r_peter_job', func=r_peter, trigger='interval', seconds=r_peter_period)
 
 if __name__ == '__main__':
-    ## Scheduling r_peter()
-    scheduler.add_job(id='r_peter_job', func=r_peter, trigger='interval', seconds=r_peter_period)
     app.run(debug=False, use_reloader=False)
 
 
