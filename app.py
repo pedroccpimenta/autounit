@@ -572,7 +572,7 @@ def run_scheduler():
     print(">>> Scheduler thread starting...")
     while True:
         schedule.run_pending()
-        time.sleep(1)
+        time.sleep(10)
 
 scheduler_thread = threading.Thread(target=run_scheduler, daemon=True)
 scheduler_thread.start()
