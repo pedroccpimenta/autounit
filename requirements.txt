@@ -8,6 +8,7 @@ pymysql
 requests
 resend
 
+gunicorn
 flask
 flask_apscheduler
 
