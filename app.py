@@ -56,6 +56,8 @@ mod_date = datetime.datetime.fromtimestamp(mod_time)
 
 version=mod_date.strftime('%Y-%m-%d')
 nk=0
+
+global ostat
 ostat = 'ostat.json'
 edirect = False
 
@@ -75,6 +77,7 @@ def chrome_devtools_discovery():
 def sstatus():
     try:
         global hostanme
+        global ostat
 
         public_ip = requests.get("https://api.ipify.org", timeout=5).text
         #print(public_ip)
@@ -96,11 +99,11 @@ def sstatus():
         toret += "<br>"+ f"Available: {mem.available / (1024**3):.2f} GB  Used: {mem.used / (1024**3):.2f} GB Percent used: {mem.percent}%"
         toret += "<hr color=lime>"
 
-        toret += "<br>"+json.dumps(json.load(open('ostat.json')))
+        #toret += "<br>"+json.dumps(json.load(open(ostat)))
 
         toret += "</html>"
     except Exception as e:
-        toret =f"<html><body>{e}</html>"
+        toret =f"<html><body>{str(e)}</html>"
     return (toret)
 
 @app.route('/')
@@ -276,6 +279,7 @@ def edittasks():
     global r_tasks
     global edirect
     global status
+    global ostat
 
     now = str(datetime.datetime.now())[0:19]
 
