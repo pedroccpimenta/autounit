@@ -73,33 +73,34 @@ def chrome_devtools_discovery():
 
 @app.route('/sstatus')
 def sstatus():
+    try:
+        global hostanme
 
-    global hostanme
-    
-    public_ip = requests.get("https://api.ipify.org", timeout=5).text
-    #print(public_ip)
+        public_ip = requests.get("https://api.ipify.org", timeout=5).text
+        #print(public_ip)
 
-    toret = "<html>"
-    # Basic system info without
-    toret += f"<br>hostname:{hostname}"
-    toret += f"<br>ip_address:{public_ip}"
-    toret += "<br>OS, CPU, version:"+str(platform.uname())  # OS, CPU, version
-    toret += "<br>Disk usage:"+str(shutil.disk_usage('/'))  # Disk usage
+        toret = "<html>"
+        # Basic system info without
+        toret += f"<br>hostname:{hostname}"
+        toret += f"<br>ip_address:{public_ip}"
+        toret += "<br>OS, CPU, version:"+str(platform.uname())  # OS, CPU, version
+        toret += "<br>Disk usage:"+str(shutil.disk_usage('/'))  # Disk usage
+        toret += f"<br>Disk usage: {shutil.disk_usage('/').total/(1024**4):.2f} TB  Used: {shutil.disk_usage('/').used/(1024**4):.2f} TB   Free: {shutil.disk_usage('/').free/(1024**4):.2f}  " 
 
-    toret += "<br>"+f"CPU Cores: {os.cpu_count()}"
-    toret += "<br>"+f"Architecture: {platform.machine()}"
+        toret += "<br>"+f"CPU Cores: {os.cpu_count()}"
+        toret += "<br>"+f"Architecture: {platform.machine()}"
 
-    # Memory info in bytes
-    mem = psutil.virtual_memory()
-    toret += "<br>"+ f"Total memory: {mem.total / (1024**3):.2f} GB"
-    toret += "<br>"+ f"Available: {mem.available / (1024**3):.2f} GB"
-    toret += "<br>"+ f"Used: {mem.used / (1024**3):.2f} GB"
-    toret += "<br>"+ f"Percentusage: {mem.percent}%"
-    toret += "<hr color=lime>"
+        # Memory info in bytes
+        mem = psutil.virtual_memory()
+        toret += "<br>"+ f"Total memory: {mem.total / (1024**3):.2f} GB"
+        toret += "<br>"+ f"Available: {mem.available / (1024**3):.2f} GB  Used: {mem.used / (1024**3):.2f} GB Percent used: {mem.percent}%"
+        toret += "<hr color=lime>"
 
-    toret += "<br>"+json.dumps(json.load(open('ostat.json')))
+        toret += "<br>"+json.dumps(json.load(open('ostat.json')))
 
-    toret += "</html>"
+        toret += "</html>"
+    except Exception as e:
+        toret =f"<html><body>{e}</html>"
     return (toret)
 
 @app.route('/')
@@ -157,7 +158,6 @@ def hello():
                 #print(f"STDOUT: {stdout}")
                 #print(f"STDERR: {stderr}")
                 table2 += f"<tr><td align=right>{stdout}<td> {stderr}."
-
 
                 #ztat = ep.communicate()
                 #table2 += f"<tr><td align=right clospan=2>{ztat}"
@@ -220,6 +220,7 @@ def hello():
 
 
     table3 += "</pre>"
+    table3 += "<TR><TD><a href='./sstatus' target=_new>./status</a>"
 
     resp = f"""<html>
     <head>
@@ -422,12 +423,12 @@ def r_peter():
     dusage = shutil.disk_usage('/')
     disk_pc = dusage.used/dusage.total*100
 
-    cpu_pc = psutil.cpu_percent(interval=3)
+    cpu_pc = psutil.cpu_percent(interval=2)
 
     # Memory info in bytes
     mem = psutil.virtual_memory()
     mem_tot = mem.total / (1024**2)  # Mb 
-    mem_available = mem.available / (1024**2) # Mb
+    #mem_available = mem.available / (1024**2) # Mb
     mem_used = mem.used / (1024**2)  # Mb
     mem_pc = mem_used/mem_tot*100
 
