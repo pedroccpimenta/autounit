@@ -1,15 +1,26 @@
-from flask import Flask, request, redirect, url_for, Response
-from flask_apscheduler import APScheduler
+
+# Standard libraries
 import datetime
-import socket
 import json
 import os
-import sys
-import requests
-import pymysql
-import clts_pcp as clts
-import time 
+import platform
+import shutil
+import socket
+#import sqlite3
 import subprocess
+import sys
+import time
+
+# Third-party
+#import duckdb
+import psutil
+import pymysql
+import requests
+from flask import Flask, Response, redirect, request, url_for
+from flask_apscheduler import APScheduler
+
+#Local
+import clts_pcp as clts
 
 hostname=socket.gethostname()[:30]
 
@@ -33,15 +44,48 @@ edirect = False
 lpret = []
 status={}
 
+# Array to hold host status (memory, disk, cpu usage)
+global hoststatus
+hoststatus = []
+
 
 @app.route('/.well-known/appspecific/com.chrome.devtools.json')
 def chrome_devtools_discovery():
     return Response(status=204)
 
+@app.route('/sstatus')
+def sstatus():
+
+    public_ip = requests.get("https://api.ipify.org", timeout=5).text
+    #print(public_ip)
+
+    toret = "<html>"
+    # Basic system info without
+    toret += f"<br>hostname:{hostname}"
+    toret += f"<br>ip_address:{public_ip}"
+    toret += "<br>OS, CPU, version:"+str(platform.uname())  # OS, CPU, version
+    toret += "<br>Disk usage:"+str(shutil.disk_usage('/'))  # Disk usage
+
+    toret += "<br>"+f"CPU Cores: {os.cpu_count()}"
+    toret += "<br>"+f"Architecture: {platform.machine()}"
+
+    # Memory info in bytes
+    mem = psutil.virtual_memory()
+    toret += "<br>"+ f"Total memory: {mem.total / (1024**3):.2f} GB"
+    toret += "<br>"+ f"Available: {mem.available / (1024**3):.2f} GB"
+    toret += "<br>"+ f"Used: {mem.used / (1024**3):.2f} GB"
+    toret += "<br>"+ f"Percentusage: {mem.percent}%"
+    toret += "<hr color=lime>"
+
+    toret += "<br>"+json.dumps(json.load(open('ostat.json')))
+
+    toret += "</html>"
+    return (toret)
 
 @app.route('/')
 def hello():
     global lpret
+    global hoststatus
     now = str(datetime.datetime.now())[0:19]
     try:
         tasks = json.load(open(r_tasks))
@@ -49,6 +93,7 @@ def hello():
     except Exception as err:
         return("setting up... a minute, please...")
 
+    #print (json.dumps(tasks))
     table = "<table border=1 cellspacing=0 cellpadding=1><tr style='background:silver'><td>task_id<td align=center>status<TD>call / script<td>Period (mins)<td>lastrun<td>ret<td>T watch<td>T proc"
 
     for ek in tasks.keys():
@@ -100,6 +145,61 @@ def hello():
 
     table2 += "</table>"
 
+    table3="<table border=1  cellspacing=0 cellpadding=1><tr style='background:silver'>"
+    table3 += "<tr><td colspan=2>System status"
+
+    table3 += f"<tr><td>Platform {platform.uname()}"
+    table3 += f"<tr><td>Disk usage {shutil.disk_usage('/')}"
+    table3 += f"<tr><td># cores {os.cpu_count()}"
+    
+
+    table3 += f"<tr><td>CPU usage {psutil.cpu_percent(interval=3)}"
+    table3 += f"<tr><td>CPU usage {psutil.cpu_percent(interval=3, percpu=True)}"
+
+
+    tt2 = datetime.datetime.now() - datetime.timedelta(minutes=5)
+    tt1 = uptime + datetime.timedelta(minutes=5)
+    
+    """ duckdb
+    with duckdb.connect('au_db2.duckdb') as conn:
+        #conn.execute('drop table if exists au_status;')
+
+        tt2 = datetime.datetime.now() - datetime.timedelta(minutes=5)
+        tt1 = uptime + datetime.timedelta(minutes=5)
+
+        
+        # conn.execute('create TABLE if not exists au_status (id INTEGER PRIMARY KEY, tstamp datetime, disk_pc float, mem_pc float, proc_pc float);')
+
+        res = conn.execute(f"select * from au_status where tstamp < '{tt1}'  or tstamp > '{tt2}' order by id; ").fetchall()
+
+    
+    table3 += f"<tr><td><pre>"
+    table3 += f"   nk     | tstamp          |  disk used % |  mem used % | proc used %  <br>"
+    for ar in res:
+        for item in ar:
+            if isinstance(item, datetime.datetime):
+                table3 += f" {item.strftime("%Y-%m-%d %H:%M:%S")} "
+            elif isinstance(item, int):
+                table3 += f" {item:>8d} "
+            else:
+                table3 += f" {item:>12.2f}"
+        table3 += f"<br>"
+
+    table3 += "</pre></table>"
+
+    """
+    table3 += "<br><pre>|    nk   |         tstamp      | mem used (%) | disk used (%) | cpu used (%) |<br>"
+
+    #hoststatus = [elem for elem in hoststatus if not (tt1 <= elem[1] <= tt2)]
+
+    hoststatus[:] = [row for row in hoststatus if not (tt1 < row[1] < tt2)]
+
+
+    for ast in hoststatus:
+        table3 += f"| {ast[0]:7d} | {str(ast[1])[:19]} | {ast[2]:12.2f} | {ast[3]:13.2f} | {ast[3]:12.2f} |<br>"
+
+
+    table3 += "</pre>"
 
     resp = f"""<html>
     <head>
@@ -117,6 +217,8 @@ def hello():
         <input type="password" id="apass" name="apass" > 
         <input type="submit" value="Submit">
     </form>
+    <h3>System Status</h3>
+    {table3}
     <hr color=lime>
     Version {version}, running at {hostname} ({now}) [{ostatus['nk']}]
     </body>
@@ -236,6 +338,7 @@ def api():
 def r_peter():
     global pret
     global lpret
+    global hoststatus
     ostatus = json.load(open(ostat))
 
     print("\n\n» Starting r_peter  (", ostatus['nk'],"):", str(datetime.datetime.now())[0:19])
@@ -247,12 +350,12 @@ def r_peter():
     #print (" r_peter - tasks:" , tasks)
     #print (" r_peter - status:" , status)
 
-    print (f"| id {" ":17s} | task status and execution")
+    print (f"| id {" ":19s} | task status and execution")
     for et in tasks.keys():
         if et == "main" or et == "main cycle":
             pass
         else:
-            print(f"| {et:<20s} | {status[et]:5s}", end="")
+            print(f"| {et:<21s} | {status[et]:5s}", end="")
             if status[et]=="off":
                 print("")
                 pass
@@ -290,9 +393,28 @@ def r_peter():
     tasks['main cycle']['lrun' ] = now
     tasks['main cycle']['ets' ] = [ut[0]-ot[0], ut[0]-ot[0]]
 
-    # Saving tasks last status
-    with open(r_tasks, "w") as f:    
-        f.write(json.dumps(tasks, ensure_ascii=False))
+    dusage = shutil.disk_usage('/')
+    disk_pc = dusage.used/dusage.total*100
+
+    cpu_pc = psutil.cpu_percent(interval=3)
+
+    # Memory info in bytes
+    mem = psutil.virtual_memory()
+    mem_tot = mem.total / (1024**2)  # Mb 
+    mem_available = mem.available / (1024**2) # Mb
+    mem_used = mem.used / (1024**2)  # Mb
+    mem_pc = mem_used/mem_tot*100
+
+    """
+    # conn.execute('create TABLE if not exists au_status (id INTEGER PRIMARY KEY, tstamp datetime, disk_pc float, mem_pc float, proc_pc float);')
+    sql = f"insert into au_status (tstamp, mem_pc, disk_pc, proc_pc) values ('{datetime.datetime.now()}',{mem_pc:.2f},{dusage.used/dusage.total*100:.2f},  {cpu_percent:.2f})"
+    print ("sql:", sql)
+    
+    with duckdb.connect('au_db2.duckdb') as conn:
+        conn.execute(sql)
+
+    """
+    hoststatus.append([ ostatus['nk'], datetime.datetime.now(), mem_pc, disk_pc, cpu_pc])
 
     ostatus["nk"] = ostatus["nk"] + 1 
     if ostatus["nk"] > 100000:
@@ -302,8 +424,13 @@ def r_peter():
     with open(ostat, "w") as f:    
         f.write(json.dumps(ostatus, ensure_ascii=False))
 
+    # Saving tasks last status
+    with open(r_tasks, "w") as f:    
+        f.write(json.dumps(tasks, ensure_ascii=False))
+
+
     print("------------------------------------------------------------")
-    print(f"« ending r_peter  ( {ostatus['nk']} ):", str(datetime.datetime.now())[0:19])
+    print(f"« ending r_peter  ( {ostatus['nk']} ):", str(datetime.datetime.now())[0:19], " len(hoststatus):", len(hoststatus))
     print("------------------------------------------------------------\n\n")
 
 ####### AUTOUNIT
@@ -317,70 +444,84 @@ print ("""\n          AAAAA          UU     UU
 
 ## Context variables - FLASK @ Local vs Flask @ render / (...)
 now = str(datetime.datetime.now())[0:19]
+uptime=datetime.datetime.now()
 
-r_peter_period = 40  # seconds
 current_env = os.environ.get('CONDA_DEFAULT_ENV')
 print ("current_env", current_env)
+
+#print("sqlite version:", sqlite3.sqlite_version)
+
+
+# Connect/create DB, create table
+#conn = sqlite3.connect(':memory:')
+#conn = sqlite3.connect('au_db2')
+#conn.close()
+
+"""
+with duckdb.connect('au_db2.duckdb') as conn:
+    conn.execute('drop table if exists au_status;')
+    conn.execute ("CREATE or replace SEQUENCE id_seq START 1;")
+    conn.execute("create TABLE if not exists au_status (id INTEGER PRIMARY KEY DEFAULT nextval('id_seq'), tstamp datetime, disk_pc float, mem_pc float, proc_pc float);")
+"""
+
+## Defining r_peter period
+
+r_peter_period = 40  # seconds
 
 ## Defining the file running tasks (r_tasks) based on original tasks (o_tasks)
 
 if os.path.exists(o_tasks):
     tasks = json.load(open(o_tasks))
     print (f"o_tasks ({o_tasks}) loaded.")
+    print (f"opening {r_tasks} and saving tasks:")
+    print (json.dumps(tasks, ensure_ascii=False, indent=3))    
+
+    if "main cycle" not in tasks.keys():
+        tasks['main cycle'] ={
+        "call": "function", 
+        "script": "--", 
+        "lrun": "2025-12-23 10:20:46", 
+        "period": None, 
+        "ets": [None, None], 
+        "ret": " - not yet called - "
+    }
+
+    with open(r_tasks, "w", encoding="utf-8") as fh:
+        fh.write(json.dumps(tasks, ensure_ascii=False, indent=3))
+    print (f"{r_tasks} created!")
 else:
-    print (f"o_taks ({o_tasks}) not found, assuming default value.")
-    tasks = {
-        "pcp_meteo_icao": {
-            "call": "python", 
-            "script": "scripts/pcp_meteo_icao.py", 
-            "lrun": "2025-12-23 10:20:46", 
-            "period": 15, 
-            "ets": [None, None], 
-            "ret": " - not yet called - "
-        }   
-    }
-
-
-if 'main' not in tasks.keys():
-    tasks['main cycle'] ={
-        "main": {
-            "call": "function", 
-            "script": "--", 
-            "lrun": "2025-12-23 10:20:46", 
-            "period": r_peter_period/100, 
-            "ets": [None, None], 
-            "ret": " - not yet called - "
-        }   
-    }
-
-print (f"opening {r_tasks} and saving tasks:")
-print (json.dumps(tasks, ensure_ascii=False, indent=3))    
-with open(r_tasks, "w", encoding="utf-8") as fh:
-    fh.write(json.dumps(tasks, ensure_ascii=False, indent=3))
-print (f"{r_tasks} created!")
+    print (f"`o_tasks` ({o_tasks}) not found.")
+    exit(3)
 
 
 ## Defining default status for default tasks
 
 print (f"\n> Saving default task status to `{task_status}`: ")
-
 status = {ek: "off" for ek in tasks}
-
-with open(task_status, "w", encoding="utf-8") as f: json.dump({ek: "off" for ek in tasks}, f, ensure_ascii=False, indent=3)
+with open(task_status, "w", encoding="utf-8") as f: 
+    json.dump({ek: "off" for ek in tasks}, f, ensure_ascii=False, indent=3)
 
 print (json.dumps(status, ensure_ascii=False, indent=3))    
-print ("done!")
 
 
-
-## Calling and scheduling r_peter()
-
-r_peter()
 print (f"\n> opening `{ostat}` (overall status) and saving hostname and up timestamp...", end ="")
-scheduler.add_job(id='r_peter_job', func=r_peter, trigger='interval', seconds=r_peter_period)
 with open(ostat, "w") as f:    
     f.write(json.dumps({"host":hostname, "uptime":str(datetime.datetime.now())[0:19], "nk":0}))
-print (" done!")
+
+
+## Calling r_peter()
+r_peter()
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    ## Scheduling r_peter()
+    scheduler.add_job(id='r_peter_job', func=r_peter, trigger='interval', seconds=r_peter_period)
+    app.run(debug=False, use_reloader=False)
+
+
+""" or
+
+    if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+        init_once()
+    app.run(debug=True)  # reloader ON
+"""

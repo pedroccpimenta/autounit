@@ -1,13 +1,17 @@
+crate
+# duckdb
+google
+mailersend
+psutil
+pygsheets
+pymysql
+requests
+resend
 
 flask
 flask_apscheduler
 
-crate
-google
-mailersend
-pymysql
-pygsheets
-resend
+
 clts_pcp
 
 #  The following modules are included in standard python, 

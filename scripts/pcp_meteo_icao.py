@@ -554,7 +554,8 @@ Again, the filename of this file could be parametrized as <user>-<email service>
 
 clts.elapt["Overall (before email):"]=clts.deltat(tstart)
 hora=str(datetime.datetime.now())[11:13]
-horaemail=['06','07', '08','09' ,'10', '11','13',  "17", "20", "23", "00"  ]
+horaemail=['06', '07', '08', '09' ,'10', '11','13',  "17", "20", "23", "00"  ]
+horaemail=['07', '09', "16", "18" ]
 
 #if sendmail and (hora in horaemail):  
 if send_mail and email_addresses!=[] and hora in horaemail :
