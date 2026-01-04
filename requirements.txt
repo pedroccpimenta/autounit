@@ -1,10 +1,10 @@
 crate
 # duckdb
 
-google
+#google
 mailersend
 psutil
-pygsheets
+#pygsheets
 pymysql
 requests
 resend

@@ -12,7 +12,11 @@ import subprocess
 import sys
 import time
 import threading
-import resource
+try:
+    import resource
+    HAS_RESOURCE = True
+except ImportError:
+    HAS_RESOURCE = False  # Windows doesn't have resource module
 
 # Third-party
 #import duckdb
@@ -74,21 +78,28 @@ hoststatus = []
 
 @app.route('/real-limits')
 def real_limits():
-    # Memory limit (if set)
-    mem_limit = resource.getrlimit(resource.RLIMIT_AS)
-    
-    # Your process usage (this IS accurate)
     process = psutil.Process(os.getpid())
     my_memory_mb = process.memory_info().rss / (1024**2)
     
+    if HAS_RESOURCE:
+        # Unix/Linux only
+        mem_limit = resource.getrlimit(resource.RLIMIT_AS)
+        limit_text = f"Memory limit: {mem_limit}"
+    else:
+        # Windows
+        limit_text = "Memory limit: Not available on Windows"
+    
     return f"""
+    <html><body style="font-family: monospace;">
     <pre>
     MY process memory: {my_memory_mb:.1f} MB
-    Memory limit: {mem_limit}
+    {limit_text}
     
-    Note: The 30GB you see is the HOST, not your container!
+    Note: On Render (Linux), you'll see the actual limits.
+    On Windows, resource module is not available.
     Free tier = 512MB RAM limit
     </pre>
+    </body></html>
     """
 
 @app.route('/.well-known/appspecific/com.chrome.devtools.json')
@@ -154,11 +165,13 @@ def hello():
     table = "<table border=1 cellspacing=0 cellpadding=1><tr style='background:silver'><td>task_id<td align=center>status<TD>call / script<td>Period (mins)<td>lastrun<td>ret<td>T watch<td>T proc"
 
     for ek in tasks.keys():
-        if ek=="main cycle" or ek=="main":
+        if ek=="main cycle" or ek=="main" or ek=="r_peter":
             status[ek]="<b>on"
             tasks[ek]['call']="function"
             tasks[ek]['period']=r_peter_period/60
             tasks[ek]['script']="#na"
+            tasks[ek]['ret']="#na"
+
 
         table += f"<tr><td align=left>{ek}<td align=center>{status[ek]}<td>{tasks[ek]['call']} /{tasks[ek]['script']} "
         table += f"<td align=right>{tasks[ek]['period']:.2f}"
@@ -180,6 +193,8 @@ def hello():
     table2="<table border=1  cellspacing=0 cellpadding=1><tr style='background:silver'>"
     table2 += f"<tr><td><colspan =2>lpret:{lpret}"
     table2 += "<tr><td>#<td>"
+    
+    """
     for ep in lpret :
 
         if type(ep) is  requests.models.Response:
@@ -198,6 +213,7 @@ def hello():
                 #ztat = ep.communicate()
                 #table2 += f"<tr><td align=right clospan=2>{ztat}"
                 #table2 += f"<tr><td align=right>{ep.pid}<td align=right>{ep.returncode}"
+    """
 
     table2 += "</table>"
 
@@ -256,7 +272,7 @@ def hello():
 
 
     table3 += "</pre>"
-    table3 += "<TR><TD><a href='./zstatus' target=_new>./zstatus</a>"
+    table3 += "<TR><TD> <a href='./zstatus' target=_new>./zstatus</a> <a href='./real-limits' target=_new>./real-limits</a>"
 
     resp = f"""<html>
     <head>
@@ -449,7 +465,7 @@ def r_peter():
                     tasks[et]["lrun"]=str(datetime.datetime.now())[0:19]
                     tasks[et]["ets"]=[pc[0]-bc[0], pc[1]-bc[1]]
                     tasks[et]["ret"]=str(pret)
-                    lpret.append(pret)        
+                    #lpret.append(pret)        
 
                 else:
                     print (" (... not yet time:", tasks[et]['period']*60, ")")
@@ -495,9 +511,10 @@ def r_peter():
     with open(r_tasks, "w") as f:    
         f.write(json.dumps(tasks, ensure_ascii=False))
 
+    pc = [time.perf_counter(), time.process_time()]
 
     print("------------------------------------------------------------")
-    print(f"« ending r_peter  ( {ostatus['nk']} ): {now}, len(hoststatus): {len(hoststatus)}")
+    print(f"« ending r_peter  ( {ostatus['nk']} ): {now}, len(hoststatus): {len(hoststatus)}", [ut[0]-ot[0], ut[0]-ot[0]])
     print("------------------------------------------------------------\n\n")
 
 ####### AUTOUNIT
