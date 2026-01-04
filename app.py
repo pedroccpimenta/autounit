@@ -82,7 +82,7 @@ def zstatus():
 
         #public_ip = requests.get("https://api.ipify.org", timeout=5).text
         #print(public_ip)
-        public_ip = "<to be defined>"
+        public_ip = "_to be defined_"
 
         toret = "<html>"
         
@@ -99,7 +99,7 @@ def zstatus():
         
         
         # Memory info in bytes
-        """
+        
         mem = psutil.virtual_memory()
         toret += f"<br>Total memory: {mem.total / (1024**3):.2f} GB"
         toret += f"<br>Available: {mem.available / (1024**3):.2f} GB  Used: {mem.used / (1024**3):.2f} GB Percent used: {mem.percent}%"
@@ -108,7 +108,7 @@ def zstatus():
         toret += f"<br>Attempting to read: {ostat}"
         toret += f"<br>File exists: {os.path.exists(ostat)}"
         #toret += "<br>"+json.dumps(json.load(open(ostat)))
-        """
+        
 
         toret = toret + "</html>"
     except Exception as e:
@@ -596,19 +596,30 @@ def run_scheduler():
     print(">>> Scheduler thread starting...")
     try:
         while True:
-            print(f">>> Scheduler checking at {datetime.now()}")
+            print(f">>> Scheduler tick at {datetime.datetime.now()}")
             schedule.run_pending()
+            print(f">>> Scheduler tick complete at {datetime.datetime.now()}")
             time.sleep(5)
     except Exception as e:
         print(f"!!! Scheduler thread crashed: {e}")
         import traceback
         traceback.print_exc()
 
-scheduler_thread = threading.Thread(target=run_scheduler, daemon=True)
-scheduler_thread.start()
-print(">>> Scheduler thread started")
+scheduler_thread = None
 
-#print(f">>> Jobs: {schedule.get_jobs()}")
+def start_scheduler():
+    global scheduler_thread
+    if scheduler_thread is None or not scheduler_thread.is_alive():
+        print(">>> Starting scheduler thread...")
+        scheduler_thread = threading.Thread(target=run_scheduler, daemon=True)
+        scheduler_thread.start()
+        print(">>> Scheduler thread started")
+
+# Start it in a route that gets called early
+@app.before_request
+def ensure_scheduler():
+    start_scheduler()
+
 
 
 if __name__ == '__main__':
