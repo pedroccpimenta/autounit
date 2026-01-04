@@ -82,6 +82,7 @@ def zstatus():
 
         #public_ip = requests.get("https://api.ipify.org", timeout=5).text
         #print(public_ip)
+        public_ip = "<to be defined>"
 
         toret = "<html>"
         
