@@ -73,10 +73,10 @@ hoststatus = []
 def chrome_devtools_discovery():
     return Response(status=204)
 
-@app.route('/sstatus')
-def sstatus():
+@app.route('/zstatus')
+def zstatus():
     try:
-        global hostanme
+        global hostname
         global ostat
 
         public_ip = requests.get("https://api.ipify.org", timeout=5).text
@@ -99,6 +99,8 @@ def sstatus():
         toret += "<br>"+ f"Available: {mem.available / (1024**3):.2f} GB  Used: {mem.used / (1024**3):.2f} GB Percent used: {mem.percent}%"
         toret += "<hr color=lime>"
 
+        toret += f"<br>Attempting to read: {ostat}"
+        toret += f"<br>File exists: {os.path.exists(ostat)}"
         #toret += "<br>"+json.dumps(json.load(open(ostat)))
 
         toret += "</html>"
@@ -225,7 +227,7 @@ def hello():
 
 
     table3 += "</pre>"
-    table3 += "<TR><TD><a href='./sstatus' target=_new>./status</a>"
+    table3 += "<TR><TD><a href='./zstatus' target=_new>./zstatus</a>"
 
     resp = f"""<html>
     <head>
