@@ -83,26 +83,31 @@ def zstatus():
         #print(public_ip)
 
         toret = "<html>"
+        
         # Basic system info without
+        """
         toret += f"<br>hostname:{hostname}"
         toret += f"<br>ip_address:{public_ip}"
         toret += "<br>OS, CPU, version:"+str(platform.uname())  # OS, CPU, version
         toret += "<br>Disk usage:"+str(shutil.disk_usage('/'))  # Disk usage
         toret += f"<br>Disk usage: {shutil.disk_usage('/').total/(1024**4):.2f} TB  Used: {shutil.disk_usage('/').used/(1024**4):.2f} TB   Free: {shutil.disk_usage('/').free/(1024**4):.2f}  " 
 
-        toret += "<br>"+f"CPU Cores: {os.cpu_count()}"
-        toret += "<br>"+f"Architecture: {platform.machine()}"
-
+        toret += f"<br>CPU Cores: {os.cpu_count()}"
+        toret += f"<br>Architecture: {platform.machine()}"
+        """
+        
         # Memory info in bytes
+        """
         mem = psutil.virtual_memory()
-        toret += "<br>"+ f"Total memory: {mem.total / (1024**3):.2f} GB"
-        toret += "<br>"+ f"Available: {mem.available / (1024**3):.2f} GB  Used: {mem.used / (1024**3):.2f} GB Percent used: {mem.percent}%"
+        toret += f"<br>Total memory: {mem.total / (1024**3):.2f} GB"
+        toret += f"<br>Available: {mem.available / (1024**3):.2f} GB  Used: {mem.used / (1024**3):.2f} GB Percent used: {mem.percent}%"
         toret += "<hr color=lime>"
 
         toret += f"<br>Attempting to read: {ostat}"
         toret += f"<br>File exists: {os.path.exists(ostat)}"
         #toret += "<br>"+json.dumps(json.load(open(ostat)))
-
+        """
+        
         toret += "</html>"
     except Exception as e:
         toret =f"<html><body>{str(e)}</html>"
