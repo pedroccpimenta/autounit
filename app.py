@@ -12,6 +12,7 @@ import subprocess
 import sys
 import time
 import threading
+import resource
 
 # Third-party
 #import duckdb
@@ -70,6 +71,26 @@ global hoststatus
 hoststatus = []
 
 
+
+@app.route('/real-limits')
+def real_limits():
+    # Memory limit (if set)
+    mem_limit = resource.getrlimit(resource.RLIMIT_AS)
+    
+    # Your process usage (this IS accurate)
+    process = psutil.Process(os.getpid())
+    my_memory_mb = process.memory_info().rss / (1024**2)
+    
+    return f"""
+    <pre>
+    MY process memory: {my_memory_mb:.1f} MB
+    Memory limit: {mem_limit}
+    
+    Note: The 30GB you see is the HOST, not your container!
+    Free tier = 512MB RAM limit
+    </pre>
+    """
+
 @app.route('/.well-known/appspecific/com.chrome.devtools.json')
 def chrome_devtools_discovery():
     return Response(status=204)
@@ -92,7 +113,7 @@ def zstatus():
         toret += f"<br>ip_address:{public_ip}"
         toret += "<br>OS, CPU, version:"+str(platform.uname())  # OS, CPU, version
         toret += "<br>Disk usage:"+str(shutil.disk_usage('/'))  # Disk usage
-        toret += f"<br>Disk usage: {shutil.disk_usage('/').total/(1024**4):.2f} TB  Used: {shutil.disk_usage('/').used/(1024**4):.2f} TB   Free: {shutil.disk_usage('/').free/(1024**4):.2f}  " 
+        toret += f"<br>Disk usage: {shutil.disk_usage('/').total/(1024**3):.2f} MB  Used: {shutil.disk_usage('/').used/(1024**3):.2f} MB   Free: {shutil.disk_usage('/').free/(1024**3):.2f} MB " 
 
         toret += f"<br>CPU Cores: {os.cpu_count()}"
         toret += f"<br>Architecture: {platform.machine()}"
