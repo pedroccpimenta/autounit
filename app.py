@@ -75,11 +75,11 @@ def chrome_devtools_discovery():
 
 @app.route('/zstatus')
 def zstatus():
+    global hostname
+    global ostat
     try:
-        global hostname
-        global ostat
 
-        public_ip = requests.get("https://api.ipify.org", timeout=5).text
+        #public_ip = requests.get("https://api.ipify.org", timeout=5).text
         #print(public_ip)
 
         toret = "<html>"
@@ -108,9 +108,10 @@ def zstatus():
         #toret += "<br>"+json.dumps(json.load(open(ostat)))
         """
 
-        toret += "</html>"
+        toret = toret + "</html>"
     except Exception as e:
-        toret =f"<html><body>{str(e)}</html>"
+        toret =f"<html><body>exception: {str(e)}</html>"
+    
     return (toret)
 
 @app.route('/')
