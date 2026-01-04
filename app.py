@@ -86,7 +86,7 @@ def zstatus():
         toret = "<html>"
         
         # Basic system info without
-        """
+         
         toret += f"<br>hostname:{hostname}"
         toret += f"<br>ip_address:{public_ip}"
         toret += "<br>OS, CPU, version:"+str(platform.uname())  # OS, CPU, version
@@ -95,7 +95,7 @@ def zstatus():
 
         toret += f"<br>CPU Cores: {os.cpu_count()}"
         toret += f"<br>Architecture: {platform.machine()}"
-        """
+        
         
         # Memory info in bytes
         """
@@ -593,9 +593,15 @@ def run_scheduler():
     time.sleep(random.uniform(0, 5))
 
     print(">>> Scheduler thread starting...")
-    while True:
-        schedule.run_pending()
-        time.sleep(5)
+    try:
+        while True:
+            print(f">>> Scheduler checking at {datetime.now()}")
+            schedule.run_pending()
+            time.sleep(5)
+    except Exception as e:
+        print(f"!!! Scheduler thread crashed: {e}")
+        import traceback
+        traceback.print_exc()
 
 scheduler_thread = threading.Thread(target=run_scheduler, daemon=True)
 scheduler_thread.start()
