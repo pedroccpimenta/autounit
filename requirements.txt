@@ -13,7 +13,6 @@ schedule
 gunicorn
 flask
 # flask_apscheduler
-random
 
 clts_pcp
 
