@@ -110,6 +110,8 @@ def sstatus():
 def hello():
     global lpret
     global hoststatus
+    global ostat
+    global r_tasks
     now = str(datetime.datetime.now())[0:19]
     try:
         tasks = json.load(open(r_tasks))
@@ -370,6 +372,7 @@ def r_peter():
     global pret
     global lpret
     global hoststatus
+    global otsat
     ostatus = json.load(open(ostat))
 
     print("\n\n» Starting r_peter  (", ostatus['nk'],"):", str(datetime.datetime.now())[0:19])
