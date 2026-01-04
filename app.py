@@ -107,7 +107,7 @@ def zstatus():
         toret += f"<br>File exists: {os.path.exists(ostat)}"
         #toret += "<br>"+json.dumps(json.load(open(ostat)))
         """
-        
+
         toret += "</html>"
     except Exception as e:
         toret =f"<html><body>{str(e)}</html>"
@@ -380,16 +380,18 @@ def r_peter():
     global lpret
     global hoststatus
     global otsat
-    ostatus = json.load(open(ostat))
 
-    print("\n\n» Starting r_peter  (", ostatus['nk'],"):", str(datetime.datetime.now())[0:19])
+    ostatus = json.load(open(ostat))
+    tasks  = json.load(open(r_tasks))
+    status = json.load(open(task_status))
+
+    #print (" r_peter - tasks:" , tasks)
+    #print (" r_peter - status:" , status)
+
+    print( "\n\n» Starting r_peter  (", ostatus['nk'],"):", str(datetime.datetime.now())[0:19] )
     #print("time is:", time, "type:", type(time))
     ot = [time.perf_counter(), time.process_time()]
     
-    tasks  = json.load(open(r_tasks))
-    status = json.load(open(task_status))
-    #print (" r_peter - tasks:" , tasks)
-    #print (" r_peter - status:" , status)
 
     print (f"| id {" ":19s} | task status and execution")
     for et in tasks.keys():
@@ -471,7 +473,7 @@ def r_peter():
 
 
     print("------------------------------------------------------------")
-    print(f"« ending r_peter  ( {ostatus['nk']} ):", str(datetime.datetime.now())[0:19], " len(hoststatus):", len(hoststatus))
+    print(f"« ending r_peter  ( {ostatus['nk']} ): {now}, len(hoststatus): {len(hoststatus)}")
     print("------------------------------------------------------------\n\n")
 
 ####### AUTOUNIT
