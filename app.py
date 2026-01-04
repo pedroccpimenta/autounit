@@ -228,7 +228,7 @@ def hello():
 
 
     for ast in hoststatus:
-        table3 += f"| {ast[0]:7d} | {str(ast[1])[:19]} | {ast[2]:12.2f} | {ast[3]:13.2f} | {ast[3]:12.2f} |<br>"
+        table3 += f"| {ast[0]:7d} | {str(ast[1])[:19]} | {ast[2]:12.2f} | {ast[3]:13.2f} | {ast[4]:12.2f} |<br>"
 
 
     table3 += "</pre>"
