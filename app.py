@@ -580,10 +580,8 @@ scheduler.add_job(
 )
 """
 
-
 schedule.every(20).seconds.do(test_job)
 schedule.every(40).seconds.do(r_peter)
-
 
 print(f">>> Scheduled Jobs: {schedule.get_jobs()}")
 
@@ -591,6 +589,8 @@ print(f">>> Scheduled Jobs: {schedule.get_jobs()}")
 
 # Run scheduler in background thread
 def run_scheduler():
+    time.sleep(random.uniform(0, 5))
+
     print(">>> Scheduler thread starting...")
     while True:
         schedule.run_pending()
