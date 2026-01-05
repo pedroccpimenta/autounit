@@ -24,7 +24,7 @@ import psutil
 import pymysql
 import random 
 import requests
-from flask import Flask, Response, redirect, request, url_for
+from flask import Flask, Response, redirect, request, url_for, jsonify
 #from flask_apscheduler import APScheduler
 
 #from apscheduler.schedulers.background import BackgroundScheduler
@@ -35,6 +35,8 @@ from flask import Flask, Response, redirect, request, url_for
 #Local
 import clts_pcp as clts
 
+global tt1
+global uptime
 global hostanme
 hostname=socket.gethostname()[:30]
 
@@ -74,6 +76,77 @@ status={}
 global hoststatus
 hoststatus = []
 
+global mem_tot
+mem = psutil.virtual_memory()
+mem_tot = mem.total  
+
+global disk_tot
+disk_tot=shutil.disk_usage('/').total # GB
+
+global uname
+uname = platform.uname()
+
+global cpu_cores
+cpu_cores=os.cpu_count()
+
+@app.route('/history')
+def history():
+    global hoststatus
+    return jsonify(hoststatus)
+
+
+@app.route('/status', methods=['POST',"GET"])
+def status():
+    global r_tasks
+    global edirect
+    global status
+    global ostat
+    global mem_tot
+    global disk_tot
+    global hostname
+    global uname
+    global cpu_cores        
+    global uptime
+
+    mem = psutil.virtual_memory()
+    disk = shutil.disk_usage('.')
+    process = psutil.Process(os.getpid())
+    tenant_mem_used_mb = process.memory_info().rss 
+
+
+    process= psutil.Process()
+    
+    toret = { 
+        "system": {
+            "cpu_cores":cpu_cores,
+            "disk_tot":disk_tot,
+            "disk_used":disk.used,
+            "disk_free":disk.free,
+            "hostname":hostname,
+            "mem_free":mem.available,
+            "mem_pc":mem.percent,
+            "mem_tot":mem_tot,
+            "mem_used":mem.used,
+            "uname":uname,
+        },
+        "tenant": {
+            'cpu_percent': process.cpu_percent(interval=None),
+            "mem": process.memory_info(),
+            "mem_used": tenant_mem_used_mb,
+            'memory_mb': process.memory_info().rss ,
+            'memory_percent': process.memory_percent(),
+            "uptime":str(uptime)[:19]
+
+        }
+
+    }
+
+    #toret = json.dumps(toret, ensure_ascii=False)
+
+    return jsonify(toret)
+
+
+
 
 
 @app.route('/real-limits')
@@ -106,10 +179,15 @@ def real_limits():
 def chrome_devtools_discovery():
     return Response(status=204)
 
+
+
+
 @app.route('/zstatus')
 def zstatus():
     global hostname
     global ostat
+    global mem_tot
+    global disk_tot
     try:
 
         #public_ip = requests.get("https://api.ipify.org", timeout=5).text
@@ -123,17 +201,17 @@ def zstatus():
         toret += f"<br>hostname:{hostname}"
         toret += f"<br>ip_address:{public_ip}"
         toret += "<br>OS, CPU, version:"+str(platform.uname())  # OS, CPU, version
-        toret += "<br>Disk usage:"+str(shutil.disk_usage('/'))  # Disk usage
-        toret += f"<br>Disk usage: {shutil.disk_usage('/').total/(1024**3):.2f} MB  Used: {shutil.disk_usage('/').used/(1024**3):.2f} MB   Free: {shutil.disk_usage('/').free/(1024**3):.2f} MB " 
-
         toret += f"<br>CPU Cores: {os.cpu_count()}"
-        toret += f"<br>Architecture: {platform.machine()}"
-        
+
+        toret += "<br>Disk usage:"+str(shutil.disk_usage('/'))  # Disk usage
+        toret += f"<br>Disk usage: {disk_tot/(1024**3):.2f} MB  Used: {shutil.disk_usage('/').used/(1024**3):.2f} MB   Free: {shutil.disk_usage('/').free/(1024**3):.2f} MB " 
+
+    
         
         # Memory info in bytes
         
         mem = psutil.virtual_memory()
-        toret += f"<br>Total memory: {mem.total / (1024**3):.2f} GB"
+        toret += f"<br>Total memory: {mem_tot/(1024**3) :.2f} GB"
         toret += f"<br>Available: {mem.available / (1024**3):.2f} GB  Used: {mem.used / (1024**3):.2f} GB Percent used: {mem.percent}%"
         toret += "<hr color=lime>"
 
@@ -154,6 +232,8 @@ def hello():
     global hoststatus
     global ostat
     global r_tasks
+    global tt1
+
     now = str(datetime.datetime.now())[0:19]
     try:
         tasks = json.load(open(r_tasks))
@@ -171,6 +251,7 @@ def hello():
             tasks[ek]['period']=r_peter_period/60
             tasks[ek]['script']="#na"
             tasks[ek]['ret']="#na"
+            tasks[ek]['ets']=[0,0]
 
 
         table += f"<tr><td align=left>{ek}<td align=center>{status[ek]}<td>{tasks[ek]['call']} /{tasks[ek]['script']} "
@@ -218,19 +299,11 @@ def hello():
     table2 += "</table>"
 
     table3="<table border=1  cellspacing=0 cellpadding=1><tr style='background:silver'>"
-    table3 += "<tr><td colspan=2>System status"
-
-    table3 += f"<tr><td>Platform {platform.uname()}"
-    table3 += f"<tr><td>Disk usage {shutil.disk_usage('/')}"
-    table3 += f"<tr><td># cores {os.cpu_count()}"
-    
-
     table3 += f"<tr><td>CPU usage {psutil.cpu_percent(interval=3)}"
     table3 += f"<tr><td>CPU usage {psutil.cpu_percent(interval=3, percpu=True)}"
+    table3 += f"<tr><td><pre>"
 
-
-    tt2 = datetime.datetime.now() - datetime.timedelta(minutes=5)
-    tt1 = uptime + datetime.timedelta(minutes=5)
+    tt2 = datetime.datetime.now() - datetime.timedelta(minutes=8)
     
     """ duckdb
     with duckdb.connect('au_db2.duckdb') as conn:
@@ -260,19 +333,24 @@ def hello():
     table3 += "</pre></table>"
 
     """
-    table3 += "<br><pre>|    nk   |         tstamp      | mem used (%) | disk used (%) | cpu used (%) |<br>"
-
-    #hoststatus = [elem for elem in hoststatus if not (tt1 <= elem[1] <= tt2)]
-
     hoststatus[:] = [row for row in hoststatus if not (tt1 < row[1] < tt2)]
 
 
+    table3 += "                                |                  system                     |          tenant         |<br>"
+    table3 += "|    nk   |         tstamp      | mem used (%) | disk used (%) | cpu used (%) | mem used (MB) |  cpu_pc |<br>"
     for ast in hoststatus:
-        table3 += f"| {ast[0]:7d} | {str(ast[1])[:19]} | {ast[2]:12.2f} | {ast[3]:13.2f} | {ast[4]:12.2f} |<br>"
+        table3 += f"| {ast[0]:7d} | {str(ast[1])[:19]} | {ast[2]:12.2f} | {ast[3]:13.2f} | {ast[4]:12.2f} | {ast[5]:13.2f} | {ast[6]:7.5f} |<br>"
 
 
     table3 += "</pre>"
-    table3 += "<TR><TD> <a href='./zstatus' target=_new>./zstatus</a> <a href='./real-limits' target=_new>./real-limits</a>"
+    table3 += ( 
+        "<TR><TD>"
+        " <a href='./status' target=_new>./status</a> "
+        " <a href='./zstatus' target=_new>./zstatus</a> "
+        " <a href='./real-limits' target=_new>./real-limits</a>"
+        " <a href='./history' target=_new>./history</a>"
+        "</table>"
+        )
 
     resp = f"""<html>
     <head>
@@ -284,14 +362,14 @@ def hello():
     <h1>Overall</h1>
     <h2>Tasks</h2>
     {table}
-    <h2>sub-processes</h2>
-    {table2}
     <form action="/process" method="POST">
         <input type="password" id="apass" name="apass" > 
         <input type="submit" value="Submit">
     </form>
-    <h3>System Status</h3>
+    <h2>Historic</h2>
     {table3}
+    <h2>sub-processes</h2>
+    {table2}
     <hr color=lime>
     Version {version}, running at {hostname} ({now}) [{ostatus['nk']}]
     </body>
@@ -321,6 +399,7 @@ def process():
         return redirect(url_for('edittasks'))
     else:
         return redirect(url_for('hello'))
+
 
 
 @app.route('/edittasks', methods=['POST',"GET"])
@@ -420,6 +499,9 @@ def r_peter():
     global lpret
     global hoststatus
     global otsat
+    global mem_tot
+    global uptime
+    global tt1
 
     ostatus = json.load(open(ostat))
     tasks  = json.load(open(r_tasks))
@@ -435,7 +517,7 @@ def r_peter():
 
     print (f"| id {" ":19s} | task status and execution")
     for et in tasks.keys():
-        if et == "main" or et == "main cycle":
+        if et == "main" or et == "main cycle" or  et == "r_peter":
             pass
         else:
             print(f"| {et:<21s} | {status[et]:5s}", end="")
@@ -471,9 +553,9 @@ def r_peter():
                     print (" (... not yet time:", tasks[et]['period']*60, ")")
 
     now = str(datetime.datetime.now())[0:19]
+    tasks['main cycle']['lrun' ] = now
 
     ut = [time.perf_counter(), time.process_time()]
-    tasks['main cycle']['lrun' ] = now
     tasks['main cycle']['ets' ] = [ut[0]-ot[0], ut[0]-ot[0]]
 
     dusage = shutil.disk_usage('/')
@@ -483,9 +565,9 @@ def r_peter():
 
     # Memory info in bytes
     mem = psutil.virtual_memory()
-    mem_tot = mem.total / (1024**2)  # Mb 
+    #mem_tot = mem.total / (1024**2)  # Mb 
     #mem_available = mem.available / (1024**2) # Mb
-    mem_used = mem.used / (1024**2)  # Mb
+    mem_used = mem.used   # Mb
     mem_pc = mem_used/mem_tot*100
 
     """
@@ -497,7 +579,13 @@ def r_peter():
         conn.execute(sql)
 
     """
-    hoststatus.append([ ostatus['nk'], datetime.datetime.now(), mem_pc, disk_pc, cpu_pc])
+    process= psutil.Process()
+
+    hoststatus.append([ ostatus['nk'], datetime.datetime.now(), mem_pc, disk_pc, cpu_pc, process.memory_info().rss/(1024**2), process.cpu_percent(interval=None) ])
+
+    if ostatus["nk"]==0:
+        tt1 = uptime + datetime.timedelta(minutes=8)
+
 
     ostatus["nk"] = ostatus["nk"] + 1 
     if ostatus["nk"] > 100000:
@@ -530,6 +618,7 @@ print ("""\n          AAAAA          UU     UU
 now = str(datetime.datetime.now())[0:19]
 uptime=datetime.datetime.now()
 
+
 current_env = os.environ.get('CONDA_DEFAULT_ENV')
 print ("current_env", current_env)
 
@@ -550,7 +639,7 @@ with duckdb.connect('au_db2.duckdb') as conn:
 
 ## Defining r_peter period
 
-r_peter_period = 40  # seconds
+r_peter_period = 38  # seconds
 
 ## Defining the file running tasks (r_tasks) based on original tasks (o_tasks)
 
@@ -631,12 +720,12 @@ print(f">>> Scheduled Jobs: {schedule.get_jobs()}")
 def run_scheduler():
     time.sleep(random.uniform(0, 5))
 
-    print(">>> Scheduler thread starting...")
+    #print(">>> Scheduler thread starting...")
     try:
         while True:
-            print(f">>> Scheduler tick at {datetime.datetime.now()}")
+            #print(f">>> Scheduler tick at {datetime.datetime.now()}")
             schedule.run_pending()
-            print(f">>> Scheduler tick complete at {datetime.datetime.now()}")
+            #print(f">>> Scheduler tick complete at {datetime.datetime.now()}")
             time.sleep(5)
     except Exception as e:
         print(f"!!! Scheduler thread crashed: {e}")
@@ -648,20 +737,19 @@ scheduler_thread = None
 def start_scheduler():
     global scheduler_thread
     if scheduler_thread is None or not scheduler_thread.is_alive():
-        print(">>> Starting scheduler thread...")
+        #print(">>> Starting scheduler thread...")
         scheduler_thread = threading.Thread(target=run_scheduler, daemon=True)
         scheduler_thread.start()
-        print(">>> Scheduler thread started")
+        #print(">>> Scheduler thread started")
 
 # Start it in a route that gets called early
 @app.before_request
 def ensure_scheduler():
     start_scheduler()
 
-
-
 if __name__ == '__main__':
-    app.run(debug=False, use_reloader=False)
+   app.run(debug=True, use_reloader=False)
+   # app.run(debug=False, use_reloader=False)
 
 
 """ or

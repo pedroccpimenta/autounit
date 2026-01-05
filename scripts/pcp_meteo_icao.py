@@ -19,7 +19,6 @@ PCP, 8/11/2025
 """
 
 
-
 ## imports
 ##
 
@@ -676,3 +675,9 @@ if send_mail and email_addresses!=[] and hora in horaemail :
 else:
   print(f"Tstamp not included to send emails ({horaemail}).")
   clts.listtimes()
+
+with open(f"{script.replace(".py", "_run.json")}", "w") as fh:
+  tend=clts.getts()
+  fh.write (json.dumps({"tstart":tstart, "tend":tend}))
+  print (f"{script.replace(".py", "_run.json")} created." )
+
