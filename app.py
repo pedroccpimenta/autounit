@@ -65,6 +65,9 @@ mod_date = datetime.datetime.fromtimestamp(mod_time)
 version=mod_date.strftime('%Y-%m-%d')
 nk=0
 
+global enviro
+enviro = "#NA"
+
 global ostat
 ostat = 'ostat.json'
 edirect = False
@@ -89,10 +92,23 @@ uname = platform.uname()
 global cpu_cores
 cpu_cores=os.cpu_count()
 
+global psu_process
+psu_process = psutil.Process()
+cpu_percent = psu_process.cpu_percent(interval=None) 
+
+global process
+process = psutil.Process(os.getpid())
+
+global tenant_mem_used_mb
+tenant_mem_used_mb = process.memory_info().rss
+
 @app.route('/history')
 def history():
     global hoststatus
-    return jsonify(hoststatus)
+    response =  jsonify(hoststatus)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+
+    return response
 
 
 @app.route('/status', methods=['POST',"GET"])
@@ -107,14 +123,21 @@ def status():
     global uname
     global cpu_cores        
     global uptime
+    global process
+    global psu_process
+    global tenant_mem_used_mb
+    global cpu_percent
 
     mem = psutil.virtual_memory()
     disk = shutil.disk_usage('.')
-    process = psutil.Process(os.getpid())
-    tenant_mem_used_mb = process.memory_info().rss 
+    #process = ps<util.Process(os.getpid())
+    
+
+    tenant_mem_used_mb = psu_process.memory_info().rss
+
+    cpu_percent = psu_process.cpu_percent(interval=None) 
 
 
-    process= psutil.Process()
     
     toret = { 
         "system": {
@@ -130,13 +153,14 @@ def status():
             "uname":uname,
         },
         "tenant": {
-            'cpu_percent': process.cpu_percent(interval=None),
-            "mem": process.memory_info(),
+            'cpu_percent': cpu_percent,
+            "elapsed": (datetime.datetime.now()-uptime).total_seconds()/86400,
+            "len_history":len(hoststatus),
+            "mem": psu_process.memory_info(),
             "mem_used": tenant_mem_used_mb,
-            'memory_mb': process.memory_info().rss ,
-            'memory_percent': process.memory_percent(),
+            'memory_mb': psu_process.memory_info().rss ,
+            'memory_percent': psu_process.memory_percent(),
             "uptime":str(uptime)[:19]
-
         }
 
     }
@@ -151,8 +175,9 @@ def status():
 
 @app.route('/real-limits')
 def real_limits():
-    process = psutil.Process(os.getpid())
-    my_memory_mb = process.memory_info().rss / (1024**2)
+    global process    
+  
+    my_memory_mb = psu_process.memory_info().rss / (1024**2)
     
     if HAS_RESOURCE:
         # Unix/Linux only
@@ -250,8 +275,8 @@ def hello():
             tasks[ek]['call']="function"
             tasks[ek]['period']=r_peter_period/60
             tasks[ek]['script']="#na"
-            tasks[ek]['ret']="#na"
-            tasks[ek]['ets']=[0,0]
+            #tasks[ek]['ret']="#na"
+            # !!!!!   tasks[ek]['ets']=[0,0]
 
 
         table += f"<tr><td align=left>{ek}<td align=center>{status[ek]}<td>{tasks[ek]['call']} /{tasks[ek]['script']} "
@@ -265,8 +290,8 @@ def hello():
             table += f"<td align=right> - no ret (!)"
 
         if 'ets' in  tasks[ek].keys() and tasks[ek]['ets'][0]!=None:
-            table += f"<td align=right>{tasks[ek]['ets'][1]:.3f}"
             table += f"<td align=right>{tasks[ek]['ets'][0]:.3f}"
+            table += f"<td align=right>{tasks[ek]['ets'][1]:.3f}"
 
 
     table += "</table>"
@@ -336,10 +361,10 @@ def hello():
     hoststatus[:] = [row for row in hoststatus if not (tt1 < row[1] < tt2)]
 
 
-    table3 += "                                |                  system                     |          tenant         |<br>"
-    table3 += "|    nk   |         tstamp      | mem used (%) | disk used (%) | cpu used (%) | mem used (MB) |  cpu_pc |<br>"
+    table3 += "                                |                  system                     |          tenant        |<br>"
+    table3 += "|    nk   |         tstamp      | mem used (%) | disk used (%) | cpu used (%) | mem used (MB) | cpu_pc |<br>"
     for ast in hoststatus:
-        table3 += f"| {ast[0]:7d} | {str(ast[1])[:19]} | {ast[2]:12.2f} | {ast[3]:13.2f} | {ast[4]:12.2f} | {ast[5]:13.2f} | {ast[6]:7.5f} |<br>"
+        table3 += f"| {ast[0]:7d} | {str(ast[1])[:19]} | {ast[2]:12.2f} | {ast[3]:13.2f} | {ast[4]:12.2f} | {ast[5]:13.2f} | {ast[6]:6.3f} |<br>"
 
 
     table3 += "</pre>"
@@ -366,7 +391,7 @@ def hello():
         <input type="password" id="apass" name="apass" > 
         <input type="submit" value="Submit">
     </form>
-    <h2>Historic</h2>
+    <h2>History</h2>
     {table3}
     <h2>sub-processes</h2>
     {table2}
@@ -502,6 +527,10 @@ def r_peter():
     global mem_tot
     global uptime
     global tt1
+    global process
+    global enviro
+
+    ot = [time.perf_counter(), time.process_time()]
 
     ostatus = json.load(open(ostat))
     tasks  = json.load(open(r_tasks))
@@ -512,10 +541,12 @@ def r_peter():
 
     print( "\n\n» Starting r_peter  (", ostatus['nk'],"):", str(datetime.datetime.now())[0:19] )
     #print("time is:", time, "type:", type(time))
-    ot = [time.perf_counter(), time.process_time()]
     
+    #if enviro=='flask_autounit_dec25':
+    #    print (" SLEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEP")
+    #    time.sleep(2)
 
-    print (f"| id {" ":19s} | task status and execution")
+    print (f"| id {" ":18s} | task status and execution")
     for et in tasks.keys():
         if et == "main" or et == "main cycle" or  et == "r_peter":
             pass
@@ -555,9 +586,6 @@ def r_peter():
     now = str(datetime.datetime.now())[0:19]
     tasks['main cycle']['lrun' ] = now
 
-    ut = [time.perf_counter(), time.process_time()]
-    tasks['main cycle']['ets' ] = [ut[0]-ot[0], ut[0]-ot[0]]
-
     dusage = shutil.disk_usage('/')
     disk_pc = dusage.used/dusage.total*100
 
@@ -579,13 +607,12 @@ def r_peter():
         conn.execute(sql)
 
     """
-    process= psutil.Process()
+    #process= psutil.Process()
 
-    hoststatus.append([ ostatus['nk'], datetime.datetime.now(), mem_pc, disk_pc, cpu_pc, process.memory_info().rss/(1024**2), process.cpu_percent(interval=None) ])
+    hoststatus.append([ ostatus['nk'], datetime.datetime.now(), mem_pc, disk_pc, cpu_pc, psu_process.memory_info().rss/(1024**2), psu_process.cpu_percent(interval=None) ])
 
     if ostatus["nk"]==0:
         tt1 = uptime + datetime.timedelta(minutes=8)
-
 
     ostatus["nk"] = ostatus["nk"] + 1 
     if ostatus["nk"] > 100000:
@@ -595,15 +622,20 @@ def r_peter():
     with open(ostat, "w") as f:    
         f.write(json.dumps(ostatus, ensure_ascii=False))
 
+    #pc = [time.perf_counter(), time.process_time()]
+
+    ut = [time.perf_counter(), time.process_time()]
+    tasks['main cycle']['ets' ] = [ut[0]-ot[0], ut[1]-ot[1]]
+    tasks['main cycle']['ret' ] = f"{len(hoststatus)} | [{(ut[0]-ot[0]):2f} {(ut[1]-ot[1]):.2f}]"
     # Saving tasks last status
     with open(r_tasks, "w") as f:    
         f.write(json.dumps(tasks, ensure_ascii=False))
 
-    pc = [time.perf_counter(), time.process_time()]
-
     print("------------------------------------------------------------")
-    print(f"« ending r_peter  ( {ostatus['nk']} ): {now}, len(hoststatus): {len(hoststatus)}", [ut[0]-ot[0], ut[0]-ot[0]])
+    print(f"« ending r_peter  ( {ostatus['nk']} ): {now}, len(hoststatus): {len(hoststatus)}", [ut[0]-ot[0], ut[1]-ot[1]])
     print("------------------------------------------------------------\n\n")
+
+
 
 ####### AUTOUNIT
 print ("""\n          AAAAA          UU     UU
@@ -620,7 +652,9 @@ uptime=datetime.datetime.now()
 
 
 current_env = os.environ.get('CONDA_DEFAULT_ENV')
+
 print ("current_env", current_env)
+enviro = current_env
 
 #print("sqlite version:", sqlite3.sqlite_version)
 
@@ -639,7 +673,7 @@ with duckdb.connect('au_db2.duckdb') as conn:
 
 ## Defining r_peter period
 
-r_peter_period = 38  # seconds
+r_peter_period = 37  # seconds
 
 ## Defining the file running tasks (r_tasks) based on original tasks (o_tasks)
 
@@ -718,7 +752,6 @@ print(f">>> Scheduled Jobs: {schedule.get_jobs()}")
 
 # Run scheduler in background thread
 def run_scheduler():
-    time.sleep(random.uniform(0, 5))
 
     #print(">>> Scheduler thread starting...")
     try:
@@ -726,7 +759,8 @@ def run_scheduler():
             #print(f">>> Scheduler tick at {datetime.datetime.now()}")
             schedule.run_pending()
             #print(f">>> Scheduler tick complete at {datetime.datetime.now()}")
-            time.sleep(5)
+            time.sleep(random.uniform(5, 8))
+            #time.sleep(5)
     except Exception as e:
         print(f"!!! Scheduler thread crashed: {e}")
         import traceback
