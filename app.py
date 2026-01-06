@@ -160,6 +160,7 @@ def status():
             "mem_used": tenant_mem_used_mb,
             'memory_mb': psu_process.memory_info().rss ,
             'memory_percent': psu_process.memory_percent(),
+            "script":__file__,
             "uptime":str(uptime)[:19]
         }
 
@@ -323,7 +324,7 @@ def hello():
 
     table2 += "</table>"
 
-    table3="<table border=1  cellspacing=0 cellpadding=1><tr style='background:silver'>"
+    table3="<table border=1 id=table_history onclick='copyTable(this)' cellspacing=0 cellpadding=1><tr style='background:silver'>"
     table3 += f"<tr><td>CPU usage {psutil.cpu_percent(interval=3)}"
     table3 += f"<tr><td>CPU usage {psutil.cpu_percent(interval=3, percpu=True)}"
     table3 += f"<tr><td><pre>"
@@ -361,10 +362,12 @@ def hello():
     hoststatus[:] = [row for row in hoststatus if not (tt1 < row[1] < tt2)]
 
 
-    table3 += "                                |                  system                     |          tenant        |<br>"
-    table3 += "|    nk   |         tstamp      | mem used (%) | disk used (%) | cpu used (%) | mem used (MB) | cpu_pc |<br>"
+    table3 += "                               |                  system                     |          tenant        <br>"
+    table3 += "    nk   |         tstamp      | mem used (%) | disk used (%) | cpu used (%) | mem used (MB) | cpu_pc <pre>"
+    table3 +="<tr><td><pre>"    
+
     for ast in hoststatus:
-        table3 += f"| {ast[0]:7d} | {str(ast[1])[:19]} | {ast[2]:12.2f} | {ast[3]:13.2f} | {ast[4]:12.2f} | {ast[5]:13.2f} | {ast[6]:6.3f} |<br>"
+        table3 += f" {ast[0]:7d} | {str(ast[1])[:19]} | {ast[2]:12.2f} | {ast[3]:13.2f} | {ast[4]:12.2f} | {ast[5]:13.2f} | {ast[6]:6.3f} <br>"
 
 
     table3 += "</pre>"
@@ -379,7 +382,10 @@ def hello():
 
     resp = f"""<html>
     <head>
-    <script>
+    <script>""" + """function copyTable(el) {
+  const text = el.innerText;        // ou el.outerHTML se quiseres o HTML
+  navigator.clipboard.writeText(text);
+}"""+f"""
         setTimeout(function() {{ location.reload(); }}, 30000);
     </script>
     </head>
@@ -536,11 +542,7 @@ def r_peter():
     tasks  = json.load(open(r_tasks))
     status = json.load(open(task_status))
 
-    #print (" r_peter - tasks:" , tasks)
-    #print (" r_peter - status:" , status)
-
     print( "\n\n» Starting r_peter  (", ostatus['nk'],"):", str(datetime.datetime.now())[0:19] )
-    #print("time is:", time, "type:", type(time))
     
     #if enviro=='flask_autounit_dec25':
     #    print (" SLEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEP")
@@ -576,9 +578,10 @@ def r_peter():
                     pc = [time.perf_counter(), time.process_time()]
 
                     tasks[et]["lrun"]=str(datetime.datetime.now())[0:19]
-                    tasks[et]["ets"]=[pc[0]-bc[0], pc[1]-bc[1]]
-                    tasks[et]["ret"]=str(pret)
+                    #tasks[et]["ret"]=str(pret)
+                    tasks[et]["ret"]= ostatus["nk"]
                     #lpret.append(pret)        
+                    tasks[et]["ets"]=[pc[0]-bc[0], pc[1]-bc[1]]
 
                 else:
                     print (" (... not yet time:", tasks[et]['period']*60, ")")
@@ -626,7 +629,7 @@ def r_peter():
 
     ut = [time.perf_counter(), time.process_time()]
     tasks['main cycle']['ets' ] = [ut[0]-ot[0], ut[1]-ot[1]]
-    tasks['main cycle']['ret' ] = f"{len(hoststatus)} | [{(ut[0]-ot[0]):2f} {(ut[1]-ot[1]):.2f}]"
+    tasks['main cycle']['ret' ] = f"{len(hoststatus)} | [{(ut[0]-ot[0]):.2f} {(ut[1]-ot[1]):.2f}]"
     # Saving tasks last status
     with open(r_tasks, "w") as f:    
         f.write(json.dumps(tasks, ensure_ascii=False))
