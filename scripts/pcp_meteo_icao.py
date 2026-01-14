@@ -347,12 +347,12 @@ for db in dblist:
         dbcreds=json.loads(userdata.get(f'{user}-{db}.json'))
       elif enviro == "render":
         key_path = f'/etc/secrets/{user}-{db}.json'
-        print("About to open:", repr(key_path))
+        print(f"[{enviro}] About to open:", repr(key_path))
         dbcreds=json.load(open(key_path))
         
       else:
-        key_path = f'etc/secrets/{user}-{db}.json'
-        print("About to open:", repr(key_path))
+        key_path = f'secrets/{user}-{db}.json'
+        print(f"[enviro:{enviro}] About to open:", repr(key_path))
         dbcreds=json.load(open(key_path))
         print("dbcreds:", dbcreds)
 
@@ -469,7 +469,7 @@ for db in dblist:
             autocommit=True
         )
         else:
-          pem_path = f'etc/secrets/{dbcreds['pem']}'
+          pem_path = f'secrets/{dbcreds['pem']}'
           print("About to use:", repr(pem_path))
           
           connection = pymysql.connect(
