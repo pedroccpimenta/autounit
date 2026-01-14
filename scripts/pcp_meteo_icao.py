@@ -637,6 +637,8 @@ if send_mail and email_addresses!=[] and hora in horaemail :
         "subject": f"🌦️🛫🏤 {context}",
         "html": html
       })
+      print (f"email sending to {em}", r)
+      time.sleep(3)
 
 
 
