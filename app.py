@@ -194,9 +194,21 @@ def real_limits():
         # Unix/Linux only
         mem_limit = resource.getrlimit(resource.RLIMIT_AS)
         limit_text = f"Memory limit: {mem_limit}"
+        
     else:
         # Windows
         limit_text = "Memory limit: Not available on Windows"
+
+    #
+    cdir = ""
+    here = Path.cwd()          # current working directory
+    print("CWD:", here)
+    cdir = cd +f"Current dir: {here}"
+
+    for p in here.iterdir():
+        print(p)
+        cdir = f"<br> - {p}"
+
     
     return f"""
     <html><body style="font-family: monospace;">
@@ -207,6 +219,9 @@ def real_limits():
     Note: On Render (Linux), you'll see the actual limits.
     On Windows, resource module is not available.
     Free tier = 512MB RAM limit
+
+    <br>Files in current path:
+    {cdir}
     </pre>
     </body></html>
     """
