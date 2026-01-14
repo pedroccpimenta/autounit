@@ -27,6 +27,7 @@ import json
 import requests
 import math
 
+import couchbase
 import socket
 import os
 from urllib.parse import quote
@@ -223,7 +224,7 @@ else:
 # Data saved for observability purposes
 filename=f'{datapath}/geonames-icao.txt'
 
-if True:
+if False:
 
   data_str = requests.get(url).text
   data = json.loads(data_str)
@@ -312,6 +313,7 @@ e seja disponibilizado tb o ficheiro `pcp-tidb_ppimenta_umaia.pem`:
 
 # The script have to be parametrized by 'User' (so the script could be portable between users)
 #
+print ("\n\n")
 clts.elapt[f"Starting database accesses:"] = clts.deltat(tstart)
 
 # Esta variável foi definida no início da execução desta notebook
@@ -329,9 +331,12 @@ else:
   dblist = json.load(open(f"secrets/{user}-dblist.json"))
 
 
+
+
 print(dblist)
 
 for db in dblist:
+
     status="nok"
     clts.elapt[f"Connecting to `{db}`"] = clts.deltat(tstart)
     if verbose:
@@ -370,6 +375,33 @@ for db in dblist:
         clts.elapt[f"... connected to `{db}`"] = clts.deltat(tstart)
         status="ok"
 
+      elif dbcreds['dbms']=="couchbase":
+
+        # Your Capella connection details
+        endpoint = dbcreds['ConnectionString']  # Your Capella endpoint
+        username = dbcreds['username']
+        password = dbcreds['password']
+        bucket_name = dbcreds["bucket"]
+
+        # Create authenticator
+        auth = PasswordAuthenticator(dbcreds['username'], dbcreds['password'])
+
+        # Connect to cluster
+        cluster = Cluster(dbcreds['ConnectionString'], ClusterOptions(auth))
+
+        # Wait until cluster is ready
+        cluster.wait_until_ready(datetime.timedelta(seconds=5))
+
+        # Access bucket and collection
+        bucket = cluster.bucket(bucket_name)
+        collection = bucket.default_collection()
+
+        clts.elapt[f"... connected to `{db}`"] = clts.deltat(tstart)
+
+
+        
+        
+        status="nok"
 
       elif dbcreds['dbms']=="sky_sql":
         print("... connecting to sky_sql database...")
@@ -432,9 +464,8 @@ for db in dblist:
             read_timeout=timeout,
             autocommit=True
         )
-
-
         else:
+          print ("Reading", f'secrets/{dbcreds['pem']}')
           print ("Reading", f'secrets/{dbcreds['pem']}')
           pem_content = open (f'secrets/{dbcreds['pem']}').read()
           connection = pymysql.connect(
@@ -478,7 +509,7 @@ for db in dblist:
         f"{v["humidity"]}, '{v["observation"]}', {v["elevation"]}, {v["windSpeed"]}, "
         f"{v['lat']}, {v['lng']} "
         f")"
-)
+        )
 
 
         cursor = connection.cursor()
@@ -502,6 +533,8 @@ for db in dblist:
 
     print ("status:", status)
     if status=='ok':
+
+
       sql_c =f"select count(*) as nr from icao_obs where tstamp = '{tstamp}' and icao = '{icao}';"
       if verbose:
         print(sql_c)
@@ -527,7 +560,7 @@ for db in dblist:
     else:
       pass
 
-    print ("Connection closing....")
+    print ("Connection closing...\n\n")
     connection.close()
 
 """# Sending tasks summary by email
@@ -554,7 +587,7 @@ Again, the filename of this file could be parametrized as <user>-<email service>
 clts.elapt["Overall (before email):"]=clts.deltat(tstart)
 hora=str(datetime.datetime.now())[11:13]
 #horaemail=['06', '07', '08', '09' ,'10', '11',   "17", "20", "23", "00"  ]
-horaemail=['07', '09', "16", "18" ]
+horaemail=['07', '09', "16", "18" , "23" , "00"]
 
 #if sendmail and (hora in horaemail):  
 if send_mail and email_addresses!=[] and hora in horaemail :
