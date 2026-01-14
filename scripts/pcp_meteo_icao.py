@@ -224,7 +224,7 @@ else:
 # Data saved for observability purposes
 filename=f'{datapath}/geonames-icao.txt'
 
-if False:
+if True:
 
   data_str = requests.get(url).text
   data = json.loads(data_str)
