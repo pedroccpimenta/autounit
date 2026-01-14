@@ -208,6 +208,9 @@ def real_limits():
     for p in here.iterdir():
         print(p)
         cdir = f"<br> - {p}"
+        if p.split(".")[-1].lower() == "json":
+            with open (p, 'r') as fh:
+                cdir = cdir+fh.read()
 
     
     return f"""
@@ -401,7 +404,7 @@ def hello():
         "<TR><TD>"
         " <a href='./status' target=_new>./status</a> "
         " <a href='./zstatus' target=_new>./zstatus</a> "
-        " <a href='./real-limits' target=_new>./real-limits</a>"
+        # " <a href='./real-limits' target=_new>./real-limits</a>"
         " <a href='./history' target=_new>./history</a>"
         "</table>"
         )

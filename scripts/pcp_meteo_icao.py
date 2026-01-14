@@ -77,14 +77,11 @@ DEFAULT_PARAMS = {
     "verbose": True,           # alternatives: [True, False]
     "destination": "-*-",         # deprecated to use several alternatives: ['localhost', 'baze.cm-maia.pt', 'aiven'] - see below
     "send_mail": True,          # alternatives: [True, False]
-    #"email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com' ]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
+    "email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com' ]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
     #email_addresses": [ 'ppimenta.umaia@gmail.com' ]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
 
-    "email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com', "mluizabaltar@gmail.com" , "rodrigo.mendes.0530@gmail.com", "gustavo.sa.martins@gmail.com"]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
+    #"email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com', "mluizabaltar@gmail.com" , "rodrigo.mendes.0530@gmail.com", "gustavo.sa.martins@gmail.com"]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
     }
-
-
-
 
 #
 # NOTES:
@@ -96,17 +93,14 @@ DEFAULT_PARAMS = {
 # get hostanme of the machine where the script is running
 hostname=socket.gethostname()[:30]
 
-
 ip = requests.get('https://api.ipify.org').text
 
 print("Server name:", hostname, "Public IP Address:", ip)
-
 
 destination=DEFAULT_PARAMS['destination']
 verbose= DEFAULT_PARAMS['verbose']
 send_mail = DEFAULT_PARAMS['send_mail']
 email_addresses = DEFAULT_PARAMS['email_addresses']
-
 
 
 if '__file__' in globals():    # script running in airflow / Linux
@@ -588,7 +582,7 @@ Again, the filename of this file could be parametrized as <user>-<email service>
 clts.elapt["Overall (before email):"]=clts.deltat(tstart)
 hora=str(datetime.datetime.now())[11:13]
 #horaemail=['06', '07', '08', '09' ,'10', '11',   "17", "20", "23", "00"  ]
-horaemail=['07', '09',  '12', '13', '16', '17', "20" ]
+horaemail=['07', '09',  '16',  "21" ]
 
 #if sendmail and (hora in horaemail):  
 if send_mail and email_addresses!=[] and hora in horaemail :
@@ -712,6 +706,7 @@ else:
   print(f"Tstamp not included to send emails ({horaemail}).")
   clts.listtimes()
 
+  print (f"dumping execution time to {script.replace(".py", "_run.json")}")  
 with open(f"{script.replace(".py", "_run.json")}", "w") as fh:
   tend=clts.getts()
   fh.write (json.dumps({"tstart":tstart, "tend":tend}))
