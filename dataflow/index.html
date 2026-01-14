@@ -1,0 +1,292 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AutoUnit</title>
+<style>
+  body { font-family: system-ui, sans-serif; }
+  
+  #overlay {
+    position: fixed; /* cobre a viewport; mude para absolute se usar container */
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none;
+  }
+  
+</style>
+
+
+<style>
+  /* Animação de tracejado correndo ao longo do path */
+  @keyframes dash-flow {
+    to { stroke-dashoffset: -40; } /* ajuste a direção e velocidade */
+  }
+
+  .flow-dashed {
+    stroke-dasharray: 8 8;      /* 8px de traço, 8px de espaço — ajuste à vontade */
+    animation: dash-flow 900ms linear infinite;
+  }
+
+  /* Variante mais “fina/rápida” */
+  .flow-dashed.fast {
+    stroke-dasharray: 5 3;
+    animation-duration: 90000s;
+  }
+</style>
+
+
+
+</head>
+<body>
+<center>
+<table border=0 noborder width=85% align=center>
+    <tr><td colspan=5>
+      <h1>Data flow</h1>
+       <i> Redundant, autonomously distributed data collection for low-frequency endpoint data providers.
+       <br>
+       <bR>
+    <tr>
+      <td width=25% bgcolor = 'PaleGreen' align=center>Data providers
+      <td width=10% >
+      <td width=35% bgcolor = 'PaleGreen'  align=center> Data collection autonumous unit
+      <td width=10% >
+      <td width=25% bgcolor = 'PaleGreen'  align=center> Data bases
+    <tr>
+      <td valign="middle" align=center style="text-valign: middle;">
+        
+        <img src='../static/pics/geonames_logo.png' height=30><img id=geonames  src='../static/pics/REST API_opaco_md.png' height=30><br>        
+        <br>
+        <img src='../static/pics/iteconsv25.png' height=30><img id=atmos41  src='../static/pics/mysqlv2.png' height=25><br>
+        <br>
+        <img src='../static/pics/ipma.png' height=30><img id=ipma  src='../static/pics/REST API_opaco_md.png' height=25>
+        <br>
+        <img src='../static/pics/openmeteo.jpg' height=50><img id=openmeteo  src='../static/pics/REST API_opaco_md.png' height=25>
+        <br>
+        <img src='../static/pics/weatherapi.png' height=30><img id=weatherapi src='../static/pics/REST API_opaco_md.png' height=25>
+        <br>
+        <img src='../static/pics/overpass-api.png' height=30><img id=overpass  src='../static/pics/REST API_opaco_md.png' height=25>        
+        <br>
+        <img src='../static/pics/porto digital.png' height=30><img id=portodigital src='../static/pics/REST API_opaco_md.png' height=25>
+        <br>
+        <img src='../static/pics/mapbox_logo.png' height=30><img id=mapbox src='../static/pics/REST API_opaco_md.png' height=25>
+        <td>
+        <td valign=middle><center>
+
+
+<!--          <img  src='./../static/pics/render2.png' width=95%>
+            Autounit
+            <br>
+          <span id='PCP-icao'>PCP-icao</span><br>
+-->
+          
+
+        <table border=0 width=95% cellpadding="5"><tr>
+        
+          <td id="autounit" align=center style='border-left: solid gray 1px;border-right: solid gray 1px;'><center>
+     <!--   <img src='./../static/pics/render2.png' width=95%> 
+     --> 
+          
+          <b>AutoUnit</b> (@<img id=autounit2 src='./../static/pics/render2.png' width=85>)
+          <br>
+          <br>
+          <br>
+          <p align=left>
+            Context
+            <ol style="text-align:left">
+              <li>Scheduler
+              <li>environment monitoring (memory, processor, ...)
+              <li>hardcoded default functions (support features)
+              <li>external py scripts
+              <li><pre style='display:inline;'>user</pre> services' credentials in <pre>secrets/&lt;user&gt;-&lt;service&gt;_&lt;instance&gt;.json</pre>
+              <li><pre style='display:inline;'>user</pre> SSL certifictaes in <pre>secrets/&lt;user&gt;-&lt;service&gt;_&lt;instance&gt;.pem</pre>
+            </ol>
+
+
+
+          <p align=left>
+            "External" py scripts<br>
+          <ol style="text-align:left">
+            <li><pre>&lt;user&gt;-&lt;data provider&gt;.py</pre>
+          </ol>
+
+
+        </table>
+
+      <td valign=middle>
+
+      <td valign=middle align=center>
+        <br>
+        <img id=yugabyte src='../static/pics/yugabyte.png'  width=80> <br>
+         <img id=aiven src='../static/pics/aiven.png' width=80>
+        <br>
+        <img id=mariadb src='../static/pics/mariadb.png'  width=80>
+        <br>
+        <img id=skysql src='../static/pics/skysql_logo.jpg'  width=80>
+        <br>
+        <img id=tidb src='../static/pics/tidb-cloud-trans.png'  width=80>
+        <br>
+        <img id=mongodb src='../static/pics/mongodbdb.png'  width=70>
+        <br>
+        <img id=cratedb src='../static/pics/cratedb_logo.png'  width=150>
+</table>
+</center>
+<hr color=green>
+&copy; Pedro Pimenta, 2026
+</center>
+
+
+
+<!-- SVG overlay -->
+<svg id="overlay" aria-hidden="true">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5"
+            markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke"></path>
+    </marker>
+
+ <marker id="arrow2" viewBox="0 0 10 10" refX="8" refY="5"
+            markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke"></path>
+    </marker>
+
+
+  </defs>
+  <!-- paths serão criados dinamicamente -->
+</svg>
+
+<script>
+  // ===== Utilitários de geometria =====
+  function anchorPoint(rect, side, pad = 8, offset = {dx: 0, dy: 0}) {
+    let x, y;
+    switch (side) {
+      case 'left':
+        x = rect.left - pad; y = rect.top + rect.height / 2;
+        break;
+      case 'right':
+        x = rect.right + pad; y = rect.top + rect.height / 2;
+        break;
+      case 'top':
+        x = rect.left + rect.width / 2; y = rect.top - pad;
+        break;
+      case 'bottom':
+        x = rect.left + rect.width / 2; y = rect.bottom + pad;
+        break;
+      default:
+        x = rect.left + rect.width / 2; y = rect.top + rect.height / 2;
+    }
+    return { x: x + (offset.dx || 0), y: y + (offset.dy || 0) };
+  }
+
+  function handleLength(A, B, tension = 0.35) {
+    const d = Math.hypot(B.x - A.x, B.y - A.y);
+    return Math.max(40, Math.min(220, d * tension));
+  }
+
+  function controlPoints(A, B, sideA, sideB, tension = 0.35) {
+    const h = handleLength(A, B, tension);
+
+    let c1 = { x: A.x, y: A.y };
+    if (sideA === 'right') c1.x += h;
+    if (sideA === 'left')  c1.x -= h;
+    if (sideA === 'bottom') c1.y += h;
+    if (sideA === 'top')    c1.y -= h;
+
+    let c2 = { x: B.x, y: B.y };
+    if (sideB === 'left')   c2.x -= h;
+    if (sideB === 'right')  c2.x += h;
+    if (sideB === 'top')    c2.y -= h;
+    if (sideB === 'bottom') c2.y += h;
+
+    return { c1, c2 };
+  }
+
+  // Cria ou obtém um path com o ID indicado
+  function ensurePath(pathId) {
+    const svg = document.getElementById('overlay');
+    let p = document.getElementById(pathId);
+    if (!p) {
+      p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      p.setAttribute('id', pathId);
+      p.setAttribute('fill', 'none');
+      p.setAttribute('stroke-linecap', 'round');
+      p.setAttribute('stroke-linejoin', 'round');
+      svg.appendChild(p);
+    }
+    return p;
+  }
+
+  function drawCurvedArrow({
+    fromId, toId,
+    fromSide = 'right', toSide = 'left',
+    pathId,
+    color = '#2f6fed', width = 2.5,
+    tension = 0.35,
+    startOffset = {dx: 0, dy: 0}, // desvio para separar múltiplas setas da mesma origem
+    endOffset   = {dx: 0, dy: 0}  // desvio no destino
+  }) {
+    const fromEl = document.getElementById(fromId);
+    const toEl   = document.getElementById(toId);
+    if (!fromEl || !toEl) return;
+
+    const pathEl = ensurePath(pathId);
+    const rA = fromEl.getBoundingClientRect();
+    const rB = toEl.getBoundingClientRect();
+
+    const A = anchorPoint(rA, fromSide, 8, startOffset);
+    const B = anchorPoint(rB, toSide, 8, endOffset);
+    const { c1, c2 } = controlPoints(A, B, fromSide, toSide, tension);
+
+    const d = `M ${A.x},${A.y} C ${c1.x},${c1.y} ${c2.x},${c2.y} ${B.x},${B.y}`;
+    pathEl.setAttribute('d', d);
+    pathEl.setAttribute('stroke', color);
+    pathEl.setAttribute('stroke-width', width);
+    pathEl.setAttribute('marker-end', 'url(#arrow)');
+
+
+    // ativa a animação de tracejado
+    pathEl.classList.add('flow-dashed'); // ou 'flow-dashed', 'fast'…
+
+  }
+
+  // ===== Definição das conexões =====
+  const connections = [
+   
+    {  pathId: 'curve_geonames_au', fromId: 'geonames',     toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: -80 }},
+    {  pathId: 'curve_atmos41_au',  fromId: 'atmos41',      toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: -60 }},
+    {  pathId: 'ipma_au',           fromId: 'ipma',         toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: -40 }},
+    {  pathId: 'openmeteo_au',      fromId: 'openmeteo',    toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: -20 }},
+    {  pathId: 'weatherapi_au',     fromId: 'weatherapi',   toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 0   }},
+    {  pathId: 'curve_overpass_au', fromId: 'overpass',     toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 20  }},
+    {  pathId: 'portodigital_au',   fromId: 'portodigital', toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 40  }},
+    {  pathId: 'mapbox_au',         fromId: 'mapbox',       toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 60  }},
+    {  pathId: 'curve_S_W',         fromId: 'ori1',         toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 80  }},
+    {  pathId: 'curve_R2_W',        fromId: 'rapi2',        toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 100  }},
+
+
+    // Autounit -> Data bases
+    { fromId: 'autounit', toId: 'yugabyte', fromSide: 'right', toSide: 'left', pathId: 'curve_AU_yugabyte', color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy: -60 } },
+    { fromId: 'autounit', toId: 'aiven',    fromSide: 'right', toSide: 'left', pathId: 'curve_AU_aiven',    color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy: -40 } },
+    { fromId: 'autounit', toId: 'mariadb',  fromSide: 'right', toSide: 'left', pathId: 'curve_AU_mariadb',  color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy: -20 } },
+    { fromId: 'autounit', toId: 'skysql',   fromSide: 'right', toSide: 'left', pathId: 'curve_AU_skysql',   color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy:   0 } },
+    { fromId: 'autounit', toId: 'tidb',     fromSide: 'right', toSide: 'left', pathId: 'curve_AU_tidb',     color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy:  20 } },
+    { fromId: 'autounit', toId: 'mongodb',  fromSide: 'right', toSide: 'left', pathId: 'curve_AU_mongodb',  color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy:  40 } },
+    { fromId: 'autounit', toId: 'cratedb',  fromSide: 'right', toSide: 'left', pathId: 'curve_AU_cratedb',  color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy:  60 } },
+  
+
+  ];
+
+  function updateAll() {
+    connections.forEach(cfg => drawCurvedArrow(cfg));
+  }
+
+  addEventListener('load', updateAll);
+  addEventListener('resize', updateAll, { passive: true });
+  addEventListener('scroll', updateAll, { passive: true });
+
+  // Observa mudanças que possam afetar layout
+  const ro = new ResizeObserver(updateAll);
+  ro.observe(document.body);
+</script>
+</body>
+</html>

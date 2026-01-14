@@ -113,6 +113,12 @@ def history():
 global elapsed
 elapsed = 0
 
+@app.route('/dataflow')
+def dataflow():
+    return send_from_directory('dataflow', 'index.html')
+
+
+
 @app.route('/status', methods=['POST',"GET"])
 def status():
     global r_tasks
