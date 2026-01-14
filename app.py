@@ -110,11 +110,14 @@ def history():
 
     return response
 
+global elapsed
+elapsed = 0
 
 @app.route('/status', methods=['POST',"GET"])
 def status():
     global r_tasks
     global edirect
+    global elapsed
     global status
     global ostat
     global mem_tot
@@ -137,7 +140,7 @@ def status():
 
     cpu_percent = psu_process.cpu_percent(interval=None) 
 
-
+    elapsed = (datetime.datetime.now()-uptime).total_seconds()/86400
     
     toret = { 
         "system": {
@@ -154,7 +157,7 @@ def status():
         },
         "tenant": {
             'cpu_percent': cpu_percent,
-            "elapsed": (datetime.datetime.now()-uptime).total_seconds()/86400,
+            "elapsed": elapsed,
             "len_history":len(hoststatus),
             "mem": psu_process.memory_info(),
             "mem_used": tenant_mem_used_mb,
@@ -254,6 +257,7 @@ def zstatus():
 
 @app.route('/')
 def hello():
+    global elapsed
     global lpret
     global hoststatus
     global ostat
@@ -359,7 +363,7 @@ def hello():
     table3 += "</pre></table>"
 
     """
-    hoststatus[:] = [row for row in hoststatus if not (tt1 < row[1] < tt2)]
+    hoststatus[:] = [row for row in hoststatus if not (tt1 < row[1] <= tt2)]
 
 
     table3 += "                               |                  system                     |          tenant        <br>"
@@ -390,7 +394,7 @@ def hello():
     </script>
     </head>
     <body style='font-family:roboto'>
-    <h1>Overall</h1>
+    <h1>Overall <small>{hostname} {str(uptime)[:19]} ({elapsed:.1f} days)</h1>
     <h2>Tasks</h2>
     {table}
     <form action="/process" method="POST">

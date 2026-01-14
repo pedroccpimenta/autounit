@@ -11,6 +11,8 @@ requests
 resend
 schedule
 
+
+couchbase
 gunicorn
 flask
 # flask_apscheduler
