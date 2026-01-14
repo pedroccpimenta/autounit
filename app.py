@@ -203,7 +203,7 @@ def real_limits():
     cdir = ""
     here = Path.cwd()          # current working directory
     print("CWD:", here)
-    cdir = cd +f"Current dir: {here}"
+    cdir = cdir +f"Current dir: {here}"
 
     for p in here.iterdir():
         print(p)
