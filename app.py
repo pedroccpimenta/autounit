@@ -663,6 +663,14 @@ current_env = os.environ.get('CONDA_DEFAULT_ENV')
 print ("current_env", current_env)
 enviro = current_env
 
+
+print ("Path to /etc/secrets and contents")
+from pathlib import Path
+
+print(Path("/etc/secrets").exists())
+print(list(Path("/etc/secrets").glob("*")))
+
+
 #print("sqlite version:", sqlite3.sqlite_version)
 
 
@@ -680,7 +688,7 @@ with duckdb.connect('au_db2.duckdb') as conn:
 
 ## Defining r_peter period
 
-r_peter_period = 37  # seconds
+r_peter_period = 35  # seconds
 
 ## Defining the file running tasks (r_tasks) based on original tasks (o_tasks)
 
@@ -789,11 +797,19 @@ def ensure_scheduler():
     start_scheduler()
 
 if __name__ == '__main__':
+   port = int(os.environ.get("PORT", 10000))
    app.run(debug=True, use_reloader=False)
    # app.run(debug=False, use_reloader=False)
 
 
 """ or
+if __name__ == "__main__":
+    # CRITICAL for Render: host="0.0.0.0", port from $PORT
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port, debug=False)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port, debug=False)
+
 
     if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         init_once()
