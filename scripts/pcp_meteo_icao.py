@@ -346,12 +346,14 @@ for db in dblist:
       if enviro == "google.colab":
         dbcreds=json.loads(userdata.get(f'{user}-{db}.json'))
       elif enviro == "render":
-        print ("READING ", f'/etc/secrets/{user}-{db}.json')
-        dbcreds=json.load(open(f'/etc/secrets/{user}-{db}.json'))
+        key_path = f'/etc/secrets/{user}-{db}.json'
+        print("About to open:", repr(key_path))
+        dbcreds=json.load(open(key_path))
         
       else:
-        print ("READING ", f'secrets/{user}-{db}.json')
-        dbcreds=json.load(open(f'secrets/{user}-{db}.json'))
+        key_path = f'etc/secrets/{user}-{db}.json'
+        print("About to open:", repr(key_path))
+        dbcreds=json.load(open(key_path))
         print("dbcreds:", dbcreds)
 
 
@@ -448,8 +450,10 @@ for db in dblist:
             autocommit=True
         )
         elif enviro == "render":
-          print ("Reading", f'/etc/secrets/{dbcreds['pem']}')
-          pem_content = open (f'/etc/secrets/{dbcreds['pem']}').read()
+          print ("ENVIRO", enviro)
+          pem_path=f'/etc/secrets/{dbcreds['pem']}'
+          print("About to use:", repr(pem_path))
+
           connection = pymysql.connect(
             host=dbcreds["dest_host"],
             port=dbcreds["port"],
@@ -458,16 +462,16 @@ for db in dblist:
             password=dbcreds['password'],
             cursorclass=pymysql.cursors.DictCursor,
             charset="utf8mb4",
-            ssl={'ca': f'/etc/secrets/{user}.pem'},
+            ssl={'ca': pem_path},
             connect_timeout=timeout,
             write_timeout=timeout,
             read_timeout=timeout,
             autocommit=True
         )
         else:
-          print ("Reading", f'secrets/{dbcreds['pem']}')
-          print ("Reading", f'secrets/{dbcreds['pem']}')
-          pem_content = open (f'secrets/{dbcreds['pem']}').read()
+          pem_path = f'etc/secrets/{dbcreds['pem']}'
+          print("About to use:", repr(pem_path))
+          
           connection = pymysql.connect(
             host=dbcreds["dest_host"],
             port=dbcreds["port"],
@@ -476,7 +480,7 @@ for db in dblist:
             password=dbcreds['password'],
             cursorclass=pymysql.cursors.DictCursor,
             charset="utf8mb4",
-            ssl={'ca': f'secrets/{user}.pem'},
+            ssl={'ca': pem_path},
             connect_timeout=timeout,
             write_timeout=timeout,
             read_timeout=timeout,
