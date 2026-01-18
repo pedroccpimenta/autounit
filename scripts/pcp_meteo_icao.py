@@ -77,10 +77,10 @@ DEFAULT_PARAMS = {
     "verbose": True,           # alternatives: [True, False]
     "destination": "-*-",         # deprecated to use several alternatives: ['localhost', 'baze.cm-maia.pt', 'aiven'] - see below
     "send_mail": True,          # alternatives: [True, False]
-    #"email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com' ]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
+    "email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com' ]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
     #email_addresses": [ 'ppimenta.umaia@gmail.com' ]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
 
-    "email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com', "mluizabaltar@gmail.com" , "rodrigo.mendes.0530@gmail.com", "gustavo.sa.martins@gmail.com"]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
+    #"email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com', "mluizabaltar@gmail.com" , "rodrigo.mendes.0530@gmail.com", "gustavo.sa.martins@gmail.com"]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
     }
 
 #
@@ -530,31 +530,35 @@ for db in dblist:
     print ("status:", status)
     if status=='ok':
 
-      sql_c =f"select count(*) as nr from icao_obs where tstamp = '{tstamp}' and icao = '{icao}';"
-      if verbose:
-        print(sql_c)
+      try:
+        sql_c =f"select count(*) as nr from icao_obs where tstamp = '{tstamp}' and icao = '{icao}';"
+        if verbose:
+          print(sql_c)
 
-      cursor.execute(sql_c)
-      res=cursor.fetchone()
-      print('res:', res)
-      if dbcreds['dbms']=="crate":
-        a={}
-        a['nr']= res[0]
-        res= a
+        cursor.execute(sql_c)
+        res=cursor.fetchone()
+        print('res:', res)
+        if dbcreds['dbms']=="crate":
+          a={}
+          a['nr']= res[0]
+          res= a
 
-      print(res)
-      if res["nr"]==0:
-        cursor.execute(sql)
-        connection.commit()
-        clts.elapt[f"... `{tstamp}` inserted for {icao} @ {db} "] = clts.deltat(tstart)
-      elif res["nr"]==1:
-        clts.elapt[f"... `{tstamp}` for {icao} already persisted @ {db} "] = clts.deltat(tstart)
-      else:
-        status=f"duplicates"
-        clts.elapt[f"... duplicates for `{icao}` @ `{tstamp}` @ {db}  "] = clts.deltat(tstart)
-    
-      print ("Connection closing...\n\n")
-      connection.close()
+        print(res)
+        if res["nr"]==0:
+          cursor.execute(sql)
+          connection.commit()
+          clts.elapt[f"... `{tstamp}` inserted for {icao} @ {db} "] = clts.deltat(tstart)
+        elif res["nr"]==1:
+          clts.elapt[f"... `{tstamp}` for {icao} already persisted @ {db} "] = clts.deltat(tstart)
+        else:
+          status=f"duplicates"
+          clts.elapt[f"... duplicates for `{icao}` @ `{tstamp}` @ {db}  "] = clts.deltat(tstart)
+      
+        print ("Connection closing...\n\n")
+        connection.close()
+      except Exception as e:
+        clts.elapt[f"... Error `{e}` in `{db}`   "] = clts.deltat(tstart)
+        print ("Exception: ", e) 
     else:
       clts.elapt[f"Error in connecting {db} @ `{tstamp}`"] = clts.deltat(tstart)
       pass
@@ -584,7 +588,7 @@ Again, the filename of this file could be parametrized as <user>-<email service>
 clts.elapt["Overall (before email):"]=clts.deltat(tstart)
 hora=str(datetime.datetime.now())[11:13]
 #horaemail=['06', '07', '08', '09' ,'10', '11',   "17", "20", "23", "00"  ]
-horaemail=['07', '09', '11',  '16',  "21" ]
+horaemail=['07', '09', '12', '15', '18',  "21" ]
 
 #if sendmail and (hora in horaemail):  
 if send_mail and email_addresses!=[] and hora in horaemail :
