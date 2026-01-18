@@ -43,7 +43,7 @@
 <table border=0 noborder width=85% align=center>
     <tr><td colspan=5>
       <h1>Data flow</h1>
-       <i> Redundant, autonomously distributed data collection for low-frequency endpoint data providers.
+       <i> Redundant, multiple context, autonomously distributed data collection for low-frequency endpoint data providers.
        <br>
        <bR>
     <tr>
@@ -51,25 +51,27 @@
       <td width=10% >
       <td width=35% bgcolor = 'PaleGreen'  align=center> Data collection autonomous unit
       <td width=10% >
-      <td width=25% bgcolor = 'PaleGreen'  align=center> Data bases (Primary data)
+      <td width=25% bgcolor = 'PaleGreen'  align=center> Data bases  (DBaaS, Primary data)
     <tr>
       <td valign="middle" align=center style="text-valign: middle;">
         
-        <img src='../static/pics/geonames_logo.png' height=30><img id=geonames  src='../static/pics/REST API_opaco_md.png' height=30><br>        
+        <img src='../static/pics/geonames_logo.png' height=30><img id=geonames  src='../static/pics/REST API_opaco_md.png' height=30>     
         <br>
-        <img src='../static/pics/Iteconsv25.png' height=30><img id=atmos41  src='../static/pics/mysqlv2.png' height=25><br>
+        <img src='../static/pics/Iteconsv25.png' height=30><img id=atmos41  src='../static/pics/mysqlv2.png' height=25>
         <br>
         <img src='../static/pics/ipma.png' height=30><img id=ipma  src='../static/pics/REST API_opaco_md.png' height=25>
         <br>
         <img src='../static/pics/openmeteo.jpg' height=50><img id=openmeteo  src='../static/pics/REST API_opaco_md.png' height=25>
         <br>
-        <img src='../static/pics/weatherapi.png' height=30><img id=weatherapi src='../static/pics/REST API_opaco_md.png' height=25>
+        <img src='../static/pics/weatherapi.png' height=35><img id=weatherapi src='../static/pics/REST API_opaco_md.png' height=25>
         <br>
-        <img src='../static/pics/overpass-api.png' height=30><img id=overpass  src='../static/pics/REST API_opaco_md.png' height=25>        
+        <img src='../static/pics/overpass-api.png' height=35><img id=overpass  src='../static/pics/REST API_opaco_md.png' height=25>        
         <br>
-        <img src='../static/pics/porto digital.png' height=30><img id=portodigital src='../static/pics/REST API_opaco_md.png' height=25>
+        <img src='../static/pics/porto digital.png' height=35><img id=portodigital src='../static/pics/REST API_opaco_md.png' height=25>
         <br>
-        <img src='../static/pics/mapbox_logo.png' height=30><img id=mapbox src='../static/pics/REST API_opaco_md.png' height=25>
+        <img src='../static/pics/mapbox_logo.png' height=35><img id=mapbox src='../static/pics/REST API_opaco_md.png' height=25>
+        <br>
+        <img src='../static/pics/googledrive.png' height=40 id=googledrive_in>
         <td>
         <td valign=middle><center>
 
@@ -109,26 +111,31 @@
           <ol style="text-align:left">
             <li><pre>&lt;user&gt;-&lt;data provider&gt;.py</pre>
           </ol>
-
-
+          <!--
+                <table width=100% border=1>
+                  <tr><td align=center><img src='../static/pics/log-file-icon.png' height=25> <td align=right><img src='../static/pics/REST API_opaco_md.png' height=25>
+                </table>
+            -->
         </table>
 
       <td valign=middle>
 
       <td valign=middle align=center>
         <br>
-        <img id=yugabyte src='../static/pics/yugabyte.png'  width=80> <br>
-         <img id=aiven src='../static/pics/aiven.png' width=80>
+        <img id=yugabyte src='../static/pics/yugabyte.png'  width=70> <br>
+         <img id=aiven src='../static/pics/aiven.png' width=70>
         <br>
-        <img id=mariadb src='../static/pics/MariaDB.png'  width=80>
+        <img id=mariadb src='../static/pics/MariaDB.png'  width=70>
         <br>
-        <img id=skysql src='../static/pics/skysql_logo.jpg'  width=80>
+        <img id=skysql src='../static/pics/skysql_logo.jpg'  width=70>
         <br>
-        <img id=tidb src='../static/pics/tidb-cloud-trans.png'  width=80>
+        <img id=tidb src='../static/pics/tidb-cloud-trans.png'  width=70>
         <br>
-        <img id=mongodb src='../static/pics/mongodbdb.png'  width=70>
+        <img id=mongodb src='../static/pics/mongodbdb.png'  width=55>
         <br>
-        <img id=cratedb src='../static/pics/cratedb_logo.png'  width=150>
+        <img id=cratedb src='../static/pics/cratedb_logo.png'  width=120>
+        <br>
+        <img id=googledrive_out src='../static/pics/googledrive.png'  width=50>
 </table>
 </center>
 <hr color=green>
@@ -252,26 +259,26 @@
   // ===== Definição das conexões =====
   const connections = [
    
-    {  pathId: 'curve_geonames_au', fromId: 'geonames',     toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: -80 }},
-    {  pathId: 'curve_atmos41_au',  fromId: 'atmos41',      toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: -60 }},
-    {  pathId: 'ipma_au',           fromId: 'ipma',         toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: -40 }},
-    {  pathId: 'openmeteo_au',      fromId: 'openmeteo',    toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: -20 }},
-    {  pathId: 'weatherapi_au',     fromId: 'weatherapi',   toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 0   }},
-    {  pathId: 'curve_overpass_au', fromId: 'overpass',     toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 20  }},
-    {  pathId: 'portodigital_au',   fromId: 'portodigital', toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 40  }},
-    {  pathId: 'mapbox_au',         fromId: 'mapbox',       toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 60  }},
-    {  pathId: 'curve_S_W',         fromId: 'ori1',         toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 80  }},
-    {  pathId: 'curve_R2_W',        fromId: 'rapi2',        toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 100  }},
+    {  pathId: 'curve_geonames_au', fromId: 'geonames',       toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: -80 }},
+    {  pathId: 'curve_atmos41_au',  fromId: 'atmos41',        toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: -60 }},
+    {  pathId: 'ipma_au',           fromId: 'ipma',           toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: -40 }},
+    {  pathId: 'openmeteo_au',      fromId: 'openmeteo',      toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: -20 }},
+    {  pathId: 'weatherapi_au',     fromId: 'weatherapi',     toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 0   }},
+    {  pathId: 'curve_overpass_au', fromId: 'overpass',       toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 20  }},
+    {  pathId: 'portodigital_au',   fromId: 'portodigital',   toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 40  }},
+    {  pathId: 'mapbox_au',         fromId: 'mapbox',         toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 60  }},
+    {  pathId: 'curve_gd_in',       fromId: 'googledrive_in', toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 80 }},
 
 
     // Autounit -> Data bases
-    { fromId: 'autounit', toId: 'yugabyte', fromSide: 'right', toSide: 'left', pathId: 'curve_AU_yugabyte', color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy: -60 } },
-    { fromId: 'autounit', toId: 'aiven',    fromSide: 'right', toSide: 'left', pathId: 'curve_AU_aiven',    color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy: -40 } },
-    { fromId: 'autounit', toId: 'mariadb',  fromSide: 'right', toSide: 'left', pathId: 'curve_AU_mariadb',  color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy: -20 } },
-    { fromId: 'autounit', toId: 'skysql',   fromSide: 'right', toSide: 'left', pathId: 'curve_AU_skysql',   color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy:   0 } },
-    { fromId: 'autounit', toId: 'tidb',     fromSide: 'right', toSide: 'left', pathId: 'curve_AU_tidb',     color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy:  20 } },
-    { fromId: 'autounit', toId: 'mongodb',  fromSide: 'right', toSide: 'left', pathId: 'curve_AU_mongodb',  color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy:  40 } },
-    { fromId: 'autounit', toId: 'cratedb',  fromSide: 'right', toSide: 'left', pathId: 'curve_AU_cratedb',  color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy:  60 } },
+    { fromId: 'autounit', toId: 'yugabyte',          fromSide: 'right', toSide: 'left', pathId: 'curve_AU_yugabyte',     color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy: -60 } },
+    { fromId: 'autounit', toId: 'aiven',             fromSide: 'right', toSide: 'left', pathId: 'curve_AU_aiven',        color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy: -40 } },
+    { fromId: 'autounit', toId: 'mariadb',           fromSide: 'right', toSide: 'left', pathId: 'curve_AU_mariadb',      color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy: -20 } },
+    { fromId: 'autounit', toId: 'skysql',            fromSide: 'right', toSide: 'left', pathId: 'curve_AU_skysql',       color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy:   0 } },
+    { fromId: 'autounit', toId: 'tidb',              fromSide: 'right', toSide: 'left', pathId: 'curve_AU_tidb',         color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy:  20 } },
+    { fromId: 'autounit', toId: 'mongodb',           fromSide: 'right', toSide: 'left', pathId: 'curve_AU_mongodb',      color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy:  40 } },
+    { fromId: 'autounit', toId: 'cratedb',           fromSide: 'right', toSide: 'left', pathId: 'curve_AU_cratedb',      color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy:  60 } },
+    { fromId: 'autounit', toId: 'googledrive_out',   fromSide: 'right', toSide: 'left', pathId: 'curve_AU_googledrive',  color: 'gray', width: 1.5, tension: 0.35,  startOffset: { dx: 0, dy:  80 } },
   
 
   ];

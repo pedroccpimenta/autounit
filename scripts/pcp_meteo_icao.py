@@ -77,10 +77,10 @@ DEFAULT_PARAMS = {
     "verbose": True,           # alternatives: [True, False]
     "destination": "-*-",         # deprecated to use several alternatives: ['localhost', 'baze.cm-maia.pt', 'aiven'] - see below
     "send_mail": True,          # alternatives: [True, False]
-    "email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com' ]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
+    #"email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com' ]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
     #email_addresses": [ 'ppimenta.umaia@gmail.com' ]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
 
-    #"email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com', "mluizabaltar@gmail.com" , "rodrigo.mendes.0530@gmail.com", "gustavo.sa.martins@gmail.com"]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
+    "email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com', "mluizabaltar@gmail.com" , "rodrigo.mendes.0530@gmail.com", "gustavo.sa.martins@gmail.com"]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
     }
 
 #
@@ -329,6 +329,7 @@ print(dblist)
 for db in dblist:
 
     status="nok"
+
     clts.elapt[f"Connecting to `{db}`"] = clts.deltat(tstart)
     if verbose:
       print ("db in dblist:", db)
@@ -390,15 +391,12 @@ for db in dblist:
         collection = bucket.default_collection()
 
         clts.elapt[f"... connected to `{db}`"] = clts.deltat(tstart)
-
-
-        
         
         status="nok"
 
       elif dbcreds['dbms']=="sky_sql":
         print("... connecting to sky_sql database...")
-        # timeout = dbcreds['timeout'] # NOT COMPATIBLE WITH SKYSQL
+        # timeout = dbcreds['timeout'] # NOT COMPATIBLE WITH SKYSQL ? - to verify
 
         connection = pymysql.connect(
             host=dbcreds["dest_host"],
@@ -407,6 +405,9 @@ for db in dblist:
             user=dbcreds['username'],
             password=dbcreds['password'],
             ssl={'verify_cert': True} ,
+            connect_timeout=timeout,
+            write_timeout=timeout,
+            read_timeout=timeout,
             cursorclass=pymysql.cursors.DictCursor
 
             #cursorclass=pymysql.cursors.DictCursor,
@@ -521,14 +522,13 @@ for db in dblist:
       status="ok"
     except Exception as e:
       print("Error:", e)
-      clts.elapt[f"... error `{e}` "] = clts.deltat(tstart)
+      clts.elapt[f"<b><i>... error `{e}`</b></i>"] = clts.deltat(tstart)
       status='onerror'
       print ("status", status)
-      exit(1)
+      #exit(1)
 
     print ("status:", status)
     if status=='ok':
-
 
       sql_c =f"select count(*) as nr from icao_obs where tstamp = '{tstamp}' and icao = '{icao}';"
       if verbose:
@@ -551,12 +551,14 @@ for db in dblist:
         clts.elapt[f"... `{tstamp}` for {icao} already persisted @ {db} "] = clts.deltat(tstart)
       else:
         status=f"duplicates"
-        clts.elapt[f"... duplicates for `{icao}` @ `{tstamp}` @ {sb}  "] = clts.deltat(tstart)
+        clts.elapt[f"... duplicates for `{icao}` @ `{tstamp}` @ {db}  "] = clts.deltat(tstart)
+    
+      print ("Connection closing...\n\n")
+      connection.close()
     else:
+      clts.elapt[f"Error in connecting {db} @ `{tstamp}`"] = clts.deltat(tstart)
       pass
 
-    print ("Connection closing...\n\n")
-    connection.close()
 
 """# Sending tasks summary by email
 
@@ -582,7 +584,7 @@ Again, the filename of this file could be parametrized as <user>-<email service>
 clts.elapt["Overall (before email):"]=clts.deltat(tstart)
 hora=str(datetime.datetime.now())[11:13]
 #horaemail=['06', '07', '08', '09' ,'10', '11',   "17", "20", "23", "00"  ]
-horaemail=['07', '09',  '16',  "21" ]
+horaemail=['07', '09', '11',  '16',  "21" ]
 
 #if sendmail and (hora in horaemail):  
 if send_mail and email_addresses!=[] and hora in horaemail :

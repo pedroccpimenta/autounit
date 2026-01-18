@@ -207,11 +207,10 @@ def real_limits():
 
     for p in here.iterdir():
         print(p)
-        cdir = f"<br> - {p}"
-        if p.split(".")[-1].lower() == "json":
-            with open (p, 'r') as fh:
-                cdir = cdir+fh.read()
-
+        cdir = cdir + f"<br> - {p}"
+        if str(p).split(".")[-1].lower() == "json":
+            with open (str(p), 'r') as fh:
+                cdir = cdir+ "<table border=1 cellspacing=0><tr><td><pre>" + json.dumps(json.loads(fh.read()), indent=3) +"</pre></table>"
     
     return f"""
     <html><body style="font-family: monospace;">
@@ -219,13 +218,10 @@ def real_limits():
     MY process memory: {my_memory_mb:.1f} MB
     {limit_text}
     
-    Note: On Render (Linux), you'll see the actual limits.
-    On Windows, resource module is not available.
-    Free tier = 512MB RAM limit
 
     <br>Files in current path:
     {cdir}
-    </pre>
+    
     </body></html>
     """
 
