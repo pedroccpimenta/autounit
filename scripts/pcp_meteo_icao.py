@@ -325,14 +325,16 @@ else:
 
 print(dblist)
 
+ndb =0
 for db in dblist:
-
+    ndb = ndb+1
     status="nok"
 
     clts.elapt[f"Connecting to `{db}`"] = clts.deltat(tstart)
     if verbose:
       print ("db in dblist:", db)
       print (f'connecting to `{db}`')
+    #if True:
     try:
       if enviro == "google.colab":
         dbcreds=json.loads(userdata.get(f'{user}-{db}.json'))
@@ -396,6 +398,7 @@ for db in dblist:
       elif dbcreds['dbms']=="sky_sql":
         print("... connecting to sky_sql database...")
         # timeout = dbcreds['timeout'] # NOT COMPATIBLE WITH SKYSQL ? - to verify
+
 
         connection = pymysql.connect(
             host=dbcreds["dest_host"],
@@ -519,9 +522,11 @@ for db in dblist:
         status='onerror'
         pass
       status="ok"
+    
+
     except Exception as e:
       print("Error:", e)
-      clts.elapt[f"<b><i>... error `{e}`</b></i>"] = clts.deltat(tstart)
+      clts.elapt[f"<b><i>{ndb}... error `{e}`</b></i>"] = clts.deltat(tstart)
       status='onerror'
       print ("status", status)
       #exit(1)
@@ -556,10 +561,10 @@ for db in dblist:
         print ("Connection closing...\n\n")
         connection.close()
       except Exception as e:
-        clts.elapt[f"... Error `{e}` in `{db}`   "] = clts.deltat(tstart)
+        clts.elapt[f"<b><i>{ndb}... Error `{e}` in `{db}`   "] = clts.deltat(tstart)
         print ("Exception: ", e) 
     else:
-      clts.elapt[f"Error in connecting {db} @ `{tstamp}`"] = clts.deltat(tstart)
+      clts.elapt[f"{ndb}. Error in connecting {db} @ `{tstamp}`"] = clts.deltat(tstart)
       pass
 
 
@@ -586,8 +591,8 @@ Again, the filename of this file could be parametrized as <user>-<email service>
 
 clts.elapt["Overall (before email):"]=clts.deltat(tstart)
 hora=str(datetime.datetime.now())[11:13]
-#horaemail=['06', '07', '08', '09' ,'10', '11',   "17", "20", "23", "00"  ]
-horaemail=['07', '11', '13', '15', '17', "21" ]
+horaemail=['06', '07', '08', '09' ,'10', '11',   "17", "20", "21", "23", "00"  ]
+#horaemail=['07', '11',   '15',  "20" ]
 
 #if sendmail and (hora in horaemail):  
 if send_mail and email_addresses!=[] and hora in horaemail :
@@ -711,7 +716,11 @@ else:
   print(f"Tstamp not included to send emails ({horaemail}).")
   clts.listtimes()
 
-  print (f"dumping execution time to {script.replace(".py", "_run.json")}")  
+
+with open(f"{script.replace(".py", "_run.html")}", "w") as fh:
+  fh.write(clts.listtimes())
+
+print (f"dumping execution time to {script.replace(".py", "_run.json")}")  
 with open(f"{script.replace(".py", "_run.json")}", "w") as fh:
   tend=clts.getts()
   fh.write (json.dumps({"tstart":tstart, "tend":tend}))
