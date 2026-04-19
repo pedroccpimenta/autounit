@@ -163,6 +163,7 @@ def status():
             "uname":uname,
         },
         "tenant": {
+            'CONDA_DEFAULT_ENV': os.environ.get("CONDA_DEFAULT_ENV"),
             'cpu_percent': cpu_percent,
             "elapsed": elapsed,
             "len_history":len(hoststatus),
@@ -171,6 +172,7 @@ def status():
             'memory_mb': psu_process.memory_info().rss ,
             'memory_percent': psu_process.memory_percent(),
             "script":__file__,
+            "__file__":__file__,
             "uptime":str(uptime)[:19]
         }
 
@@ -182,9 +184,7 @@ def status():
 
 
 
-
-
-@app.route('/real-limits')
+@app.route('/real_limits')
 def real_limits():
     global process    
   
@@ -211,6 +211,10 @@ def real_limits():
         if str(p).split(".")[-1].lower() == "json":
             with open (str(p), 'r') as fh:
                 cdir = cdir+ "<table border=1 cellspacing=0><tr><td><pre>" + json.dumps(json.loads(fh.read()), indent=3) +"</pre></table>"
+        elif str(p).split(".")[-1].lower() == "html":
+            with open (str(p), 'r') as fh:
+                cdir = cdir+ "<table border=1 cellspacing=0><tr><td>" + fh.read() +"</table>"
+
     
     return f"""
     <html><body style="font-family: monospace;">

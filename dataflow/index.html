@@ -43,8 +43,21 @@
 <table border=0 noborder width=85% align=center>
     <tr><td colspan=5>
       <h1>Data flow</h1>
-       <i> Redundant, multiple context, autonomously distributed data collection for low-frequency endpoint data providers.
-       <br>
+       
+       
+<details>
+    <summary>
+    <i> Redundant, multiple context, autonomously distributed data collection for low-frequency endpoint data providers.
+    </summary>
+
+    <ol>
+      <li> Redundancy: Pipeline authors, Data providers, Runtime environments (desktop, render, other), Databases (DBaaS), Reconciliation workers
+      <li> Multiple context: Jupyter notebooks (Google Colabs, other), Apache Airflow, Python (Flask)
+      <li> Autonomous distributed data collection: Coordinated via timestamp management
+      <li> Low-frequency intervals (≥10 minutes) 
+    </ol>
+</details>
+
        <bR>
     <tr>
       <td width=25% bgcolor = 'PaleGreen' align=center>Data providers
@@ -68,6 +81,8 @@
         <img src='../static/pics/overpass-api.png' height=35><img id=overpass  src='../static/pics/REST API_opaco_md.png' height=25>        
         <br>
         <img src='../static/pics/porto digital.png' height=35><img id=portodigital src='../static/pics/REST API_opaco_md.png' height=25>
+        <br>
+        <img src='../static/pics/GTFS_SVG_Icon_01.png' height=35 id=gtfs >
         <br>
         <img src='../static/pics/mapbox_logo.png' height=35><img id=mapbox src='../static/pics/REST API_opaco_md.png' height=25>
         <br>
@@ -259,15 +274,16 @@
   // ===== Definição das conexões =====
   const connections = [
    
-    {  pathId: 'curve_geonames_au', fromId: 'geonames',       toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: -80 }},
-    {  pathId: 'curve_atmos41_au',  fromId: 'atmos41',        toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: -60 }},
-    {  pathId: 'ipma_au',           fromId: 'ipma',           toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: -40 }},
-    {  pathId: 'openmeteo_au',      fromId: 'openmeteo',      toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: -20 }},
-    {  pathId: 'weatherapi_au',     fromId: 'weatherapi',     toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 0   }},
-    {  pathId: 'curve_overpass_au', fromId: 'overpass',       toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 20  }},
-    {  pathId: 'portodigital_au',   fromId: 'portodigital',   toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 40  }},
-    {  pathId: 'mapbox_au',         fromId: 'mapbox',         toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 60  }},
-    {  pathId: 'curve_gd_in',       fromId: 'googledrive_in', toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 80 }},
+    {  pathId: 'curve_geonames_au', fromId: 'geonames',       toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: -90 }},
+    {  pathId: 'curve_atmos41_au',  fromId: 'atmos41',        toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: -70 }},
+    {  pathId: 'ipma_au',           fromId: 'ipma',           toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: -50 }},
+    {  pathId: 'openmeteo_au',      fromId: 'openmeteo',      toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: -30 }},
+    {  pathId: 'weatherapi_au',     fromId: 'weatherapi',     toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: -10  }},
+    {  pathId: 'curve_overpass_au', fromId: 'overpass',       toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 10  }},
+    {  pathId: 'portodigital_au',   fromId: 'portodigital',   toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 30  }},
+    {  pathId: 'gtfs_au',           fromId: 'gtfs',           toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 50  }},
+    {  pathId: 'mapbox_au',         fromId: 'mapbox',         toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 70  }},
+    {  pathId: 'curve_gd_in',       fromId: 'googledrive_in', toId: 'autounit', fromSide: 'right', toSide: 'left', color: 'gray', width: 1.5, tension: 0.35,  endOffset: { dx: 0, dy: 90 }},
 
 
     // Autounit -> Data bases

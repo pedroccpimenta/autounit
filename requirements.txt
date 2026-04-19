@@ -10,7 +10,9 @@ pymysql
 requests
 resend
 schedule
+# paramiko[dss] - necessário para d5gate (acesso a baze)
 
+	
 
 couchbase
 gunicorn
