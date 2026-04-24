@@ -451,10 +451,15 @@ def health():
 def process():
     global edirect
     global enviro
+    global hostname
 
     user = "PCP"
 
     user_input =  request.form['apass']
+
+
+    if hostname[:4]=="srv-":
+        enviro="render"
 
     print("PROCESS, enviro:", enviro)
     print ("request.form['apass']:",request.form['apass'])
