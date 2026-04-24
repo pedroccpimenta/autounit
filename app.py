@@ -450,15 +450,39 @@ def health():
 @app.route('/process', methods=['POST'])
 def process():
     global edirect
+    global enviro
+
+    user = "PCP"
 
     user_input =  request.form['apass']
 
+    print("PROCESS, enviro:", enviro)
+    print ("request.form['apass']:",request.form['apass'])
+
+    if enviro == "render":
+        print (" > loading", f"/etc/secrets/{user}-d5bee.json")
+        ucreds = json.load(open(f"/etc/secrets/{user}-d5bee.json"))
+
+    else:
+        print (" > loading", f"./secrets/{user}-d5bee.json")
+        ucreds = json.load(open(f"./secrets/{user}-d5bee.json"))
+
+
+    print ("ucreds:", ucreds)
     # Example logic: redirect based on string content
-    if 'admin' in user_input.lower():
+    if ucreds['admin'] == user_input :
         edirect = True
         return redirect(url_for('edittasks'))
     else:
         return redirect(url_for('hello'))
+
+
+    # Example logic: redirect based on string content
+    #if 'admin' in user_input.lower():
+    #    edirect = True
+    #    return redirect(url_for('edittasks'))
+    #else:
+    #    return redirect(url_for('hello'))
 
 
 
@@ -531,7 +555,11 @@ def edittasks():
     ostatus = json.load(open(ostat))
     #print (" ========================= Overall status", ostatus)
 
-    resp = f"""<html>
+    resp = f"""<!doctype html><link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <head>
+        <link rel="icon" type="image/x-icon" href="static/pics/autounit.ico">
     <head>
     <script>
        // setTimeout(function() {{ location.reload(); }}, 10000);
