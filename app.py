@@ -618,20 +618,20 @@ def r_peter():
                 pass
             else:
                 print (" status on: ", end="")
-                print('time check:')
-                print('time check: now', datetime.datetime.now(datetime.UTC))
-                print('time check: then', datetime.datetime.strptime( tasks[et]["lrun"], "%Y-%m-%d %H:%M:%S" ).replace(tzinfo=datetime.UTC))
+                #print('time check:')
+                #print('time check: now', datetime.datetime.now(datetime.UTC))
+                #print('time check: then', datetime.datetime.strptime( tasks[et]["lrun"], "%Y-%m-%d %H:%M:%S" ).replace(tzinfo=datetime.UTC))
 
                 difference = datetime.datetime.now(datetime.UTC) - datetime.datetime.strptime( tasks[et]["lrun"], "%Y-%m-%d %H:%M:%S" ).replace(tzinfo=datetime.UTC)
                 totsecs=difference.days*24*60*60+difference.seconds    
                 totsecs=difference.total_seconds()    
-                print ('time check: ', totsecs, ' totsecs')    
 
-                print (f"time check: {et:>22s} | {tasks[et]['lrun']:>20s} | {totsecs:.0f} |", end = "")
-                print (f"time check: {totsecs/60} compared to  {tasks[et]['period']}", end = "")
+                #print ('time check: ', totsecs, ' totsecs')    
+                #print (f"time check: {et:>22s} | {tasks[et]['lrun']:>20s} | {totsecs:.0f} |", end = "")
+                #print (f"time check: {totsecs/60} compared to  {tasks[et]['period']}", end = "")
 
                 if totsecs/60 > tasks[et]['period']:
-                    print (f" calling {et} ..." )
+                    print (f"  ============================= calling {et} ..." )
 
                     bc = [time.perf_counter(), time.process_time()]
                    

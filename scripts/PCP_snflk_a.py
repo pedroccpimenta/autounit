@@ -138,11 +138,12 @@ if verbose:
     print ("script file_name:", script)
     print ('config:', config)
 
-context= f'{hostname} ({ip}) | {channel} | {script} | * d5 comb *'
-
-clts.setcontext(context)
 now = str(datetime.datetime.now())[0:19]
 today = now[:10]
+
+context= f'{hostname} ({ip}) | {channel} | {script} | {now} | * d5 comb *'
+
+clts.setcontext(context)
 
 # Execution options
 datafrom = "database"
@@ -449,7 +450,9 @@ else:
 #    or as a function of inserts / passes ...
 # ...
 
-clts.elapt["Overall (before email):"]=clts.deltat(tstart)
+
+clts.elapt[f"Overall (before email): {str(datetime.datetime.now())[0:19]}"]=clts.deltat(tstart)
+
 hora=str(datetime.datetime.now())[11:13]
 
 if enviro=='render':
