@@ -208,7 +208,7 @@ def real_limits():
     for p in here.iterdir():
         print(p)
         cdir = cdir + f"<br> - {p}"
-        if str(p).split(".")[-1].lower() == "json"  and p[-8]=='run.json':
+        if str(p).split(".")[-1].lower() == "json"  and p[-8:]=='run.json':
             with open (str(p), 'r') as fh:
                 cdir = cdir+ "<table border=1 cellspacing=0><tr><td><pre>" + json.dumps(json.loads(fh.read()), indent=3) +"</pre></table>"
         elif str(p).split(".")[-1].lower() == "html":
