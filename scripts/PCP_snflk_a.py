@@ -86,7 +86,7 @@ parts = __file__.replace('\\', "/").split('/')
 script = parts[-1]    
 if len(parts) > 1:
     channel = parts[-2]
-    user = scrip.split("_")[0]
+    user = script.split("_")[0]
 else:
     channel = 'd5hive:snowflake platform'
     user = "PCP"
