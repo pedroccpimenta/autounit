@@ -79,9 +79,6 @@ tstart=clts.getts()
 hostname=socket.gethostname()
 hostname=socket.gethostname()[:30]
 
-
-
-
 ip = requests.get('https://api.ipify.org').text
 
 print("Server name:", hostname, "Public IP Address:", ip)
@@ -141,7 +138,7 @@ if verbose:
     print ("script file_name:", script)
     print ('config:', config)
 
-context= f'{hostname} | {channel} | {script} | * (redundant DBaaS) *'
+context= f'{hostname} ({ip}) | {channel} | {script} | * (redundant DBaaS) *'
 
 clts.setcontext(context)
 now = str(datetime.datetime.now())[0:19]
@@ -173,7 +170,7 @@ if datafrom=="database":
 
   try:
   #if True:
-    clts.elapt[f"Getting data from snowflake database"] = clts.deltat(tstart)    
+    clts.elapt[f"Preparing connection..."] = clts.deltat(tstart)    
 
     ##################################################################################################
     #                                                                                                #
@@ -207,6 +204,8 @@ if datafrom=="database":
         encryption_algorithm=serialization.NoEncryption()
       )
 
+    clts.elapt[f"Connecting..."] = clts.deltat(tstart)    
+
     conn = snowflake.connector.connect(
         user=snflkcreds['user'],                   # from credentials file
         account=snflkcreds['account'],             # from credentials file
@@ -218,7 +217,7 @@ if datafrom=="database":
     )
 
 
-    clts.elapt[f"Connection ok!"] = clts.deltat(tstart)    
+    clts.elapt[f"Connected - getting data..."] = clts.deltat(tstart)    
     
   #else:
   #  exit(0)
@@ -249,11 +248,11 @@ if datafrom=="database":
     # Convert rows to list of dictionaries
     result = [dict(zip(columns, row)) for row in result]
     clts.elapt[f"{len(result)} readings extracted from system:snowflake"]= clts.deltat(tstart)
-    clts.elapt[f"... connected to `{destination}`"] = clts.deltat(tstart)
 
     # Writing received data as JSON to file
     if enviro=='render':
-      pass
+      with open(f"{filepath2}", 'w', encoding='utf-8') as f:
+        f.write(json.dumps(result))
     else:
       with open(f"{filepath1}", 'w', encoding='utf-8') as f:
         f.write(json.dumps(result))
@@ -266,26 +265,27 @@ else:
   try:
     if verbose:
       print("Reading from:", os.path.abspath(f"/home/ppimenta/{filepath2}"))
-    clts.elapt[f"Getting data from file {filepath2} (testing)"] = clts.deltat(tstart)    # Profiling, August 2025 
+    clts.elapt[f"Getting data from file {filepath2} (testing)"] = clts.deltat(tstart)    
     result=json.load(open(f"{filepath2}"))
   except Exception as e:
-    clts.elapt[f"Error {e} getting data from file {filepath2} (testing) ❌"] = clts.deltat(tstart)    # Profiling, August 2025 
+    clts.elapt[f"Error {e} getting data from file {filepath2} (testing) ❌"] = clts.deltat(tstart)    
     sstatus="error"
 
 if sstatus=="ok":
   # connecting to destination DBaaS
   #
+  clts.elapt[f"Storing data in destination (comb) databases..."] = clts.deltat(tstart)    
   
   #destination_list = [ "aiven_acess"]
   destination_list = ["crate_pedropimenta", "aiven_acess"]
 
-
   for destination in destination_list:
     sstatus="ok"
+    clts.elapt[f"{destination}:"] = clts.deltat(tstart)    
 
     try:
     #if True:
-      clts.elapt[f"Connecting to {destination}..."] = clts.deltat(tstart)   
+      clts.elapt[f"... connecting to {destination}..."] = clts.deltat(tstart)   
 
       if destination =='aiven_acess':
           if enviro=="render":
@@ -295,9 +295,9 @@ if sstatus=="ok":
     
       elif destination=="crate_pedropimenta":
         if enviro=="render":
-            fcreds=f'/etc/secrets/{user}-{db}.json'
+            fcreds=f'/etc/secrets/{user}-{destination}.json'
         else:
-            fcreds='./secrets/PCP-crate_pedropimenta.json'
+            fcreds=f'./secrets/{user}-{destination}.json'
           
       else:
           print(f"destination unknown:{destination}.")
@@ -367,7 +367,7 @@ if sstatus=="ok":
         if sstatus=="ok":
           cursor = connection.cursor()
           print (f"===================================== Connection to {destination} successfull ✅ ")
-          clts.elapt[f"Connection to {destination} successfull ✅ "] = clts.deltat(tstart)    
+          clts.elapt[f" ... connection to {destination} successfull ✅ "] = clts.deltat(tstart)    
       
         else:
           pass
@@ -380,7 +380,7 @@ if sstatus=="ok":
 
     except Exception as e:
       sstatus="error"
-      clts.elapt[f"Connection to {destination} in error: {e} ❌"] = clts.deltat(tstart)    # add an entry to elapt dictionary
+      clts.elapt[f"____ connection to {destination} in error: `{e}` ❌"] = clts.deltat(tstart)    # add an entry to elapt dictionary
     #else:
     #  pass
 
@@ -418,7 +418,7 @@ if sstatus=="ok":
 
         if row['nr'] >  1:
           print (f"Duplicate in {tabela} DEVICESERIAL {c['DEVICESERIAL']} at SAMPLETIME = '{sql_datetime}' ! - correct please")
-          clts.elapt[f"{destination}:duplicate in {tabela} DEVICESERIAL {c['DEVICESERIAL']} at SAMPLETIME = '{sql_datetime}' for kr={kr}"] = clts.deltat(tstart)
+          clts.elapt[f"___ {destination}:duplicate in {tabela} DEVICESERIAL {c['DEVICESERIAL']} at SAMPLETIME = '{sql_datetime}' for kr={kr}"] = clts.deltat(tstart)
           passes += 1
 
         elif row['nr'] == 1:
@@ -439,15 +439,15 @@ if sstatus=="ok":
           connection.commit()
     
         kr=kr+1
-      clts.elapt[f"{destination}:{inserts} inserts, {passes} passes (total:{inserts+passes}) ✅ "] = clts.deltat(tstart)    # add an entry to elapt dictionary
+      clts.elapt[f"... {destination}:{inserts} inserts, {passes} passes (total:{inserts+passes}) ✅ "] = clts.deltat(tstart)    # add an entry to elapt dictionary
     
 
     else:
-      clts.elapt[f"Script failed in connecting to destination database `{destination}`."] = clts.deltat(tstart)    # add an entry to elapt dictionary
+      clts.elapt[f"{script} failed in connecting to destination database `{destination}`."] = clts.deltat(tstart)    # add an entry to elapt dictionary
 
 else:
   # Script arrived to (destination) database connection in error status 
-  clts.elapt[f"Script arrived to destination database - connectior in error status."] = clts.deltat(tstart)    # add an entry to elapt dictionary
+  clts.elapt[f"Script arrived to storing step, but connection to source failed."] = clts.deltat(tstart)    # add an entry to elapt dictionary
   pass
 
 # if send_mail and email_addresses and hora in [lista]:           
@@ -458,15 +458,14 @@ else:
 clts.elapt["Overall (before email):"]=clts.deltat(tstart)
 hora=str(datetime.datetime.now())[11:13]
 
-
 if enviro=='render':
   horaemail=['07', '11', '15',  "20" ]
   horaemail=range(0,23,1)   ## temporary
 else:
   horaemail=range(0,23,1)   ## if running locally, always send emails
 
-#if send_mail and email_addresses!=[] and hora in horaemail :   # This script is to be ran every 4 hours, so it only counts with 8 emails / day
-if True:
+if send_mail and email_addresses!=[] and hora in horaemail :   # This script is to be ran every 4 hours, so it only counts with 8 emails / day
+#if True:
   print ("Request to send at enviro:", enviro)
 
   if enviro == "render":
