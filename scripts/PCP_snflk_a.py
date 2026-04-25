@@ -138,7 +138,7 @@ if verbose:
     print ("script file_name:", script)
     print ('config:', config)
 
-context= f'{hostname} ({ip}) | {channel} | {script} | * (redundant DBaaS) *'
+context= f'{hostname} ({ip}) | {channel} | {script} | * d5 comb *'
 
 clts.setcontext(context)
 now = str(datetime.datetime.now())[0:19]
@@ -152,8 +152,8 @@ if enviro=="render":    # temporary
   datafrom="database"
 
 
-filepath1 = f"snfk_data_{today}.json"
-filepath2 = f"snfk_data.json"
+filepath1 = f"snflk_data_{now.replace(":", "_")}.json"
+filepath2 = f"snflk_data.json"
 
 sstatus="ok"
 
@@ -306,18 +306,9 @@ if sstatus=="ok":
 
       creds = json.load(open(fcreds))
 
-      """
-      with open(fcreds) as fh:
-          creds=json.loads(fh.read())
-          dbuser = creds['username']
-          dbpwd = creds['password']
-      """
-
       if sstatus=="ok":
 
         if creds["dbms"]=="sql":
-          print(f"username:{creds['username']} acessing to {creds['database']} with password:______")
-
           timeout=20
           connection = pymysql.connect(
             host = creds['dest_host'],
@@ -567,7 +558,7 @@ with open(f"{script.replace(".py", "_run.json")}", "w") as fh:
   print (f"{script.replace(".py", "_run.json")} created." )
 
 k=clts.listtimes()
-with open(f"{script.replace(".py", "_run.html")}", "w") as fh:
+with open(f"{script.replace(".py", "_run.html")}", "w", encoding="utf-8") as fh:
   fh.write (k)
   
 

@@ -202,11 +202,11 @@ def real_limits():
     #
     cdir = ""
     here = Path.cwd()          # current working directory
-    print("CWD:", here)
+    #print("CWD:", here)
     cdir = cdir +f"Current dir: {here}"
 
     for p in here.iterdir():
-        print(p)
+        #print(p)
         cdir = cdir + f"<br> - {p}"
         if str(p).split(".")[-1].lower() == "json"  and str(p)[-8:]=='run.json':
             with open (str(p), 'r') as fh:
