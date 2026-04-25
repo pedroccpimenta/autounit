@@ -488,8 +488,6 @@ def process():
     #else:
     #    return redirect(url_for('hello'))
 
-
-
 @app.route('/edittasks', methods=['POST',"GET"])
 def edittasks():
     global r_tasks

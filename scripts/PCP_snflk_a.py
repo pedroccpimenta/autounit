@@ -465,8 +465,8 @@ if enviro=='render':
 else:
   horaemail=range(0,23,1)   ## if running locally, always send emails
 
-if send_mail and email_addresses!=[] and hora in horaemail :   # This script is to be ran every 4 hours, so it only counts with 8 emails / day
-
+#if send_mail and email_addresses!=[] and hora in horaemail :   # This script is to be ran every 4 hours, so it only counts with 8 emails / day
+if True
   print ("Request to send at enviro:", enviro)
 
   if enviro == "render":
