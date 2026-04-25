@@ -295,7 +295,7 @@ if sstatus=="ok":
     
       elif destination=="crate_pedropimenta":
         if enviro=="render":
-            fcreds='/etc/secrets/{user}-{db}.json'
+            fcreds=f'/etc/secrets/{user}-{db}.json'
         else:
             fcreds='./secrets/PCP-crate_pedropimenta.json'
           
