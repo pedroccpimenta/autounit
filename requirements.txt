@@ -29,3 +29,6 @@ clts_pcp
 #os
 #sys
 #time
+
+# access to snowflake platform
+snowflake-connector-python
