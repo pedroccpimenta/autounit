@@ -379,59 +379,62 @@ if sstatus=="ok":
     # Data access
 
     if sstatus=="ok":
-      ## Data extraction, parsing and storing
-      inserts = 0
-      passes = 0
+      try:
+        ## Data extraction, parsing and storing
+        inserts = 0
+        passes = 0
 
-      insaq=0
-      passaq=0
+        insaq=0
+        passaq=0
 
-      #today = str(datetime.datetime.now())[:10]
-      kr = 0
+        #today = str(datetime.datetime.now())[:10]
+        kr = 0
 
-      tabela=snflkcreds["tabela"]
+        tabela=snflkcreds["tabela"]
 
-      for c in result:
-        dt = datetime.datetime.strptime(c['SAMPLETIME'], "%d/%m/%Y %H:%M:%S")
-        sql_datetime = dt.strftime("%Y-%m-%d %H:%M:%S")
+        for c in result:
+          dt = datetime.datetime.strptime(c['SAMPLETIME'], "%d/%m/%Y %H:%M:%S")
+          sql_datetime = dt.strftime("%Y-%m-%d %H:%M:%S")
 
-        sql = f"select count(*) as nr from {tabela} where SAMPLETIME='{sql_datetime}' and DEVICESERIAL='{c['DEVICESERIAL']}' "   
-        if kr < 5:  
-          print ("sql:", sql)
-
-        cursor.execute(sql)
-        row=cursor.fetchone()
-
-        if creds['dbms']=="crate":
-            a={}
-            a['nr']= row[0]
-            row = a
-
-        if row['nr'] >  1:
-          print (f"Duplicate in {tabela} DEVICESERIAL {c['DEVICESERIAL']} at SAMPLETIME = '{sql_datetime}' ! - correct please")
-          clts.elapt[f"___ {destination}:duplicate in {tabela} DEVICESERIAL {c['DEVICESERIAL']} at SAMPLETIME = '{sql_datetime}' for kr={kr}"] = clts.deltat(tstart)
-          passes += 1
-
-        elif row['nr'] == 1:
-          passes += 1
-          pass
-
-        else:
-          sql = ( 
-              f"insert into {tabela} (hostsource, DEVICESERIAL, tstamp, METERSERIAL,TENANTNAME, SITENAME, SAMPLETIME,READING,CONSUMPTION) values ("
-              f"'{hostname}', '{c['DEVICESERIAL']}', '{today}', '{c['METERSERIAL']}', '{c['TENANTNAME']}', '{c['SITENAME']}', '{sql_datetime}', {c['READING']}, {c['CONSUMPTION']})" 
-            )
-          inserts += 1
-
+          sql = f"select count(*) as nr from {tabela} where SAMPLETIME='{sql_datetime}' and DEVICESERIAL='{c['DEVICESERIAL']}' "   
           if kr < 5:  
             print ("sql:", sql)
 
           cursor.execute(sql)
-          connection.commit()
-    
-        kr=kr+1
-      clts.elapt[f"... {destination}:{inserts} inserts, {passes} passes (total:{inserts+passes}) ✅ "] = clts.deltat(tstart)    # add an entry to elapt dictionary
-    
+          row=cursor.fetchone()
+
+          if creds['dbms']=="crate":
+              a={}
+              a['nr']= row[0]
+              row = a
+
+          if row['nr'] >  1:
+            print (f"Duplicate in {tabela} DEVICESERIAL {c['DEVICESERIAL']} at SAMPLETIME = '{sql_datetime}' ! - correct please")
+            clts.elapt[f"___ {destination}:duplicate in {tabela} DEVICESERIAL {c['DEVICESERIAL']} at SAMPLETIME = '{sql_datetime}' for kr={kr}"] = clts.deltat(tstart)
+            passes += 1
+
+          elif row['nr'] == 1:
+            passes += 1
+            pass
+
+          else:
+            sql = ( 
+                f"insert into {tabela} (hostsource, DEVICESERIAL, tstamp, METERSERIAL,TENANTNAME, SITENAME, SAMPLETIME,READING,CONSUMPTION) values ("
+                f"'{hostname}', '{c['DEVICESERIAL']}', '{today}', '{c['METERSERIAL']}', '{c['TENANTNAME']}', '{c['SITENAME']}', '{sql_datetime}', {c['READING']}, {c['CONSUMPTION']})" 
+              )
+            inserts += 1
+
+            if kr < 5:  
+              print ("sql:", sql)
+
+            cursor.execute(sql)
+            connection.commit()
+      
+          kr=kr+1
+        clts.elapt[f"... {destination}:{inserts} inserts, {passes} passes (total:{inserts+passes}) ✅ "] = clts.deltat(tstart)    # add an entry to elapt dictionary
+      except Exception as e:
+        clts.elapt[f"... {destination} connection broke after {inserts} inserts, {passes} passes. ❌ "] = clts.deltat(tstart)    # add an entry to elapt dictionary
+
 
     else:
       clts.elapt[f"{script} failed in connecting to destination database `{destination}`."] = clts.deltat(tstart)    # add an entry to elapt dictionary
