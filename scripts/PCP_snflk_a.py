@@ -451,12 +451,12 @@ hora=str(datetime.datetime.now())[11:13]
 
 if enviro=='render':
   horaemail=['07', '11', '15',  "20" ]
-  horaemail=range(0,23,1)   ## temporary
+  horaemail=[f"{h:02d}" for h in range(0, 24)]   ## temporary
 else:
-  horaemail=range(0,23,1)   ## if running locally, always send emails
+  horaemail=[f"{h:02d}" for h in range(0, 24)]   ## if running locally, always send emails
 
-if send_mail and email_addresses!=[] and hora in horaemail :   # This script is to be ran every 4 hours, so it only counts with 8 emails / day
-#if True:
+#if send_mail and email_addresses!=[] and hora in horaemail :   # This script is to be ran every 4 hours, so it only counts with 8 emails / day
+if True:
   print ("Request to send at enviro:", enviro)
 
   if enviro == "render":
