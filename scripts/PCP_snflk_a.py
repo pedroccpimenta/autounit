@@ -65,6 +65,11 @@ PCP, April 2026
 
 # clts profiling
 
+print (
+      "***************************************************************************"
+      "*         PCP_snflk_a                                                     *"
+      "***************************************************************************"
+  )
 tstart=clts.getts()
 
 
@@ -144,7 +149,7 @@ today = now[:10]
 
 # Execution options
 datafrom = "database"
-datafrom = "file"
+#datafrom = "file"
 
 if enviro=="render":    # temporary
   datafrom="database"
