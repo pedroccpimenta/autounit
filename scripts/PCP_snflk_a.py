@@ -1,5 +1,4 @@
 ﻿
-
 ##################################################################################################
 #                                                                                                #
 # SENSITIVE CREDENTIALS – IMPORTANT                                                              #
@@ -73,8 +72,10 @@ tstart=clts.getts()
 
 # get hostanme and ip of the machine where the script is running
 hostname=socket.gethostname()
-
 hostname=socket.gethostname()[:30]
+
+
+
 
 ip = requests.get('https://api.ipify.org').text
 
@@ -93,8 +94,16 @@ else:
 
 if hostname[:4]=="srv-":
   enviro="render"
+
 else:
   enviro="flask"
+
+
+print(
+      f"\n\n\nHOSTNAME - enviro"
+      f"{hostname}"
+      f"{enviro}"
+      )
 
 
 # Default configuration with alternatives documented  # to be deprecated

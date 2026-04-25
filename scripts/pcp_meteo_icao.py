@@ -313,6 +313,7 @@ clts.elapt[f"Starting database accesses:"] = clts.deltat(tstart)
 # This connection needs further parametrization, since the same user might want to use
 # different databases for different pipelines / data sources
 #
+
 if enviro == "google.colab":
   dblist=json.loads(userdata.get(f"{user}-dblist.json"))
 elif enviro == "render":
@@ -321,7 +322,16 @@ else:
   dblist = json.load(open(f"secrets/{user}-dblist.json"))
 
 
-
+dblist = [ "aiven_acess_mysql", 
+            "tidb_ppimenta_umaia", 
+            "tidb_Maria", 
+            "aiven_projectoMaria_mysql",
+            "crate_projectoMaria_crate",
+            "crate_pedropimenta",
+            #"skysql_EstMaria",
+            #"skysql_IPMAIA",
+            #"skysql_PPimenta"
+]
 
 print(dblist)
 
