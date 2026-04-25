@@ -208,7 +208,7 @@ def real_limits():
     for p in here.iterdir():
         print(p)
         cdir = cdir + f"<br> - {p}"
-        if str(p).split(".")[-1].lower() == "json":
+        if str(p).split(".")[-1].lower() == "json"  and p[-8]=='run.json':
             with open (str(p), 'r') as fh:
                 cdir = cdir+ "<table border=1 cellspacing=0><tr><td><pre>" + json.dumps(json.loads(fh.read()), indent=3) +"</pre></table>"
         elif str(p).split(".")[-1].lower() == "html":
@@ -457,7 +457,6 @@ def process():
 
     user_input =  request.form['apass']
 
-
     if hostname[:4]=="srv-":
         enviro="render"
 
@@ -473,7 +472,7 @@ def process():
         ucreds = json.load(open(f"./secrets/{user}-d5bee.json"))
 
 
-    print ("ucreds:", ucreds)
+    #print ("ucreds:", ucreds)
     # Example logic: redirect based on string content
     if ucreds['admin'] == user_input :
         edirect = True

@@ -567,3 +567,9 @@ with open(f"{script.replace(".py", "_run.json")}", "w") as fh:
   fh.write (json.dumps({"tstart":tstart, "tend":tend}))
   print (f"{script.replace(".py", "_run.json")} created." )
 
+k=clts.listtimes()
+with open(f"{script.replace(".py", "_run.html")}", "w") as fh:
+  fh.write (k)
+  
+
+
