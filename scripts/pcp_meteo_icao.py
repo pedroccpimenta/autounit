@@ -74,7 +74,7 @@ tstart=clts.getts()
 
 # Default configuration with alternatives documented
 DEFAULT_PARAMS = {
-    "verbose": True,           # alternatives: [True, False]
+    "verbose": False,           # alternatives: [True, False]
     "destination": "-*-",         # deprecated to use several alternatives: ['localhost', 'baze.cm-maia.pt', 'aiven'] - see below
     "send_mail": True,          # alternatives: [True, False]
     
@@ -551,13 +551,13 @@ for db in dblist:
 
         cursor.execute(sql_c)
         res=cursor.fetchone()
-        print('res:', res)
+        #print('res:', res)
         if dbcreds['dbms']=="crate":
           a={}
           a['nr']= res[0]
           res= a
 
-        print(res)
+        #print(res)
         if res["nr"]==0:
           cursor.execute(sql)
           connection.commit()
@@ -729,8 +729,14 @@ else:
   clts.listtimes()
 
 
+now=str(datetime.datetime.now())[:19]
+
+with open(f"{script.replace(".py", f"_{now.replace(":","_")}_run.html")}", "w") as fh:
+  fh.write(clts.listtimes())
+
 with open(f"{script.replace(".py", "_run.html")}", "w") as fh:
   fh.write(clts.listtimes())
+
 
 print (f"dumping execution time to {script.replace(".py", "_run.json")}")  
 with open(f"{script.replace(".py", "_run.json")}", "w") as fh:

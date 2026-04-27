@@ -507,6 +507,13 @@ if True:
 
     # V25
     print (" enviro:", enviro, "at hostname:", hostname)
+    if enviro=="ender":
+      epath="/etc/"
+    else:
+      epath="./"
+
+
+
     if enviro=="jupyter":
       credsgmail=json.loads(userdata.get('configGMail_PCP.json') )
     else:
