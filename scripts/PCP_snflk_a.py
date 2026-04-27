@@ -273,6 +273,11 @@ else:
     sstatus="error"
 
 if sstatus=="ok":
+
+  min_sampletime = min(d['SAMPLETIME'] for d in result)
+  max_sampletime = max(d['SAMPLETIME'] for d in result)
+  clts.elapt[f"Data between {min_sampletime} and {max_sampletime} "] = clts.deltat(tstart)    
+
   # connecting to destination DBaaS
   #
   clts.elapt[f"Storing data in destination (comb) databases..."] = clts.deltat(tstart)    
@@ -450,13 +455,12 @@ else:
 #    or as a function of inserts / passes ...
 # ...
 
-
 clts.elapt[f"Overall (before email): {str(datetime.datetime.now())[0:19]}"]=clts.deltat(tstart)
 
 hora=str(datetime.datetime.now())[11:13]
 
 if enviro=='render':
-  horaemail=['07', '11', '15',  "20" ]
+  #horaemail=['07', '11', '15',  "20" ]
   horaemail=[f"{h:02d}" for h in range(0, 24)]   ## temporary
 else:
   horaemail=[f"{h:02d}" for h in range(0, 24)]   ## if running locally, always send emails
@@ -465,17 +469,24 @@ else:
 if True:
   print ("Request to send at enviro:", enviro)
 
-  if enviro == "render":
-    toem=clts.listtimes()
+  toem=clts.listtimes()
 
-    text = toem+"\nEsta é uma mensagem automática."
-    subject = f"V💦 {context}"
-    html = "<html><body style=''font-family:Montserrat;''>"+toem+ "<hr color=orange>"
-    html = html +"This message is an automated notification from "+ context +"</body></html>"
+  text = toem+"\nEsta é uma mensagem automática."
 
+  subject = f"V💦 {context}"
+  html = "<html><body style=''font-family:Montserrat;''>"+text+ "<hr color=orange>"
+  html = html +"This message is an automated notification from "+ context +"</body></html>"
+
+  if enviro == "render" or hostname == "pc1395":
     import resend
-    credsgmail=json.load( open("/etc/secrets/PCP-resend.json" ))
+
+    if enviro=="render":
+      credsgmail=json.load( open("/etc/secrets/PCP-resend.json" ))
+    elif hostname =="pc1395":
+      credsgmail=json.load( open("secrets/PCP-resend.json" ))
+
     resend.api_key = credsgmail['api-key']
+
     for em in email_addresses:
       r = resend.Emails.send({
         "from": credsgmail['from'],
@@ -485,10 +496,7 @@ if True:
       })
       print (f"email sending to {em}", r)
       time.sleep(3)
-
-
   else:
-    toem=clts.listtimes()
 
     from email.mime.text import MIMEText
     from email.mime.multipart import MIMEMultipart
@@ -499,32 +507,19 @@ if True:
     if enviro=="jupyter":
       credsgmail=json.loads(userdata.get('configGMail_PCP.json') )
     else:
-      epath=""
-      if enviro=="render":
-          epath="/etc/"
-
-      try:
-          print("Trying to open " , f'{epath}secrets/configGMail_{hostname}.json')
-          with open(f'{epath}secrets/configGMail_{hostname}.json', 'r') as fh:
-              credsgmail=json.loads(fh.read())
-      except Exception as err:
-        print ("Error:", err)
-
+      with open(f'{epath}secrets/configGMail_{hostname}.json', 'r') as fh:
+        credsgmail=json.loads(fh.read())
 
     try:
-        assunto = f"V💦 {context}"
 
         message = MIMEMultipart("alternative")
         message["Subject"] = assunto
 
+        #assunto = f"V💦 {context}"
         message["From"]=credsgmail['UserFrom']
         message["To"]=", ".join(email_addresses)
         message["Reply-To"]="ppimenta@ipmaia.pt"
 
-        text = toem+"\nEsta é uma mensagem automática."
-
-        html = "<html><body style=''font-family:Montserrat;''>"+toem+ "<hr color=orange>"
-        html = html +"This message is an automated notification from "+ context +"</body></html>"
 
         # Turn these into plain/html MIMEText objects
         part1 = MIMEText(text, "plain")
@@ -564,8 +559,15 @@ with open(f"{script.replace(".py", "_run.json")}", "w") as fh:
   print (f"{script.replace(".py", "_run.json")} created." )
 
 k=clts.listtimes()
+
 with open(f"{script.replace(".py", "_run.html")}", "w", encoding="utf-8") as fh:
   fh.write (k)
+
+if enviro != "render":
+  now = str(datetime.datetime.now())[:19]
+  with open(f"{script.replace(".py", f"_{now.replace(":","_")}_run.html")}", "w", encoding="utf-8") as fh:
+    fh.write (k)
+
   
 
 
