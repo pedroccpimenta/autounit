@@ -7,7 +7,7 @@
 		"ets": [null, null], 
 		"ret": " - not yet called - "
 	},
-	"PCP_snowflake": {
+	"PCP_snowflake_a": {
 		"call": "python", 
 		"script": "scripts/PCP_snflk_a.py", 
 		"lrun": "2025-12-23 10:20:46", 
@@ -15,7 +15,7 @@
 		"ets": [null, null], 
 		"ret": " - not yet called - "
 	},
-	"PCP_snowflake": {
+	"PCP_snowflake_b": {
 		"call": "python", 
 		"script": "scripts/PCP_snflk_b.py", 
 		"lrun": "2025-12-23 10:20:46", 
