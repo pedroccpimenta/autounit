@@ -274,9 +274,12 @@ else:
 
 if sstatus=="ok":
 
-  min_sampletime = min(d['SAMPLETIME'] for d in result)
-  max_sampletime = max(d['SAMPLETIME'] for d in result)
-  clts.elapt[f"Data between {min_sampletime} and {max_sampletime} "] = clts.deltat(tstart)    
+  if result!=[]:
+    min_sampletime = min(d['SAMPLETIME'] for d in result)
+    max_sampletime = max(d['SAMPLETIME'] for d in result)
+    clts.elapt[f"Data between {min_sampletime} and {max_sampletime} "] = clts.deltat(tstart)    
+  else:
+    clts.elapt[f" result is [] "] = clts.deltat(tstart)    
 
   # connecting to destination DBaaS
   #
