@@ -23,6 +23,14 @@
 		"ets": [null, null], 
 		"ret": " - not yet called - "
 	},
+	"PCP_snowflake_c": {
+		"call": "python", 
+		"script": "scripts/PCP_snflk_c.py", 
+		"lrun": "2025-12-23 10:20:46", 
+		"period": 240, 
+		"ets": [null, null], 
+		"ret": " - not yet called - "
+	},
 
 	"autounit@render.com": {
 		"call": "url", 

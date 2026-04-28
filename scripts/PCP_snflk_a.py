@@ -223,6 +223,7 @@ if datafrom=="database":
   #else:
   #  exit(0)
   except Exception as e:
+    print (f"Error: {e}")
     clts.elapt[f"error {e}"]=clts.deltat(tstart)
     sstatus="error"
 
@@ -250,6 +251,7 @@ if datafrom=="database":
     result = [dict(zip(columns, row)) for row in result]
     clts.elapt[f"{len(result)} readings extracted from system:snowflake"]= clts.deltat(tstart)
 
+
     # Writing received data as JSON to file
     if enviro=='render':
       with open(f"{filepath2}", 'w', encoding='utf-8') as f:
@@ -272,7 +274,7 @@ else:
     clts.elapt[f"Error {e} getting data from file {filepath2} (testing) ❌"] = clts.deltat(tstart)    
     sstatus="error"
 
-if sstatus=="ok":
+if sstatus=="ok" and result!=[]:
 
   if result!=[]:
     min_sampletime = min(d['SAMPLETIME'] for d in result)
@@ -450,7 +452,7 @@ if sstatus=="ok":
 
 else:
   # Script arrived to (destination) database connection in error status 
-  clts.elapt[f"Script arrived to storing step, but connection to source failed."] = clts.deltat(tstart)    # add an entry to elapt dictionary
+  clts.elapt[f"Script arrived to storing step, but connection to source failed OR NO DATA WAS EXTRACTED."] = clts.deltat(tstart)    # add an entry to elapt dictionary
   pass
 
 # if send_mail and email_addresses and hora in [lista]:           
@@ -477,6 +479,8 @@ if True:
   text = toem+"\nEsta é uma mensagem automática."
 
   subject = f"V💦 {context}"
+  #assunto = f"🌦️🛫 {context}"
+  
   html = "<html><body style=''font-family:Montserrat;''>"+text+ "<hr color=orange>"
   html = html +"This message is an automated notification from "+ context +"</body></html>"
 
@@ -494,7 +498,7 @@ if True:
       r = resend.Emails.send({
         "from": credsgmail['from'],
         "to": f"{em} <{em}>",
-        "subject": f"V💦 {context}",
+        "subject": subject,
         "html": html
       })
       print (f"email sending to {em}", r)
@@ -512,8 +516,6 @@ if True:
     else:
       epath="./"
 
-
-
     if enviro=="jupyter":
       credsgmail=json.loads(userdata.get('configGMail_PCP.json') )
     else:
@@ -523,9 +525,9 @@ if True:
     try:
 
         message = MIMEMultipart("alternative")
-        message["Subject"] = assunto
+        message["Subject"] = subject
 
-        #assunto = f"V💦 {context}"
+
         message["From"]=credsgmail['UserFrom']
         message["To"]=", ".join(email_addresses)
         message["Reply-To"]="ppimenta@ipmaia.pt"

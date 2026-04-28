@@ -175,16 +175,16 @@ if datafrom=="database":
 
     # read query from file
     if enviro=="render":
-      ssqueryf="/etc/secrets/PCP-vs_sql_v2.json"
+      ssqueryf="/etc/secrets/PCP-vs_sql_v3.json"
     else:
-      ssqueryf="./secrets/PCP-vs_sql_v2.json"
+      ssqueryf="./secrets/PCP-vs_sql_v3.json"
 
     psqueryf=json.load(open(ssqueryf))
     psql=psqueryf['psql']
-    target = datetime.datetime.now() - datetime.timedelta(hours=12)
+    target = datetime.datetime.now() - datetime.timedelta(days=1)
 
-    sql = psql.format(target=str(target)[:19])
-    print ("sql_b_v2:", sql)          
+    sql = psql.format(target=str(target)[:10])
+    print ("sql_b_v3:", sql)          
     clts.elapt[f"sql:{sql}"] = clts.deltat(tstart)    
     #exit(0)
 
