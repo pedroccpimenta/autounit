@@ -483,7 +483,7 @@ if True:
 
   text = toem+"\nEsta é uma mensagem automática."
 
-  subject = f"V💦 {context}"
+  subject = f"Vc💦 {context}"
   #assunto = f"🌦️🛫 {context}"
   
   html = "<html><body style=''font-family:Montserrat;''>"+text+ "<hr color=orange>"
