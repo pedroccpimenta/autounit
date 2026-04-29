@@ -138,6 +138,9 @@ def status():
     global tenant_mem_used_mb
     global cpu_percent
 
+
+
+
     mem = psutil.virtual_memory()
     disk = shutil.disk_usage('.')
     #process = ps<util.Process(os.getpid())
@@ -149,6 +152,16 @@ def status():
 
     elapsed = (datetime.datetime.now()-uptime).total_seconds()/86400
     
+    try:
+        result = subprocess.run(
+            ["quota", "-s"],
+            capture_output=True,
+            text=True
+        )
+    except Exception as e:
+        result="no quota -s available on this system."
+
+
     toret = { 
         "system": {
             "cpu_cores":cpu_cores,
@@ -173,7 +186,8 @@ def status():
             'memory_percent': psu_process.memory_percent(),
             "script":__file__,
             "__file__":__file__,
-            "uptime":str(uptime)[:19]
+            "uptime":str(uptime)[:19],
+            "disk_quota":result
         }
 
     }
@@ -184,8 +198,8 @@ def status():
 
 
 
-@app.route('/real_limits')
-def real_limits():
+@app.route('/logs')
+def logs():
     global process    
   
     my_memory_mb = psu_process.memory_info().rss / (1024**2)
@@ -205,7 +219,10 @@ def real_limits():
     #print("CWD:", here)
     cdir = cdir +f"Current dir: {here}"
 
-    for p in here.iterdir():
+    for p in sorted(
+                    (p for p in here.iterdir() if "creds" not in p.name.lower()),
+                    key=lambda p:(p.is_file(), p.name.lower())
+        ):
         #print(p)
         cdir = cdir + f"<br> - {p}"
         if str(p).split(".")[-1].lower() == "json"  and str(p)[-8:]=='run.json':
@@ -214,7 +231,13 @@ def real_limits():
         elif str(p).split(".")[-1].lower() == "html":
             with open (str(p), 'r') as fh:
                 cdir = cdir+ "<table border=1 cellspacing=0><tr><td>" + fh.read() +"</table>"
-
+        elif str(p).replace('\\', "/").split("/")[-1] in [
+        'requirements.txt',
+        'README.md'
+        ]:
+            with open (str(p), 'r', encoding='utf-8') as fh:
+                cdir = cdir+ "<table border=1 cellspacing=0><tr><td>" + fh.read() +"</table>"
+        
     
     return f"""
     <html><body style="font-family: monospace;">
@@ -402,10 +425,11 @@ def hello():
     table3 += "</pre>"
     table3 += ( 
         "<TR><TD>"
-        " <a href='./status' target=_new>./status</a> "
-        " <a href='./zstatus' target=_new>./zstatus</a> "
+        " <a href='./status' target=_new>status</a> "
+        " <a href='./zstatus' target=_new>zstatus</a> "
         # " <a href='./real-limits' target=_new>./real-limits</a>"
-        " <a href='./history' target=_new>./history</a>"
+        " <a href='./history' target=_new>history</a>"
+        " <a href='./logs' target=_new>logs</a>"
         "</table>"
         )
 

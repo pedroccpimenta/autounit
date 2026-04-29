@@ -728,14 +728,14 @@ else:
   print(f"Tstamp not included to send emails ({horaemail}).")
   clts.listtimes()
 
-
-now=str(datetime.datetime.now())[:19]
-
-with open(f"{script.replace(".py", f"_{now.replace(":","_")}_run.html")}", "w") as fh:
-  fh.write(clts.listtimes())
-
 with open(f"{script.replace(".py", "_run.html")}", "w") as fh:
   fh.write(clts.listtimes())
+
+if enviro!='render':
+  now=str(datetime.datetime.now())[:19]
+  with open(f"{script.replace(".py", f"_{now.replace(":","_")}_run.html")}", "w") as fh:
+    fh.write(clts.listtimes())
+
 
 
 print (f"dumping execution time to {script.replace(".py", "_run.json")}")  
