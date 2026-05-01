@@ -293,6 +293,7 @@ if sstatus=="ok" and result!=[]:
   clts.elapt[f"Storing data in destination (comb) databases..."] = clts.deltat(tstart)    
   
   #destination_list = [ "aiven_acess"]
+  #destination_list = ["aiven_acess"]
   destination_list = ["crate_pedropimenta", "aiven_acess"]
 
   for destination in destination_list:
@@ -390,13 +391,13 @@ if sstatus=="ok" and result!=[]:
       clts.elapt[f"____ connection to {destination} in error: `{e}` ❌"] = clts.deltat(tstart)    # add an entry to elapt dictionary
     #else:
     #  pass
-
     
     # Data access
 
     if sstatus=="ok":
       try:
         ## Data extraction, parsing and storing
+        now = str(datetime.datetime.now())[:19]
         inserts = 0
         passes = 0
 
@@ -405,10 +406,19 @@ if sstatus=="ok" and result!=[]:
 
         #today = str(datetime.datetime.now())[:10]
         kr = 0
-
+        maxk=5
+        nk=0
         tabela=snflkcreds["tabela"]
 
         for c in result:
+          dt = datetime.datetime.strptime(c['SAMPLETIME'], "%d/%m/%Y %H:%M:%S")
+          sql_datetime = dt.strftime("%Y-%m-%d %H:%M:%S")
+
+          if "0000" in sql_datetime:
+            print (c)
+            exit(8)
+         
+          """
           dt = datetime.datetime.strptime(c['SAMPLETIME'], "%d/%m/%Y %H:%M:%S")
           sql_datetime = dt.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -418,38 +428,50 @@ if sstatus=="ok" and result!=[]:
 
           cursor.execute(sql)
           row=cursor.fetchone()
+          """
 
           if creds['dbms']=="crate":
-              a={}
-              a['nr']= row[0]
-              row = a
+            sql = ( f"insert into {snflkcreds['tabela']} ("
+                f"hostsource, deviceserial, reading, consumption, sampletime, "
+                f"meterserial, tenantname, sitename, tstamp "
+                f") values ( "
+                f"'{hostname}', '{c["DEVICESERIAL"]}', {c["READING"]}, {c["CONSUMPTION"]}, "
+                f" timezone('Europe/Lisbon', '{sql_datetime}'::TIMESTAMP),  '{c["METERSERIAL"]}', "
+                f" 'CM-MAIA', 'CM-MAIA',  timezone('Europe/Lisbon', '{now}'::TIMESTAMP)) ON CONFLICT (sampletime, meterserial) DO NOTHING;"
+            )
 
-          if row['nr'] >  1:
-            print (f"Duplicate in {tabela} DEVICESERIAL {c['DEVICESERIAL']} at SAMPLETIME = '{sql_datetime}' ! - correct please")
-            clts.elapt[f"___ {destination}:duplicate in {tabela} DEVICESERIAL {c['DEVICESERIAL']} at SAMPLETIME = '{sql_datetime}' for kr={kr}"] = clts.deltat(tstart)
-            passes += 1
-
-          elif row['nr'] == 1:
-            passes += 1
-            pass
 
           else:
-            sql = ( 
-                f"insert into {tabela} (hostsource, DEVICESERIAL, tstamp, METERSERIAL,TENANTNAME, SITENAME, SAMPLETIME,READING,CONSUMPTION) values ("
-                f"'{hostname}', '{c['DEVICESERIAL']}', '{today}', '{c['METERSERIAL']}', '{c['TENANTNAME']}', '{c['SITENAME']}', '{sql_datetime}', {c['READING']}, {c['CONSUMPTION']})" 
+            sql = ( f"insert ignore  into {snflkcreds['tabela']} ("
+                  f"hostsource, deviceserial, reading, consumption, sampletime, "
+                  f"meterserial, tenantname, sitename, tstamp "
+                  f") values ( "
+                  f"'{hostname}', '{c["DEVICESERIAL"]}', {c["READING"]}, {c["CONSUMPTION"]}, "
+                  f"'{sql_datetime}',  '{c["METERSERIAL"]}', 'CM-MAIA', 'CM-MAIA', '{str(datetime.datetime.now())[:19]}') ;"
+
               )
-            inserts += 1
 
-            if kr < 5:  
-              print ("sql:", sql)
+          if kr < 5:  
+              print ("sql:", sql)          
 
+          if "0000" in sql_datetime:
+            print ("ALARME:\n",c,"\n")
+            clts.elapt[f"... ... Alarme : sql_datetime: {sql_datetime}"] = clts.deltat(tstart)
+
+          else: 
             cursor.execute(sql)
-            connection.commit()
+
+            inserts+=1
       
-          kr=kr+1
-        clts.elapt[f"... {destination}:{inserts} inserts, {passes} passes (total:{inserts+passes}) ✅ "] = clts.deltat(tstart)    # add an entry to elapt dictionary
+            kr=kr+1
+            connection.commit()
+        #clts.elapt[f"... {destination}:{inserts} inserts, {passes} passes (total:{inserts+passes}) ✅ "] = clts.deltat(tstart)    # add an entry to elapt dictionary
+        
+        print (f"... ... {destination} updated: {inserts} processed (insert ignore)")
+        clts.elapt[f"... ... {destination} updated: {inserts} processed (insert ignore)"] = clts.deltat(tstart)
+
       except Exception as e:
-        clts.elapt[f"... {destination} connection broke after {inserts} inserts, {passes} passes. ❌ "] = clts.deltat(tstart)    # add an entry to elapt dictionary
+        clts.elapt[f"... {destination} connection broke after {inserts} inserts, {passes} passes - {e}. ❌ "] = clts.deltat(tstart)    # add an entry to elapt dictionary
 
 
     else:

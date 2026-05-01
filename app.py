@@ -248,6 +248,8 @@ def logs():
 
     <br>Files in current path:
     {cdir}
+    <hr color=lime>
+    Version {version}, running at {hostname} ({now}) [{ostatus['nk']}]
     
     </body></html>
     """
@@ -296,10 +298,12 @@ def zstatus():
         toret += f"<br>File exists: {os.path.exists(ostat)}"
         #toret += "<br>"+json.dumps(json.load(open(ostat)))
         
-
         toret = toret + "</html>"
     except Exception as e:
-        toret =f"<html><body>exception: {str(e)}</html>"
+        toret = (  f"<html><body>exception: {str(e)}"
+                   f"<hr color=lime>Version {version}, running at {hostname} ({now}) [{ostatus['nk']}]"
+                   "</html>"
+             )
     
     return (toret)
 
