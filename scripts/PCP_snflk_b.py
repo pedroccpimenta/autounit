@@ -66,9 +66,9 @@ PCP, April 2026
 # clts profiling
 
 print (
-      "***************************************************************************"
-      "*         PCP_snflk_a                                                     *"
-      "***************************************************************************"
+      f"***************************************************************************"
+      f"                      {__file__} "
+      f"***************************************************************************"
   )
 tstart=clts.getts()
 
@@ -258,13 +258,12 @@ if datafrom=="database":
 
 
     # Writing received data as JSON to file
-    if enviro=='render':
-      with open(f"{filepath2}", 'w', encoding='utf-8') as f:
-        f.write(json.dumps(result))
-    else:
+
+    with open(f"{filepath2}", 'w', encoding='utf-8') as f:
+      f.write(json.dumps(result))
+
+    if enviro!='render':
       with open(f"{filepath1}", 'w', encoding='utf-8') as f:
-        f.write(json.dumps(result))
-      with open(f"{filepath2}", 'w', encoding='utf-8') as f:
         f.write(json.dumps(result))
         
     conn.close()    
@@ -292,9 +291,9 @@ if sstatus=="ok" and result!=[]:
   #
   clts.elapt[f"Storing data in destination (comb) databases..."] = clts.deltat(tstart)    
   
-  #destination_list = [ "aiven_acess"]
   #destination_list = ["aiven_acess"]
   destination_list = ["crate_pedropimenta", "aiven_acess"]
+  #destination_list = [ "aiven_acess"]
 
   for destination in destination_list:
     sstatus="ok"
@@ -473,9 +472,32 @@ if sstatus=="ok" and result!=[]:
       except Exception as e:
         clts.elapt[f"... {destination} connection broke after {inserts} inserts, {passes} passes - {e}. ❌ "] = clts.deltat(tstart)    # add an entry to elapt dictionary
 
-
     else:
       clts.elapt[f"{script} failed in connecting to destination database `{destination}`."] = clts.deltat(tstart)    # add an entry to elapt dictionary
+
+
+    if creds['dbms']=="sql":
+      clts.elapt[f"Getting barchart"] = clts.deltat(tstart)
+
+      zql = f"select hour(sampletime) as s_hour, count(*) as nr from {snflkcreds['tabela']} where sampletime like '{str(datetime.datetime.now())[:10]}%' group by s_hour order by s_hour;"
+      #zql = f"select hour(sampletime) as s_hour, count(*) as nr from {snflkcreds['tabela']} where sampletime like '2026-05-01%' group by s_hour order by s_hour;"
+      
+      clts.elapt[zql] = clts.deltat(tstart)
+      cursor.execute(zql)
+      res=cursor.fetchall()
+
+      chart = "<table border=1 cellspacing=0><tr><td colspan=24>Distribuição do número de leituras em BD pela hora do dia"
+      linha1="<tr>"
+      linha2="<tr>"
+      linha3="<tr>"
+      for r in res:
+        linha1 = linha1 + f"<td align=center valign=bottom ><div title='{r['nr']} leituras' style='width: 24px; height: {int(r['nr']/8):0f}px; background: steelblue;'></div>"
+        linha2 = linha2 + f"<td align=center>{r['nr']}"
+        linha3 = linha3 + f"<td align=center>{int(r['s_hour']):02d}-{int(r['s_hour'])+1:02d}"
+      chart = chart + linha1 + linha2+ linha3+ "</table>"
+
+      clts.elapt[chart] = clts.deltat(tstart)
+
 
 else:
   # Script arrived to (destination) database connection in error status 

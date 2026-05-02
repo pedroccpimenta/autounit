@@ -143,6 +143,7 @@ today = now[:10]
 
 context= f'{hostname} ({ip}) | {channel} | {script} | {now} | * d5 comb *'
 
+
 clts.setcontext(context)
 
 # Execution options
@@ -182,6 +183,7 @@ if datafrom=="database":
     psqueryf=json.load(open(ssqueryf))
     psql=psqueryf['psql']
     target = datetime.datetime.now() - datetime.timedelta(days=1)
+    yesterday=datetime.datetime.now() - datetime.timedelta(days=1)
 
     sql = psql.format(target=str(target)[:10])
     print ("sql_b_v3:", sql)          
@@ -476,6 +478,30 @@ if sstatus=="ok" and result!=[]:
 
     else:
       clts.elapt[f"{script} failed in connecting to destination database `{destination}`."] = clts.deltat(tstart)    # add an entry to elapt dictionary
+
+    if creds['dbms']=="sql":
+      clts.elapt[f"Getting barchart"] = clts.deltat(tstart)
+
+      zql = f"select hour(sampletime) as s_hour, count(*) as nr from {snflkcreds['tabela']} where sampletime like '{str(yesterday)[:10]}%' group by s_hour order by s_hour;"
+      #zql = f"select hour(sampletime) as s_hour, count(*) as nr from {snflkcreds['tabela']} where sampletime like '2026-05-01%' group by s_hour order by s_hour;"
+      
+      clts.elapt[zql] = clts.deltat(tstart)
+      cursor.execute(zql)
+      res=cursor.fetchall()
+
+      chart = "<table border=1 cellspacing=0><tr><td colspan=24>Distribuição do número de leituras em BD pela hora do dia"
+      linha1="<tr>"
+      linha2="<tr>"
+      linha3="<tr>"
+      for r in res:
+        linha1 = linha1 + f"<td align=center valign=bottom ><div title='{r['nr']} leituras' style='width: 24px; height: {int(r['nr']/8):0f}px; background: steelblue;'></div>"
+        linha2 = linha2 + f"<td align=center>{r['nr']}"
+        linha3 = linha3 + f"<td align=center>{int(r['s_hour']):02d}-{int(r['s_hour'])+1:02d}"
+      chart = chart + linha1 + linha2+ linha3+ "</table>"
+
+      clts.elapt[chart] = clts.deltat(tstart)
+
+
 
 else:
   # Script arrived to (destination) database connection in error status 
