@@ -486,15 +486,29 @@ if sstatus=="ok" and result!=[]:
       cursor.execute(zql)
       res=cursor.fetchall()
 
-      chart = "<table border=1 cellspacing=0><tr><td colspan=24>Distribuição do número de leituras em BD pela hora do dia"
+      chart = "<table border=1 cellspacing=0 style='font-family:Montserrat'><tr><td colspan=24>Distribuição do número de leituras em BD pela hora do dia"
       linha1="<tr>"
       linha2="<tr>"
       linha3="<tr>"
       for r in res:
-        linha1 = linha1 + f"<td align=center valign=bottom ><div title='{r['nr']} leituras' style='width: 24px; height: {int(r['nr']/8):0f}px; background: steelblue;'></div>"
-        linha2 = linha2 + f"<td align=center>{r['nr']}"
-        linha3 = linha3 + f"<td align=center>{int(r['s_hour']):02d}-{int(r['s_hour'])+1:02d}"
+        thresh_max=490
+        thresh_min=150
+
+        if r['nr'] > thresh_max:
+          hue = 120        # green
+        elif r['nr'] < thresh_min:
+          hue = 0          # red
+        else:
+          hue = int(r['nr'] / thresh_max * 120)  # gradient in between 490 and 150
+
+        color = f"hsl({hue}, 100%, 45%)"
+
+        linha1 = linha1 + f"<td align=center valign=bottom ><div title='{r['nr']} leituras' style='width: 24px; height: {int(r['nr']/5):0f}px; background: {color};'></div>"
+        linha2 = linha2 + f"<td align=center><small>{r['nr']}"
+        linha3 = linha3 + f"<td align=center><small>{int(r['s_hour']):02d}-{int(r['s_hour'])+1:02d}"
+
       chart = chart + linha1 + linha2+ linha3+ "</table>"
+
 
       clts.elapt[chart] = clts.deltat(tstart)
 
