@@ -75,10 +75,10 @@ tstart=clts.getts()
 # Default configuration with alternatives documented
 DEFAULT_PARAMS = {
     "verbose": False,           # alternatives: [True, False]
-    "destination": "-*-",         # deprecated to use several alternatives: ['localhost', 'baze.cm-maia.pt', 'aiven'] - see below
+    "destination": "-*-",       # deprecated to use several alternatives: ['localhost', 'baze.cm-maia.pt', 'aiven'] - see below
     "send_mail": True,          # alternatives: [True, False]
     
-    "email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com' ]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
+    "email_addresses": ["pedroccpimenta@gmail.com" ] 
     #"email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com', "mluizabaltar@gmail.com" , "rodrigo.mendes.0530@gmail.com", "gustavo.sa.martins@gmail.com"]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
     }
 
@@ -173,7 +173,7 @@ if False:   #  CHECK FOr AIRFLOW
 
 # The overall format of context should be:
 # server (ip) | user | channel | file.py | database destination (to be deprecated)
-context= f'{hostname} ({ip}) | {user} | {channel} | {script} | {destination}'
+context= f'{hostname} ({ip}) | {user} | {channel} | {script} | * redundant *'
 
 clts.setcontext(context)
 now = str(datetime.datetime.now())[0:19]
@@ -328,9 +328,9 @@ dblist = [ "aiven_acess_mysql",
             "aiven_projectoMaria_mysql",
             "crate_projectoMaria_crate",
             "crate_pedropimenta",
-            #"skysql_EstMaria",
-            #"skysql_IPMAIA",
-            #"skysql_PPimenta"
+            "skysql_EstMaria",
+            "skysql_IPMAIA",
+            "skysql_PPimenta"
 ]
 
 print(dblist)
@@ -604,45 +604,21 @@ hora=str(datetime.datetime.now())[11:13]
 horaemail=['06', '07', '08', '09' ,'10', '11',   "17", "20", "21", "23", "00"  ]
 
 if enviro=='render':
-  horaemail=['07', '11',   '15',  "20" ]
+  horaemail=['07',   '15',  "20" ]
 
 #if sendmail and (hora in horaemail):  
 if send_mail and email_addresses!=[] and hora in horaemail :
 
-  print ("Request to send enviro:", enviro)
+  #print ("Request to send enviro:", enviro)
   #return
+  subject = f"🌦️🛫🏤 {context}"
+  toem=clts.listtimes()
+  text = toem+"\nEsta é uma mensagem automática."
+  html = "<html><body style=''font-family:Montserrat;''>"+toem+ "<hr color=orange>"
+  html = html +"This message is an automated notification from "+ context +"</body></html>"
 
-#if send_mail and email_addresses!=[] and hora in horaemail or True :
-#if send_mail and  email_addresses!=[] and abs((datetime.datetime.now() - datetime.datetime.combine(datetime.datetime.now().date(), datetime.time(11, 0))).total_seconds() / 60) < 40 :
 
   if enviro == "render":
-    toem=clts.listtimes()
-
-    text = toem+"\nEsta é uma mensagem automática."
-    subject = f"🌦️🛫🏤 {context}"
-    html = "<html><body style=''font-family:Montserrat;''>"+toem+ "<hr color=orange>"
-    html = html +"This message is an automated notification from "+ context +"</body></html>"
-
-    """
-    from mailersend import MailerSendClient, EmailBuilder
-    credsgmail=json.load( open("/etc/secrets/PCP-mailersend.json" ))
-    ms = MailerSendClient( api_key=credsgmail['token'])
-  
-
-    for em in email_addresses:
-      email = (EmailBuilder()
-       .from_email(credsgmail['user'], credsgmail['username'])
-       .to_many([{"email": em, "name": em}  ])
-       .subject(f"🌦️🛫🏤 {context}")
-       .html(html)
-       .text(text)
-       .build())
-
-
-      response = ms.emails.send(email )
-      print(f"Email sent to {em}: {response}")  
-      """
-
     import resend
     credsgmail=json.load( open("/etc/secrets/PCP-resend.json" ))
     resend.api_key = credsgmail['api-key']
@@ -650,17 +626,14 @@ if send_mail and email_addresses!=[] and hora in horaemail :
       r = resend.Emails.send({
         "from": credsgmail['from'],
         "to": f"{em} <{em}>",
-        "subject": f"🌦️🛫🏤 {context}",
+        "subject": subject,
         "html": html
       })
       print (f"email sending to {em}", r)
       time.sleep(3)
 
 
-
-
   else:
-    toem=clts.listtimes()
 
     from email.mime.text import MIMEText
     from email.mime.multipart import MIMEMultipart

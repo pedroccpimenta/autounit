@@ -39,6 +39,7 @@ import clts_pcp as clts
 global tt1
 global uptime
 global hostanme
+global ostatus
 hostname=socket.gethostname()[:30]
 
 app = Flask(__name__)
@@ -200,7 +201,8 @@ def status():
 
 @app.route('/logs')
 def logs():
-    global process    
+    global process
+    global ostatus    
   
     my_memory_mb = psu_process.memory_info().rss / (1024**2)
     
@@ -223,13 +225,19 @@ def logs():
                     (p for p in here.iterdir() if "creds" not in p.name.lower()),
                     key=lambda p:(p.is_file(), p.name.lower())
         ):
-        #print(p)
+        print(p)
         cdir = cdir + f"<br> - {p}"
         if str(p).split(".")[-1].lower() == "json"  and str(p)[-8:]=='run.json':
-            with open (str(p), 'r') as fh:
+            with open (str(p), 'r', encoding="utf-8") as fh:
                 cdir = cdir+ "<table border=1 cellspacing=0><tr><td><pre>" + json.dumps(json.loads(fh.read()), indent=3) +"</pre></table>"
         elif str(p).split(".")[-1].lower() == "html":
-            with open (str(p), 'r') as fh:
+            print (str(p))
+            print (str(p))
+            print (str(p))
+            print (str(p))
+            print (str(p))
+            print (str(p))
+            with open (str(p), 'r', encoding='utf-8') as fh:
                 cdir = cdir+ "<table border=1 cellspacing=0><tr><td>" + fh.read() +"</table>"
         elif str(p).replace('\\', "/").split("/")[-1] in [
         'requirements.txt',
@@ -313,6 +321,7 @@ def hello():
     global lpret
     global hoststatus
     global ostat
+    global ostatus
     global r_tasks
     global tt1
 
@@ -617,6 +626,7 @@ def r_peter():
     global lpret
     global hoststatus
     global otsat
+    global ostatus
     global mem_tot
     global uptime
     global tt1
@@ -672,7 +682,12 @@ def r_peter():
                     
                     pc = [time.perf_counter(), time.process_time()]
 
+                    # FIXME This line should be: 
+                    # tasks[et]["lrun"] = tasks[et]["lrun"] + tasks[et]['period'] - NOOOO!!!
+                    # 
                     tasks[et]["lrun"]=str(datetime.datetime.now())[0:19]
+
+
                     #tasks[et]["ret"]=str(pret)
                     tasks[et]["ret"]= ostatus["nk"]
                     #lpret.append(pret)        
@@ -889,7 +904,7 @@ def ensure_scheduler():
 
 if __name__ == '__main__':
    port = int(os.environ.get("PORT", 10000))
-   app.run(debug=True, use_reloader=False)
+   app.run(debug=True, use_reloader=True)
    # app.run(debug=False, use_reloader=False)
 
 

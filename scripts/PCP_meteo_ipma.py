@@ -73,7 +73,7 @@ DEFAULT_PARAMS = {
     "destination": "-*-",         # deprecated to use several alternatives: ['localhost', 'baze.cm-maia.pt', 'aiven'] - see below
     "send_mail": True,          # alternatives: [True, False]
     
-    "email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com' ]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
+    "email_addresses": ['ppimenta.umaia@gmail.com' ]  
     #"email_addresses": ["pedroccpimenta@gmail.com", 'ppimenta.umaia@gmail.com', "mluizabaltar@gmail.com" , "rodrigo.mendes.0530@gmail.com", "gustavo.sa.martins@gmail.com"]  # array of email addresses - alternatives: ['ppimenta@umaia.pt', 'ppimenta@cm-maia.pt']
     }
 
@@ -168,7 +168,7 @@ if False:   #  CHECK FOr AIRFLOW
 
 # The overall format of context should be:
 # server (ip) | user | channel | file.py | database destination (to be deprecated)
-context= f'{hostname} ({ip}) | {user} | {channel} | {script} | {destination}'
+context= f'{hostname} ({ip}) | {user} | {channel} | {script} | * redundant * '
 
 clts.setcontext(context)
 now = str(datetime.datetime.now())[0:19]
@@ -522,20 +522,20 @@ if status=='ok':
             cursor.execute(sql_c)
             clts.elapt[f"... writing {len(data2)} records @ {db} "] = clts.deltat(tstart)
             connection.commit()
-            clts.elapt[f"{datetime.datetime.now()} ... commit "] = clts.deltat(tstart)
+            clts.elapt[f"... {datetime.datetime.now()} commit "] = clts.deltat(tstart)
   
 
           elif dbcreds['dbms']=="sql":
             cursor.execute(sql)
             clts.elapt[f"... writing {len(data2)} records @ {db} "] = clts.deltat(tstart)
             connection.commit()
-            clts.elapt[f"{datetime.datetime.now()} ... commit "] = clts.deltat(tstart)
+            clts.elapt[f"... {datetime.datetime.now()} commit "] = clts.deltat(tstart)
   
           elif dbcreds['dbms']=="sql_tls":
             cursor.execute(sql)
             clts.elapt[f"... writing {len(data2)} records @ {db} "] = clts.deltat(tstart)
             connection.commit()
-            clts.elapt[f"{datetime.datetime.now()} ... commit "] = clts.deltat(tstart)
+            clts.elapt[f"... {datetime.datetime.now()} commit "] = clts.deltat(tstart)
   
           else:
             clts.elapt[f" dbms {dbcreds['dbms']} NOT PROCESSED! "] = clts.deltat(tstart)
@@ -568,7 +568,6 @@ if send_mail and email_addresses!=[] and hora in horaemail :
   subject = f"🌦️ IPMA {context}"
   toem=clts.listtimes()
   text = toem+"\nEsta é uma mensagem automática."
-
   html = "<html><body style=''font-family:Montserrat;''>"+toem+ "<hr color=orange>"
   html = html +"This message is an automated notification from "+ context +"</body></html>"
 
