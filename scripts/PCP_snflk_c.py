@@ -65,11 +65,6 @@ PCP, April 2026
 
 # clts profiling
 
-print (
-      "***************************************************************************"
-      f"                             {__file__} "
-      "***************************************************************************"
-  )
 tstart=clts.getts()
 
 
@@ -140,6 +135,8 @@ if verbose:
 
 now = str(datetime.datetime.now())[0:19]
 today = now[:10]
+hora=now[11:13]
+
 
 context= f'{hostname} ({ip}) | {channel} | {script} | {now} | * d5 comb *'
 
@@ -182,10 +179,18 @@ if datafrom=="database":
 
     psqueryf=json.load(open(ssqueryf))
     psql=psqueryf['psql']
-    target = datetime.datetime.now() - datetime.timedelta(days=1)
+    #target = datetime.datetime.now() - datetime.timedelta(days=1)
+    twodaysago=datetime.datetime.now() - datetime.timedelta(days=2)
     yesterday=datetime.datetime.now() - datetime.timedelta(days=1)
 
-    sql = psql.format(target=str(target)[:10])
+
+
+    if hora in ['00', '01']:
+      sql = psql.format(target=str(twodaysago)[:10])
+      
+    else:
+      sql = psql.format(target=str(yesterday)[:10])
+  
     print ("sql_b_v3:", sql)          
     clts.elapt[f"sql:{sql}"] = clts.deltat(tstart)    
     #exit(0)
@@ -542,12 +547,10 @@ if True:
 
   toem=clts.listtimes()
 
-  text = toem+"\nEsta é uma mensagem automática."
-
   subject = f"Vc💦 {context}"
   #assunto = f"🌦️🛫 {context}"
   
-  html = "<html><body style=''font-family:Montserrat;''>"+text+ "<hr color=orange>"
+  html = "<html><body style=''font-family:Montserrat;''>"+toem+ "<hr color=orange>"
   html = html +"This message is an automated notification from "+ context +"</body></html>"
 
   if enviro == "render" or hostname == "pc1395":

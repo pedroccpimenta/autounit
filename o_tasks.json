@@ -7,6 +7,14 @@
 		"ets": [null, null], 
 		"ret": " - not yet called - "
 	},
+	"pcp_meteo_ipma": {
+		"call": "python", 
+		"script": "scripts/PCP_meteo_ipma.py", 
+		"lrun": "2025-12-23 10:20:46", 
+		"period": 50, 
+		"ets": [null, null], 
+		"ret": " - not yet called - "
+	},
 	
 	"PCP_snowflake_b": {
 		"call": "python", 

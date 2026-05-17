@@ -65,11 +65,7 @@ PCP, April 2026
 
 # clts profiling
 
-print (
-      f"***************************************************************************"
-      f"                      {__file__} "
-      f"***************************************************************************"
-  )
+
 tstart=clts.getts()
 
 
@@ -539,12 +535,10 @@ if True:
 
   toem=clts.listtimes()
 
-  text = toem+"\nEsta é uma mensagem automática."
-
   subject = f"Vb💦 {context}"
   #assunto = f"🌦️🛫 {context}"
   
-  html = "<html><body style=''font-family:Montserrat;''>"+text+ "<hr color=orange>"
+  html = "<html><body style=''font-family:Montserrat;''>"+toem+ "<hr color=orange>"
   html = html +"This message is an automated notification from "+ context +"</body></html>"
 
   if enviro == "render" or hostname == "pc1395":
