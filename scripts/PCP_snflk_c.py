@@ -183,13 +183,12 @@ if datafrom=="database":
     twodaysago=datetime.datetime.now() - datetime.timedelta(days=2)
     yesterday=datetime.datetime.now() - datetime.timedelta(days=1)
 
-
-
-    if hora in ['00', '01']:
-      sql = psql.format(target=str(twodaysago)[:10])
-      
+    if hora in ['00', '01', '02', '03']:
+      target=twodaysago      
     else:
-      sql = psql.format(target=str(yesterday)[:10])
+      target=yesterday
+
+    sql = psql.format(target=str(target)[:10])
   
     print ("sql_b_v3:", sql)          
     clts.elapt[f"sql:{sql}"] = clts.deltat(tstart)    
@@ -487,7 +486,7 @@ if sstatus=="ok" and result!=[]:
     if creds['dbms']=="sql":
       clts.elapt[f"Getting barchart"] = clts.deltat(tstart)
 
-      zql = f"select hour(sampletime) as s_hour, count(*) as nr from {snflkcreds['tabela']} where sampletime like '{str(yesterday)[:10]}%' group by s_hour order by s_hour;"
+      zql = f"select hour(sampletime) as s_hour, count(*) as nr from {snflkcreds['tabela']} where sampletime like '{str(target)[:10]}%' group by s_hour order by s_hour;"
       #zql = f"select hour(sampletime) as s_hour, count(*) as nr from {snflkcreds['tabela']} where sampletime like '2026-05-01%' group by s_hour order by s_hour;"
       
       clts.elapt[zql] = clts.deltat(tstart)
