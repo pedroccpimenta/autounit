@@ -180,13 +180,16 @@ if datafrom=="database":
     psqueryf=json.load(open(ssqueryf))
     psql=psqueryf['psql']
     #target = datetime.datetime.now() - datetime.timedelta(days=1)
+    threedaysago=datetime.datetime.now() - datetime.timedelta(days=3)
     twodaysago=datetime.datetime.now() - datetime.timedelta(days=2)
     yesterday=datetime.datetime.now() - datetime.timedelta(days=1)
 
-    if hora in ['00', '01', '02', '03']:
+    if hora in ['00', '01', '02', '03', '04', '05',  '06', '07']:
       target=twodaysago      
-    else:
+    elif hora in ['08', '09', '10', '11', '12', '13',  '14', '15']:
       target=yesterday
+    else:
+      target=threedaysago
 
     sql = psql.format(target=str(target)[:10])
   
