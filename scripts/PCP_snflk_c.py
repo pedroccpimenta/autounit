@@ -184,9 +184,9 @@ if datafrom=="database":
     twodaysago=datetime.datetime.now() - datetime.timedelta(days=2)
     yesterday=datetime.datetime.now() - datetime.timedelta(days=1)
 
-    if hora in ['00', '01', '02', '03', '04', '05',  '06', '07']:
+    if hora in ['01', '02', '03', '04', '05',  '06', '07', '08']:
       target=twodaysago      
-    elif hora in ['08', '09', '10', '11', '12', '13',  '14', '15']:
+    elif hora in [ '09', '10', '11', '12', '13',  '14', '15', '16']:
       target=yesterday
     else:
       target=threedaysago
