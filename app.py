@@ -496,13 +496,21 @@ def process():
 
     if hostname[:4]=="srv-":
         enviro="render"
+    elif os.environ.get("KOYEB"):
+        enviro = "koyeb"
 
     #print("PROCESS, enviro:", enviro)
     #print ("request.form['apass']:",request.form['apass'])
 
-    if enviro == "render":
-        print (" > loading", f"/etc/secrets/{user}-d5bee.json")
+    if enviro =="render":
+        print (f" > {enviro} loading", f"/etc/secrets/{user}-d5bee.json")
         ucreds = json.load(open(f"/etc/secrets/{user}-d5bee.json"))
+    elif enviro =="koyeb":
+        print (f" > {enviro} loading", f"/etc/secrets/{user}-d5bee.json")
+        ucreds = json.load(open(f"/etc/secrets/{user}-d5bee.json"))
+
+
+
 
     else:
         print (" > loading", f"./secrets/{user}-d5bee.json")
