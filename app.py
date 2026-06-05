@@ -496,7 +496,7 @@ def process():
 
     if hostname[:4]=="srv-":
         enviro="render"
-    elif os.environ.get("KOYEB"):
+    elif os.environ.get("KOYEB_PUBLIC_DOMAIN"):
         enviro = "koyeb"
 
     #print("PROCESS, enviro:", enviro)
@@ -508,10 +508,6 @@ def process():
     elif enviro =="koyeb":
         print (f" > {enviro} loading", f"/etc/secrets/{user}-d5bee.json")
         ucreds = json.load(open(f"/etc/secrets/{user}-d5bee.json"))
-
-
-
-
     else:
         print (" > loading", f"./secrets/{user}-d5bee.json")
         ucreds = json.load(open(f"./secrets/{user}-d5bee.json"))
