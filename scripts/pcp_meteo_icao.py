@@ -167,7 +167,7 @@ if False:   #  CHECK FOr AIRFLOW
     clts.elapt[f"Updated params:{config}"] = clts.deltat(tstart)    # Profiling, August 2025
 
     verbose = config['verbose']
-    destination = config['destination']
+    #destination = config['destination']
     send_mail = config['send_mail']
     email_addresses = config['email_addresses']
 

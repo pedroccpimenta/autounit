@@ -1,34 +1,29 @@
+# standard library (do not include — causes errors)
+# os
+# socket
+# subprocess
+# sys
+# time
+
+# third party
+clts_pcp
+couchbase
 crate
 cryptography
-# duckdb
-
-#google
+flask
+gunicorn
 mailersend
 psutil
-#pygsheets
 pymysql
 requests
 resend
 schedule
-# paramiko[dss] - necessário para d5gate (acesso a baze)
-
-	
-
-couchbase
-gunicorn
-flask
-# flask_apscheduler
-
-clts_pcp
-
-#  The following modules are included in standard python, 
-#  including them here lead to errors.
-
-#subprocess
-#socket
-#os
-#sys
-#time
-
-# access to snowflake platform
 snowflake-connector-python
+
+# optional / disabled
+# duckdb
+# flask_apscheduler
+# google
+# paramiko[dss] - necessário para d5gate (acesso a baze)
+# pygsheets
+

@@ -507,7 +507,7 @@ def process():
         ucreds = json.load(open(f"/etc/secrets/{user}-d5bee.json"))
     elif enviro =="koyeb":
         print (f" > {enviro} loading", f"/etc/secrets/{user}-d5bee.json")
-        ucreds = json.load(open(f"/etc/secrets/{user}-d5bee.json"))
+        ucreds = json.load(open(f"/etc/secrets/{user}-d5bee.json".replace("-","_")))
     else:
         print (" > loading", f"./secrets/{user}-d5bee.json")
         ucreds = json.load(open(f"./secrets/{user}-d5bee.json"))

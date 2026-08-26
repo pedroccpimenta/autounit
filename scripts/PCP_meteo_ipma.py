@@ -208,8 +208,9 @@ if datafrom=="restapi":
 
   data = json.loads(rtext)
 
-  with open(filepath1, 'w') as fw:
-    fw.write(rtext)
+  if enviro!="render":
+    with open(filepath1, 'w') as fw:
+      fw.write(rtext)
 
   with open(filepath2, 'w') as fw:
     fw.write(rtext)

@@ -180,6 +180,8 @@ if datafrom=="database":
     psqueryf=json.load(open(ssqueryf))
     psql=psqueryf['psql']
     #target = datetime.datetime.now() - datetime.timedelta(days=1)
+
+    
     threedaysago=datetime.datetime.now() - datetime.timedelta(days=3)
     twodaysago=datetime.datetime.now() - datetime.timedelta(days=2)
     yesterday=datetime.datetime.now() - datetime.timedelta(days=1)
