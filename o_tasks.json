@@ -28,7 +28,7 @@
 		"call": "python", 
 		"script": "scripts/PCP_snflk_c.py", 
 		"lrun": "2025-12-23 10:20:46", 
-		"period": 479.5, 
+		"period": 479.7, 
 		"ets": [null, null], 
 		"ret": " - not yet called - "
 	},

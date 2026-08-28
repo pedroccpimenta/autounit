@@ -665,7 +665,8 @@ def r_peter():
                 #print('time check: then', datetime.datetime.strptime( tasks[et]["lrun"], "%Y-%m-%d %H:%M:%S" ).replace(tzinfo=datetime.UTC))
 
                 difference = datetime.datetime.now(datetime.UTC) - datetime.datetime.strptime( tasks[et]["lrun"], "%Y-%m-%d %H:%M:%S" ).replace(tzinfo=datetime.UTC)
-                totsecs=difference.days*24*60*60+difference.seconds    
+                
+                #totsecs=difference.days*24*60*60+difference.seconds    
                 totsecs=difference.total_seconds()    
 
                 #print ('time check: ', totsecs, ' totsecs')    
