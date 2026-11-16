@@ -47,6 +47,8 @@ img = env.get("JUPYTER_IMAGE", "")
 
 if "google.colab" in sys.modules:
     enviro = "google colab"
+elif env.get("RENDER") == "true":
+    enviro = "render"
 elif "KAGGLE_KERNEL_RUN_TYPE" in env:
     enviro = "kaggle"
 elif "DEEPNOTE_PROJECT_ID" in env:
@@ -57,6 +59,8 @@ elif "eginotebooks" in img:
     enviro = "eosc eu node"
 else:
     enviro = env.get("CONDA_DEFAULT_ENV", "unknown")
+
+
 
 work_dir = {
     "google colab": "/content",
@@ -456,7 +460,6 @@ for db in dblist:
         with psycopg.connect(DATABASE_URL) as conn:
             print("✅ Ligado com sucesso ao Prisma Postgres!")
 
-
             cols = ["source", "location"] + list(map.values())
             sql = ( f"INSERT INTO doc.weather_station ({', '.join(cols)}) "
                     f"VALUES ({', '.join(['%s'] * len(cols))}) "
@@ -541,12 +544,37 @@ send_mail=True
 
 if send_mail and email_addresses!=[]:
 
-    toem=clts.listtimes()
+  print ("Request to send enviro:", enviro)
+  #return
+  subject = context
+  toem=clts.listtimes()
+  text = toem+"\nEsta é uma mensagem automática."
+  html = "<html><body style=''font-family:Montserrat;''>"+toem+ "<hr color=orange>"
+  html = html +f"This message (approx {len(html)+50}) is an automated notification from "+ context +"</body></html>"
+
+  if enviro == "render":
+    import resend
+    credsgmail=json.load( open("/etc/secrets/PCP-resend.json" ))
+    resend.api_key = credsgmail['api-key']
+    for em in email_addresses:
+      r = resend.Emails.send({
+        "from": credsgmail['from'],
+        "to": f"{em} <{em}>",
+        "subject": subject,
+        "html": html
+      })
+      print (f"render-email sending to {em}", r)
+      time.sleep(3)
+
+  else:
 
     from email.mime.text import MIMEText
     from email.mime.multipart import MIMEMultipart
     from email.mime.image import MIMEImage
     import smtplib, ssl
+
+
+
 
     # V25
     if enviro=="google colab":

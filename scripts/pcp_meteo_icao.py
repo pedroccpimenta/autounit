@@ -704,7 +704,7 @@ if send_mail and email_addresses!=[] and hora in horaemail :
   print (f"Notificação enviada {email_addresses} (len(html):{len(html)}).")
   clts.elapt[f"After sending email"] = clts.deltat(tstart)        # add an entry to elapt dictionary
 else:
-  print(f"Tstamp not included to send emails ({horaemail}).")
+  print(f"  ({horaemail}).")
   clts.listtimes()
 
 # Dumping clts.listtimes()
