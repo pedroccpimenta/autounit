@@ -27,30 +27,29 @@ import socket
 import os
 from urllib.parse import quote
 
-global enviro
 
-current_env = os.environ.get('CONDA_DEFAULT_ENV')
-print ("current_env", current_env)
+import os, sys
 
-if current_env is None:
-  hostname=socket.gethostname()[:30]
-  if hostname[:4]=="srv-":
-    enviro="render"
-    
-  else:
-    enviro="colab.google"
-    from google.colab import userdata
+env = os.environ
+img = env.get("JUPYTER_IMAGE", "")
+
+if "google.colab" in sys.modules:
+    enviro = "google colab"
+elif "RENDER" in os.environ:
+    enviro = "render"
+elif "KAGGLE_KERNEL_RUN_TYPE" in env:
+    enviro = "kaggle"
+elif "DEEPNOTE_PROJECT_ID" in env:
+    enviro = "deepnote"
+elif "cloudferro" in img:
+    enviro = "copernicus dataspace"
+elif "eginotebooks" in img:
+    enviro = "eosc eu node"
 else:
-  enviro="to be defined"
-  enviro="flask"
+    enviro = env.get("CONDA_DEFAULT_ENV", "unknown")
 
-print ("current enviro:", enviro)
+print ("detected enviro:", enviro)
 
-
-#if current_env is None:
-#  ! pip install pymysql --quiet
-#  ! pip install clts_pcp --quiet
-#  ! pip install crate --quiet
 
 import pymysql
 
@@ -58,9 +57,7 @@ import clts_pcp as clts
 import crate
 print("... done.")
 
-current_env = os.environ.get('CONDA_DEFAULT_ENV')
-print ("current_env:", current_env)
-print ("enviro:", enviro)
+
 
 ## Context gathering
 
@@ -101,7 +98,6 @@ if '__file__' in globals():    # script running in airflow / Linux
   script_path = os.path.abspath(__file__)
   parts = __file__.replace('\\', "/").split('/')
   datapath=f'./data/ppimenta/{parts[-1]}'
-  #enviro = "airflow/linux"
 
   script = parts[-1]
   channel = parts[-2]
@@ -114,9 +110,7 @@ if False:   #  CHECK FOr AIRFLOW
     script_path = os.path.abspath(__file__)
     parts = __file__.replace('\\', "/").split('/')
     datapath=f'./data/ppimenta/{parts[-1]}'
-    #enviro = "airflow/linux"
   else:                          # script running in colab.research.google
-    enviro = "jupyter"
     #  !pip install ipynbname --quiet
     import ipynbname
     folder_path = os.getcwd()  # This returns the folder where the notebook is located
@@ -168,7 +162,7 @@ if False:   #  CHECK FOr AIRFLOW
 
 # The overall format of context should be:
 # server (ip) | user | channel | file.py | database destination (to be deprecated)
-context= f'{hostname} ({ip}) | {user} | {channel} | {script} | * redundant * '
+context= f'🌦️ IPMA {hostname} ({ip}) | {user} | {channel} | {script} | * redundant * '
 
 clts.setcontext(context)
 now = str(datetime.datetime.now())[0:19]
@@ -181,17 +175,14 @@ if verbose:
 datafrom = "restapi"
 #datafrom = "file"
 
-if hostname[:4]=="srv-":
-    enviro="render"
+if enviro=="render":    # temporary
+  datafrom="restapi"
+
+print (f"Reading data from {datafrom}")
 
 filepath1 = f"ipma_data_{now.replace(":", "_")}.json"
 filepath2 = f"ipma_data.json"
 
-if enviro=="render":    # temporary
-  datafrom="restapi"
-
-
-print (f"Reading data from {datafrom}")
 
 if datafrom=="restapi":  
   ## Getting data from IPMA endpoint
@@ -559,7 +550,7 @@ if enviro=='render':
 if True:
   print ("Request to send enviro:", enviro)
   #return
-  subject = f"🌦️ IPMA {context}"
+  subject = context
   toem=clts.listtimes()
   text = toem+"\nEsta é uma mensagem automática."
   html = "<html><body style=''font-family:Montserrat;''>"+toem+ "<hr color=orange>"

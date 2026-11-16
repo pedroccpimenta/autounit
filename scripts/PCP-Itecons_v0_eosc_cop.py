@@ -491,7 +491,7 @@ for db in dblist:
             for r in rows
         ]
 
-        n=connection.cursor().executemany(sql, dados)
+        inserted=connection.cursor().executemany(sql, dados)
 
         tom = f"{dbcreds['dest_host']} Processing {len(rows)} rows ({inserted} new), last at {rows[-1]['datahora']} ✅"
         clts.elapt[tom] = clts.deltat(tstart)
