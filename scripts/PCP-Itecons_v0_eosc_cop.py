@@ -148,6 +148,8 @@ except:
 
 print("Server name:", hostname, "Public IP Address:", ip)
 
+
+ 
 if enviro == "google colab":
     notebookname = requests.get("http://172.28.0.12:9000/api/sessions", timeout=5).json()[0]["name"]
 
@@ -238,39 +240,25 @@ now = str(datetime.datetime.now())[0:19]
 today = now[:10]
 
 context= f'☁️ | {hostname} | {user} | {channel} | {now} '
-print ("context:", context)
-print ("HOSTNAME:", hostname)
+print ("context:", context, "enviro:", enviro)
+print ("HOSTNAME:", hostname, "user:", user)
 
 clts.setcontext(context)
 
-
-# In[4]:
-
-
 # Access the source database
 
-try: # folder system is different across systems
+if enviro in ["google colab"]:    # 👍 in google colab
+  creds = json.loads(userdata.get(f"{user.upper()}-Itecons.json"))
 
-  if user in ['PCP']:  # check the first three letters of the script match your acronym
+elif enviro == "render":
+  creds = json.loads(userdata.get(f"/etc/secrets/{user.upper()}-Itecons.json"))
 
-    if enviro in ["google colab"]:    # 👍 in google colab
-      creds = json.loads(userdata.get(f"{user.upper()}-Itecons.json"))
-    elif enviro=="render":
-      creds = json.loads(userdata.get(f"/etc/secrets/{user.upper()}-Itecons.json"))
+else:  # both for "egi notebooks" and localhost
+  with open(f'./secrets/{user.upper()}-Itecons.json', 'r') as fh:
+    creds = json.load(fh)
 
-    else:  # both for "egi notebooks" and localhost
-      with open(f'./secrets/{user.upper()}-Itecons.json', 'r') as fh:
-        creds = json.load(fh)
+clts.elapt["Itecons credentials ✅"] = clts.deltat(tstart)
 
-    clts.elapt["Itecons credentials ✅"] = clts.deltat(tstart)
-
-  else:
-    clts.elapt["error reading Itecons credentials ⚠️"] = clts.deltat(tstart)
-
-except Exception as e:
-    msg = f"❌ Error in reading credentials: {str(e)}"
-    print(msg)
-    clts.elapt[msg] = clts.deltat(tstart)
 
 print (json.dumps(creds, sort_keys=False, indent=4))
 
