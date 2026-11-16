@@ -253,14 +253,15 @@ if enviro in ["google colab"]:    # 👍 in google colab
   creds = json.loads(userdata.get(f"{user.upper()}-Itecons.json"))
 
 elif enviro == "render":
-  creds = json.loads(userdata.get(f"/etc/secrets/{user.upper()}-Itecons.json"))
+  with open(f'/etc/secrets/{user.upper()}-Itecons.json', 'r') as fh:
+    creds = json.load(fh)
 
 else:  # both for "egi notebooks" and localhost
   with open(f'./secrets/{user.upper()}-Itecons.json', 'r') as fh:
     creds = json.load(fh)
 
 clts.elapt["Itecons credentials ✅"] = clts.deltat(tstart)
-print("Itecons credentials ✅", creds['manifesto'], creds)
+print("Itecons credentials ✅", creds['manifesto'])
 
 conv = pymysql.converters.conversions.copy()
 conv[pymysql.constants.FIELD_TYPE.DECIMAL] = float
