@@ -90,7 +90,6 @@ elif enviro == "eosc eu node":
   import subprocess
   subprocess.check_call([sys.executable, "-m", "pip", "install", "pymysql", "--quiet"])
   subprocess.check_call([sys.executable, "-m", "pip", "install", "clts_pcp", "--quiet"])
-  subprocess.check_call([sys.executable, "-m", "pip", "install", "pandas", "--quiet"])
   subprocess.check_call([sys.executable, "-m", "pip", "install", "ipynbname", "--quiet"])
   subprocess.check_call([sys.executable, "-m", "pip", "install", "crate", "--quiet"])
   subprocess.check_call([sys.executable, "-m", "pip", "install", "psycopg[binary]", "--quiet"])
@@ -100,7 +99,6 @@ elif enviro == "copernicus dataspace":
   import subprocess
   subprocess.check_call([sys.executable, "-m", "pip", "install", "pymysql", "--quiet"])
   subprocess.check_call([sys.executable, "-m", "pip", "install", "clts_pcp", "--quiet"])
-  subprocess.check_call([sys.executable, "-m", "pip", "install", "pandas", "--quiet"])
   subprocess.check_call([sys.executable, "-m", "pip", "install", "ipynbname", "--quiet"])
   subprocess.check_call([sys.executable, "-m", "pip", "install", "crate", "--quiet"])
   subprocess.check_call([sys.executable, "-m", "pip", "install", "psycopg[binary]", "--quiet"])
@@ -109,7 +107,7 @@ elif enviro == "copernicus dataspace":
 
 else:
   # in a 'local' conda env, all the necessary modules should already be installed.
-  print("LOCAL ENV")
+  print("LOCAL enviro:", enviro)
   pass
 
 
@@ -120,10 +118,11 @@ import psycopg
 print(f"... done, current env:{enviro}")
 
 
-# In[3]:
 
 
 # Context gathering
+#
+#
 
 tstart = clts.getts()
 
@@ -217,6 +216,7 @@ elif enviro=="copernicus dataspace":
     print(notebookname)
 
 else:
+    print("__file__", __file__)
     script_path=os.path.abspath(__file__)
     script_name=os.path.basename(script_path)
 
@@ -245,6 +245,9 @@ print ("HOSTNAME:", hostname, "user:", user)
 clts.setcontext(context)
 
 # Access the source database
+#
+print ("Accessing the source, enviro: ", enviro)
+
 
 if enviro in ["google colab"]:    # 👍 in google colab
   creds = json.loads(userdata.get(f"{user.upper()}-Itecons.json"))
@@ -257,13 +260,7 @@ else:  # both for "egi notebooks" and localhost
     creds = json.load(fh)
 
 clts.elapt["Itecons credentials ✅"] = clts.deltat(tstart)
-
-
-print (json.dumps(creds, sort_keys=False, indent=4))
-
-
-# In[5]:
-
+print("Itecons credentials ✅", creds['manifesto'], creds)
 
 conv = pymysql.converters.conversions.copy()
 conv[pymysql.constants.FIELD_TYPE.DECIMAL] = float
@@ -282,7 +279,6 @@ if leitura==True:
             password=creds['pwd'],
             cursorclass=pymysql.cursors.DictCursor,
             conv=conv
-
         )
 
         cursor = connection.cursor()
@@ -332,7 +328,7 @@ print (rows[-1])
 dblist=["prisma_d5comb01" , "crate_pedropimenta", "error-example" ]
 
 LISBON = zoneinfo.ZoneInfo("Europe/Lisbon")
-SOURCE, LOCATION = "Itecons", "ForumMaia"      # ajusta
+SOURCE, LOCATION = "Itecons", "ForumMaia"      
 
 map = {
     "datahora": "tstamp",
