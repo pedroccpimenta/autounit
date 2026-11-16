@@ -913,40 +913,12 @@ def ensure_scheduler():
     start_scheduler()
 
 
-if enviro == 'render':
-    #if __name__ == '__main__':
-    #    import os
-    #    port = int(os.environ.get('PORT', 5001))
-    #    app.run(host='0.0.0.0', port=port, debug=False, use_reloader=False)
-
-    if __name__ == '__main__':
-       port = int(os.environ.get("PORT", 10000))
-       app.run(debug=False, use_reloader=False, port=port, host='0.0.0.0')
-       # app.run(debug=False, use_reloader=False)
-
-else:
-    app.run(debug=True, use_reloader=True, port=5000)
-
-
-"""
-
 if __name__ == '__main__':
-   port = int(os.environ.get("PORT", 10000))
-   app.run(debug=True, use_reloader=True)
-   # app.run(debug=False, use_reloader=False)
-
-"""
-
-""" or
-if __name__ == "__main__":
-    # CRITICAL for Render: host="0.0.0.0", port from $PORT
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port, debug=False)
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    if enviro == 'render':
+        port = int(os.environ.get("PORT", 10000))
+        app.run(debug=False, use_reloader=False, port=port, host='0.0.0.0')
+        # app.run(debug=False, use_reloader=False)
+    else:
+        app.run(debug=True, use_reloader=True, port=5000)
 
 
-    if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-        init_once()
-    app.run(debug=True)  # reloader ON
-"""
