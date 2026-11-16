@@ -301,17 +301,10 @@ if status=='ok':
   # This connection needs further parametrization, since the same user might want to use
   # different databases for different pipelines / data sources
 
-  dblist = [ "aiven_acess_mysql", 
-              "tidb_ppimenta_umaia", 
-              "tidb_Maria", 
-              "aiven_projectoMaria_mysql",
-              "crate_projectoMaria_crate",
-              "crate_pedropimenta",
-              "skysql_EstMaria",
-              "skysql_IPMAIA",
-              "skysql_PPimenta"
+  dblist = [ "aiven_acess_mysql", "tidb_ppimenta_umaia", "tidb_Maria", 
+              "aiven_projectoMaria_mysql", "crate_projectoMaria_crate",  "crate_pedropimenta",
+              "skysql_EstMaria",  "skysql_IPMAIA",  "skysql_PPimenta"
   ]
-
 
   #dblist = ["aiven_acess_mysql", "crate_pedropimenta" ]
 
@@ -521,20 +514,20 @@ if status=='ok':
 
           if dbcreds['dbms']=="crate":
             cursor.execute(sql_c)
-            clts.elapt[f"... writing {len(data2)} records @ {db} "] = clts.deltat(tstart)
+            clts.elapt[f"... writing {len(data2)} records @ {db} (len(sql):{len(sql_c)}) "] = clts.deltat(tstart)
             connection.commit()
             clts.elapt[f"... {datetime.datetime.now()} commit "] = clts.deltat(tstart)
   
 
           elif dbcreds['dbms']=="sql":
             cursor.execute(sql)
-            clts.elapt[f"... writing {len(data2)} records @ {db} "] = clts.deltat(tstart)
+            clts.elapt[f"... writing {len(data2)} records @ {db}  (len(sql):{len(sql)})"] = clts.deltat(tstart)
             connection.commit()
             clts.elapt[f"... {datetime.datetime.now()} commit "] = clts.deltat(tstart)
   
           elif dbcreds['dbms']=="sql_tls":
             cursor.execute(sql)
-            clts.elapt[f"... writing {len(data2)} records @ {db} "] = clts.deltat(tstart)
+            clts.elapt[f"... writing {len(data2)} records @ {db}  (len(sql):{len(sql)})"] = clts.deltat(tstart)
             connection.commit()
             clts.elapt[f"... {datetime.datetime.now()} commit "] = clts.deltat(tstart)
   
@@ -562,15 +555,15 @@ if enviro=='render':
   horaemail=['07', '11',   '15',   '18', '19', "20", '21', '22' ]
 
 #if sendmail and (hora in horaemail):  
-if send_mail and email_addresses!=[] and hora in horaemail :
-
+#if send_mail and email_addresses!=[] and hora in horaemail :
+if True:
   print ("Request to send enviro:", enviro)
   #return
   subject = f"🌦️ IPMA {context}"
   toem=clts.listtimes()
   text = toem+"\nEsta é uma mensagem automática."
   html = "<html><body style=''font-family:Montserrat;''>"+toem+ "<hr color=orange>"
-  html = html +"This message is an automated notification from "+ context +"</body></html>"
+  html = html +f"This message (approx {len(html)+50}) is an automated notification from "+ context +"</body></html>"
 
   if enviro == "render":
     import resend
@@ -639,24 +632,26 @@ if send_mail and email_addresses!=[] and hora in horaemail :
     finally:
         pass
 
-  print ("Notificação enviada.")
+  print (f"Notificação enviada {email_addresses} (len(html):{len(html)}).")
   clts.elapt[f"After sending email"] = clts.deltat(tstart)        # add an entry to elapt dictionary
 else:
   print(f"Tstamp not included to send emails ({horaemail}).")
   clts.listtimes()
 
-with open(f"{script.replace(".py", "_run.html")}", "w") as fh:
-  fh.write(clts.listtimes())
 
+# Dumping clts.listtimes()
+print (f"dumping clts.listtimes() to {script.replace(".py", "_run.json")}")  
 if enviro!='render':
   now=str(datetime.datetime.now())[:19]
   with open(f"{script.replace(".py", f"_{now.replace(":","_")}_run.html")}", "w") as fh:
     fh.write(clts.listtimes())
+else:
+  with open(f"{script.replace(".py", "_run.html")}", "w") as fh:
+    fh.write(clts.listtimes())
 
-
+# Dumping execution time
 print (f"dumping execution time to {script.replace(".py", "_run.json")}")  
 with open(f"{script.replace(".py", "_run.json")}", "w") as fh:
   tend=clts.getts()
   fh.write (json.dumps({"tstart":tstart, "tend":tend}))
-  print (f"{script.replace(".py", "_run.json")} created." )
-
+  print (f"{script.replace(".py", "_run.json")} created.")

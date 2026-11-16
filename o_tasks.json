@@ -15,20 +15,36 @@
 		"ets": [null, null], 
 		"ret": " - not yet called - "
 	},
-	
-	"PCP_snowflake_b": {
+	"pcp_meteo_itecons": {
 		"call": "python", 
-		"script": "scripts/PCP_snflk_b.py", 
+		"script": "scripts/PCP-Itecons_v0_eosc_cop.py", 
 		"lrun": "2025-12-23 10:20:46", 
-		"period": 210, 
+		"period": 14, 
 		"ets": [null, null], 
 		"ret": " - not yet called - "
 	},
-	"PCP_snowflake_c": {
+
+	"pcp_snowflake_c": {
 		"call": "python", 
 		"script": "scripts/PCP_snflk_c.py", 
 		"lrun": "2025-12-23 10:20:46", 
 		"period": 479.7, 
+		"ets": [null, null], 
+		"ret": " - not yet called - "
+	},
+	"pcp_BUS_STCP": {
+		"call": "python", 
+		"script": "scripts/PCP-bus_stcp_rt_v26.py", 
+		"lrun": "2025-12-23 10:20:46", 
+		"period": 3.0, 
+		"ets": [null, null], 
+		"ret": " - not yet called - "
+	},
+	"pcp_duolingo": {
+		"call": "python", 
+		"script": "scripts/PCP-duolingo_v1.py", 
+		"lrun": "2025-12-23 10:20:46", 
+		"period": 8.0, 
 		"ets": [null, null], 
 		"ret": " - not yet called - "
 	},

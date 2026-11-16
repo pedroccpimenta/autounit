@@ -668,6 +668,7 @@ def r_peter():
                 
                 #totsecs=difference.days*24*60*60+difference.seconds    
                 totsecs=difference.total_seconds()    
+                print ("totsecs:", totsecs)
 
                 #print ('time check: ', totsecs, ' totsecs')    
                 #print (f"time check: {et:>22s} | {tasks[et]['lrun']:>20s} | {totsecs:.0f} |", end = "")
@@ -692,6 +693,10 @@ def r_peter():
                     # 
                     tasks[et]["lrun"]=str(datetime.datetime.now())[0:19]
 
+
+                    #datetime.datetime.now(datetime.UTC)
+                    #tasks[et]["lrun"]=str(datetime.datetime.UTC.now())[0:19]
+                    tasks[et]["lrun"] = str(datetime.datetime.now(datetime.timezone.utc))[0:19]
 
                     #tasks[et]["ret"]=str(pret)
                     tasks[et]["ret"]= ostatus["nk"]
@@ -907,11 +912,30 @@ def start_scheduler():
 def ensure_scheduler():
     start_scheduler()
 
+
+if enviro == 'render':
+    #if __name__ == '__main__':
+    #    import os
+    #    port = int(os.environ.get('PORT', 5001))
+    #    app.run(host='0.0.0.0', port=port, debug=False, use_reloader=False)
+
+    if __name__ == '__main__':
+       port = int(os.environ.get("PORT", 10000))
+       app.run(debug=True, use_reloader=False)
+       # app.run(debug=False, use_reloader=False)
+
+else:
+    app.run(debug=True, use_reloader=True, port=5000)
+
+
+"""
+
 if __name__ == '__main__':
    port = int(os.environ.get("PORT", 10000))
    app.run(debug=True, use_reloader=True)
    # app.run(debug=False, use_reloader=False)
 
+"""
 
 """ or
 if __name__ == "__main__":

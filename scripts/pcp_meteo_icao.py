@@ -219,9 +219,8 @@ if True:
   data_str = requests.get(url).text
   data = json.loads(data_str)
 
-  clts.elapt[f"Data request successful!"] = clts.deltat(tstart)    # add an entry to elapt dictionary
+  clts.elapt[f"Data request successful ({len(data_str)} bytes)!"] = clts.deltat(tstart)    # add an entry to elapt dictionary
 
-  
   with open(filename, 'w') as sfh:
     sfh.write (data_str)
   clts.elapt[f"Data ({len(data_str)} bytes) saved to file `{filename}`"] = clts.deltat(tstart)
@@ -239,7 +238,6 @@ v=data['weatherObservation']
 
 if verbose:
   print (icao, tstamp)
-
 
 sql = ( f"insert into icao_obs ("
         f"hostsource, tstamp, icao, nome, temperatura, pressao, "
@@ -275,8 +273,6 @@ Para cada tupo (`user`, `base de dados`), deverá haver um ficheiro de credencia
 ```
 
 These credentials are to be uploaded to the `secrets` area.
-
-
 
 Para a base de dados https://tidbcloud.com/ , o método de conexão exige TLS, o que obriga a que as credenciais sejam distintas:
 
@@ -314,16 +310,16 @@ clts.elapt[f"Starting database accesses:"] = clts.deltat(tstart)
 # different databases for different pipelines / data sources
 #
 
-if enviro == "google.colab":
-  dblist=json.loads(userdata.get(f"{user}-dblist.json"))
-elif enviro == "render":
-  dblist=json.load(open(f"/etc/secrets/{user}-dblist.json"))
-else:
-  dblist = json.load(open(f"secrets/{user}-dblist.json"))
+#if enviro == "google.colab":
+#  dblist=json.loads(userdata.get(f"{user}-dblist.json"))
+#elif enviro == "render":
+#  dblist=json.load(open(f"/etc/secrets/{user}-dblist.json"))
+#else:
+#  dblist = json.load(open(f"secrets/{user}-dblist.json"))
 
-
+"""
 dblist = [ "aiven_acess_mysql", 
-            "tidb_ppimenta_umaia", 
+           "tidb_ppimenta_umaia", 
             "tidb_Maria", 
             "aiven_projectoMaria_mysql",
             "crate_projectoMaria_crate",
@@ -332,6 +328,15 @@ dblist = [ "aiven_acess_mysql",
             "skysql_IPMAIA",
             "skysql_PPimenta"
 ]
+"""
+
+dblist = [ "aiven_acess_mysql", 
+            "tidb_ppimenta_umaia", 
+            "crate_pedropimenta",
+            #"skysql_IPMAIA",
+            #"skysql_PPimenta"
+]
+
 
 print(dblist)
 
@@ -520,6 +525,7 @@ for db in dblist:
         )
 
 
+
         cursor = connection.cursor()
         clts.elapt[f"... connected to `{db}`"] = clts.deltat(tstart)
         status="ok"
@@ -561,7 +567,7 @@ for db in dblist:
         if res["nr"]==0:
           cursor.execute(sql)
           connection.commit()
-          clts.elapt[f"... `{tstamp}` inserted for {icao} @ {db} "] = clts.deltat(tstart)
+          clts.elapt[f"... `{tstamp}` inserted for {icao} @ {db} ({len(sql)} bytes sent)"] = clts.deltat(tstart)
         elif res["nr"]==1:
           clts.elapt[f"... `{tstamp}` for {icao} already persisted @ {db} "] = clts.deltat(tstart)
         else:
@@ -615,7 +621,7 @@ if send_mail and email_addresses!=[] and hora in horaemail :
   toem=clts.listtimes()
   text = toem+"\nEsta é uma mensagem automática."
   html = "<html><body style=''font-family:Montserrat;''>"+toem+ "<hr color=orange>"
-  html = html +"This message is an automated notification from "+ context +"</body></html>"
+  html = html +f"This message (approx {len(html)+50}) is an automated notification from "+ context +"</body></html>"
 
 
   if enviro == "render":
@@ -695,25 +701,25 @@ if send_mail and email_addresses!=[] and hora in horaemail :
     finally:
         pass
 
-  print ("Notificação enviada.")
+  print (f"Notificação enviada {email_addresses} (len(html):{len(html)}).")
   clts.elapt[f"After sending email"] = clts.deltat(tstart)        # add an entry to elapt dictionary
 else:
   print(f"Tstamp not included to send emails ({horaemail}).")
   clts.listtimes()
 
-with open(f"{script.replace(".py", "_run.html")}", "w") as fh:
-  fh.write(clts.listtimes())
-
+# Dumping clts.listtimes()
+print (f"dumping clts.listtimes() to {script.replace(".py", "_run.json")}")  
 if enviro!='render':
   now=str(datetime.datetime.now())[:19]
   with open(f"{script.replace(".py", f"_{now.replace(":","_")}_run.html")}", "w") as fh:
     fh.write(clts.listtimes())
+else:
+  with open(f"{script.replace(".py", "_run.html")}", "w") as fh:
+    fh.write(clts.listtimes())
 
-
-
+# Dumping execution time
 print (f"dumping execution time to {script.replace(".py", "_run.json")}")  
 with open(f"{script.replace(".py", "_run.json")}", "w") as fh:
   tend=clts.getts()
   fh.write (json.dumps({"tstart":tstart, "tend":tend}))
-  print (f"{script.replace(".py", "_run.json")} created." )
-
+  print (f"{script.replace(".py", "_run.json")} created.")

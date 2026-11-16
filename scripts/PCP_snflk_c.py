@@ -138,7 +138,7 @@ today = now[:10]
 hora=now[11:13]
 
 
-context= f'{hostname} ({ip}) | {channel} | {script} | {now} | * d5 comb *'
+context= f'Vc💦 | {hostname} ({ip}) | {channel} | {script} | {now} | * d5 comb *'
 
 
 clts.setcontext(context)
@@ -151,8 +151,8 @@ if enviro=="render":    # temporary
   datafrom="database"
 
 
-filepath1 = f"snflk_data_{now.replace(":", "_")}.json"
-filepath2 = f"snflk_data.json"
+filepath1 = f"snflk_data_{now.replace(":", "_")}_run.json"
+filepath2 = f"snflk_data_run.json"
 
 sstatus="ok"
 
@@ -265,7 +265,7 @@ if datafrom=="database":
 
     # Convert rows to list of dictionaries
     result = [dict(zip(columns, row)) for row in result]
-    clts.elapt[f"{len(result)} readings extracted from system:snowflake"]= clts.deltat(tstart)
+    clts.elapt[f"{len(result)} readings ({len(json.dumps(result))} bytes) extracted from snowflake"]= clts.deltat(tstart)
 
 
     # Writing received data as JSON to file
@@ -439,26 +439,31 @@ if sstatus=="ok" and result!=[]:
 
           cursor.execute(sql)
           row=cursor.fetchone()
+
+
+                f"meterserial, tenantname, sitename, "
+
+                              'CM-MAIA', 'CM-MAIA',
+
           """
 
           if creds['dbms']=="crate":
             sql = ( f"insert into {snflkcreds['tabela']} ("
                 f"hostsource, deviceserial, reading, consumption, sampletime, "
-                f"meterserial, tenantname, sitename, tstamp "
+                f"meterserial,  tstamp "
                 f") values ( "
                 f"'{hostname}', '{c["DEVICESERIAL"]}', {c["READING"]}, {c["CONSUMPTION"]}, "
                 f" timezone('Europe/Lisbon', '{sql_datetime}'::TIMESTAMP),  '{c["METERSERIAL"]}', "
-                f" 'CM-MAIA', 'CM-MAIA',  timezone('Europe/Lisbon', '{now}'::TIMESTAMP)) ON CONFLICT (sampletime, meterserial) DO NOTHING;"
+                f" timezone('Europe/Lisbon', '{now}'::TIMESTAMP)) ON CONFLICT (sampletime, meterserial) DO NOTHING;"
             )
-
 
           else:
             sql = ( f"insert ignore  into {snflkcreds['tabela']} ("
                   f"hostsource, deviceserial, reading, consumption, sampletime, "
-                  f"meterserial, tenantname, sitename, tstamp "
+                  f"meterserial, tstamp "
                   f") values ( "
                   f"'{hostname}', '{c["DEVICESERIAL"]}', {c["READING"]}, {c["CONSUMPTION"]}, "
-                  f"'{sql_datetime}',  '{c["METERSERIAL"]}', 'CM-MAIA', 'CM-MAIA', '{str(datetime.datetime.now())[:19]}') ;"
+                  f"'{sql_datetime}',  '{c["METERSERIAL"]}',  '{str(datetime.datetime.now())[:19]}') ;"
 
               )
 
@@ -480,7 +485,7 @@ if sstatus=="ok" and result!=[]:
         #clts.elapt[f"... {destination}:{inserts} inserts, {passes} passes (total:{inserts+passes}) ✅ "] = clts.deltat(tstart)    # add an entry to elapt dictionary
         
         print (f"... ... {destination} updated: {inserts} processed (insert ignore)")
-        clts.elapt[f"... ... {destination} updated: {inserts} processed (insert ignore)"] = clts.deltat(tstart)
+        clts.elapt[f"... ... {destination} updated: {inserts} processed (insert ignore) (len(sql):{len(sql)})"] = clts.deltat(tstart)
       except Exception as e:
         clts.elapt[f"... {destination} connection broke after {inserts} inserts, {passes} passes. ❌ "] = clts.deltat(tstart)    # add an entry to elapt dictionary
 
@@ -551,11 +556,12 @@ if True:
 
   toem=clts.listtimes()
 
-  subject = f"Vc💦 {context}"
+  subject = context
+  #subject = f"Vc💦 {context}"
   #assunto = f"🌦️🛫 {context}"
   
   html = "<html><body style=''font-family:Montserrat;''>"+toem+ "<hr color=orange>"
-  html = html +"This message is an automated notification from "+ context +"</body></html>"
+  html = html +f"This message (approx {len(html)+50}) is an automated notification from "+ context +"</body></html>"
 
   if enviro == "render" or hostname == "pc1395":
     import resend
@@ -630,29 +636,25 @@ if True:
     finally:
         pass
 
-  print ("Notificação enviada.")
+  print (f"Notificação enviada {email_addresses} (len(html):{len(html)}).")
   clts.elapt[f"After sending email"] = clts.deltat(tstart)        # add an entry to elapt dictionary
 else:
   print(f"Tstamp not included to send emails ({horaemail}).")
   clts.listtimes()
 
+# Dumping clts.listtimes()
+print (f"dumping clts.listtimes() to {script.replace(".py", "_run.json")}")  
+if enviro!='render':
+  now=str(datetime.datetime.now())[:19]
+  with open(f"{script.replace(".py", f"_{now.replace(":","_")}_run.html")}", "w") as fh:
+    fh.write(clts.listtimes())
+else:
+  with open(f"{script.replace(".py", "_run.html")}", "w") as fh:
+    fh.write(clts.listtimes())
 
+# Dumping execution time
 print (f"dumping execution time to {script.replace(".py", "_run.json")}")  
 with open(f"{script.replace(".py", "_run.json")}", "w") as fh:
   tend=clts.getts()
   fh.write (json.dumps({"tstart":tstart, "tend":tend}))
-  print (f"{script.replace(".py", "_run.json")} created." )
-
-k=clts.listtimes()
-
-with open(f"{script.replace(".py", "_run.html")}", "w", encoding="utf-8") as fh:
-  fh.write (k)
-
-if enviro != "render":
-  now = str(datetime.datetime.now())[:19]
-  with open(f"{script.replace(".py", f"_{now.replace(":","_")}_run.html")}", "w", encoding="utf-8") as fh:
-    fh.write (k)
-
-  
-
-
+  print (f"{script.replace(".py", "_run.json")} created.")
