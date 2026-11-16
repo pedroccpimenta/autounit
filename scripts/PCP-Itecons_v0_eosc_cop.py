@@ -618,15 +618,3 @@ if send_mail and email_addresses!=[]:
     finally:
         pass
 
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
