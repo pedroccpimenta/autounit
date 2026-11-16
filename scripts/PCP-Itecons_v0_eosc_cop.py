@@ -47,7 +47,7 @@ img = env.get("JUPYTER_IMAGE", "")
 
 if "google.colab" in sys.modules:
     enviro = "google colab"
-elif env.get("RENDER") == "true":
+elif "RENDER" in os.environ:
     enviro = "render"
 elif "KAGGLE_KERNEL_RUN_TYPE" in env:
     enviro = "kaggle"
@@ -60,7 +60,7 @@ elif "eginotebooks" in img:
 else:
     enviro = env.get("CONDA_DEFAULT_ENV", "unknown")
 
-
+print ("detected enviro:", enviro)
 
 work_dir = {
     "google colab": "/content",
