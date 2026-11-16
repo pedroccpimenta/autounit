@@ -883,7 +883,6 @@ print(f">>> Scheduled Jobs: {schedule.get_jobs()}")
 
 # Run scheduler in background thread
 def run_scheduler():
-
     #print(">>> Scheduler thread starting...")
     try:
         while True:
@@ -912,7 +911,7 @@ def start_scheduler():
 def ensure_scheduler():
     start_scheduler()
 
-
+print ("__name__:", __name__)
 if __name__ == '__main__':
     if enviro == 'render':
         port = int(os.environ.get("PORT", 10000))

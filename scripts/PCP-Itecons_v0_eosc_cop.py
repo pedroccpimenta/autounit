@@ -251,6 +251,8 @@ try: # folder system is different across systems
 
     if enviro in ["google colab"]:    # 👍 in google colab
       creds = json.loads(userdata.get(f"{user.upper()}-Itecons.json"))
+    elif enviro=="render":
+      creds = json.loads(userdata.get(f"/etc/secrets/{user.upper()}-Itecons.json"))
 
     else:  # both for "egi notebooks" and localhost
       with open(f'./secrets/{user.upper()}-Itecons.json', 'r') as fh:
