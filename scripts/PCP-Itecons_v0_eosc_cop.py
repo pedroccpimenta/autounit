@@ -219,7 +219,7 @@ elif enviro=="copernicus dataspace":
 else:
     script_path=os.path.abspath(__file__)
     script_name=os.path.basename(script_path)
-    
+
     path = __file__.replace('\\', "/").split('/')
     user = path[-1].split("-")[0]
     script_url=f"{script_name}@{hostname}"
