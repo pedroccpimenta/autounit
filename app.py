@@ -253,7 +253,6 @@ def logs():
     MY process memory: {my_memory_mb:.1f} MB
     {limit_text}
     
-
     <br>Files in current path:
     {cdir}
     <hr color=lime>
@@ -455,7 +454,7 @@ def hello():
         setTimeout(function() {{ location.reload(); }}, 30000);
     </script>
     </head>
-    <body style='font-family:roboto'>
+    <body style='font-family:manrope'>
     <h1>Overall <small>{hostname} {str(uptime)[:19]} ({elapsed:.1f} days)</h1>
     <h2>Tasks</h2>
     {table}
@@ -591,8 +590,6 @@ def edittasks():
 
 
     table += "</table><input type=password name=xkvalue value='EZ53'><input type='submit' value='Submit'>"
-
-
    
     #print (" ========================= Status", status)
     ostatus = json.load(open(ostat))
@@ -601,6 +598,7 @@ def edittasks():
     resp = f"""<!doctype html><link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600&display=swap" rel="stylesheet">
     <head>
         <link rel="icon" type="image/x-icon" href="static/pics/autounit.ico">
     <head>
@@ -609,7 +607,7 @@ def edittasks():
         setTimeout(function() {{ location.submit(); }}, 20000);
     </script>
     </head>
-    <body style='font-family:roboto'>
+    <body style='font-family:manrope'>
     <h1>Editing task status</h1>
     {table}
      <hr color=lime>
@@ -645,10 +643,6 @@ def r_peter():
 
     print( "\n\n» Starting r_peter  (", ostatus['nk'],"):", str(datetime.datetime.now())[0:19] )
     
-    #if enviro=='flask_autounit_dec25':
-    #    print (" SLEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEP")
-    #    time.sleep(2)
-
     print (f"| id {" ":18s} | task status and execution")
     for et in tasks.keys():
         if et == "main" or et == "main cycle" or  et == "r_peter":
@@ -766,7 +760,7 @@ print ("""\n          AAAAA          UU     UU
         AA   AA          UU     UU
        AAAAAAAA          UU     UU 
       AA     AA          UU     UU
-     AA      AAutonomous UUUUUUUUUnit - TO STARTING... wait a minute, pleeeeeeaseeee ...
+     AA      AAutonomous UUUUUUUUUnit - TO STARTING... wait a minute, pleeeeeeassseeee ...
      """)
 
 ## Context variables - FLASK @ Local vs Flask @ render / (...)

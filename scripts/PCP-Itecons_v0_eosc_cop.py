@@ -523,10 +523,15 @@ for db in dblist:
 # send email
 
 clts.elapt["Overall (before email):"]=clts.deltat(tstart)
-send_mail=False
-send_mail=True
+hora=str(datetime.datetime.now())[11:13]
+horaemail= [f"{i:02d}" for i in range(1, 25)]
 
-if send_mail and email_addresses!=[]:
+if enviro=='render':
+  horaemail=['07', '11',   '15',   '18',  "20",  '22' ]
+
+
+#if send_mail and email_addresses!=[]:
+if send_mail and email_addresses!=[] and hora in horaemail :
 
   print ("Request to send enviro:", enviro)
   #return
@@ -556,8 +561,6 @@ if send_mail and email_addresses!=[]:
     from email.mime.multipart import MIMEMultipart
     from email.mime.image import MIMEImage
     import smtplib, ssl
-
-
 
 
     # V25

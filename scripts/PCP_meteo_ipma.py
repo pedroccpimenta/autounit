@@ -543,11 +543,11 @@ hora=str(datetime.datetime.now())[11:13]
 horaemail= [f"{i:02d}" for i in range(1, 25)]
 
 if enviro=='render':
-  horaemail=['07', '11',   '15',   '18', '19', "20", '21', '22' ]
+  horaemail=['07', '11',   '15',   '18',  "20",  '22' ]
 
 #if sendmail and (hora in horaemail):  
-#if send_mail and email_addresses!=[] and hora in horaemail :
-if True:
+if send_mail and email_addresses!=[] and hora in horaemail :
+#if True:
   print ("Request to send enviro:", enviro)
   #return
   subject = context
